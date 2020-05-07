@@ -4,9 +4,9 @@
 
 * 默认不对超过1小时的视频建立缩略图缓存（所耗时间较长），可按`shift+t`手动开始建立
 
-* 默认不开启anime4k滤镜，手动使用“`CTRL+1~3`”选择预设方案，1号仅降噪，<font color=blue>推荐3号效果显著</font>，`CTRL+0`为清除所有glsl滤镜（慎用，因为会清除cscale这样的基础必要算法，非特殊情况应使用预设`CTRL+9`只保留csale算法）
+* 默认不开启anime4k滤镜，手动使用“`CTRL+1~3`”选择预设方案，1号仅降噪，<span style="color:blue">推荐3号效果显著</span>，`CTRL+0`为清除所有glsl滤镜（慎用，因为会清除cscale这样的基础必要算法，非特殊情况应使用预设`CTRL+9`只保留csale算法）
 
-* 默认不开启补帧算法，`CTRL+4`开启/关闭mvtools补帧方案<font color=blue>标准版（推荐）</font>;`CTRL+5`开启/关闭mvtools补帧方案测试版;`CTRL+6`开启/关闭mvtools补帧方案高级版（没有变态的CPU慎用）。<font color=red>同一时间请只开启一个mvtools补帧滤镜</font>。CTRL+` 清除所有vf滤镜
+* 默认不开启补帧算法，`CTRL+4`开启/关闭mvtools补帧方案<font color=blue>标准版（推荐）</font>;`CTRL+5`开启/关闭mvtools补帧方案测试版;`CTRL+6`开启/关闭mvtools补帧方案高级版（没有变态的CPU慎用）。<span style="color:red">同一时间请只开启一个mvtools补帧滤镜</span>。CTRL+` 清除所有vf滤镜
 
 ## **注意事项**
 
