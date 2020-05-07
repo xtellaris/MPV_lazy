@@ -1,2 +1,0 @@
-# MPV_lazy
-mpv
