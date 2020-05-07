@@ -1,3 +1,7 @@
+![正确补帧.jpg](https://i.loli.net/2020/05/07/HvCywM8YjmEKTph.jpg)
+
+![Snipaste_2020-05-07_15-16-52.jpg](https://i.loli.net/2020/05/07/v9KVsbmaStlk3QN.jpg)
+
 # _MPV懒人包快速说明_ v20200507
 
 * 载入视频时默认暂停，需手动点击开始播放（或`空格键`），最好适当留时间和性能给缩略图缓存完毕再开始播放（移动至进度条查看建立的完成度）
