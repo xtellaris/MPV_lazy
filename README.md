@@ -1,6 +1,6 @@
 ![](https://github.com/hooke007/MPV_lazy/blob/master/%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
 
-# _MPV懒人包说明_ v20210118（卒于话多，一周后解封）
+# _MPV懒人包_ v20210118（卒于话多，一周后解封）
 
 ## **内部组件及整合列表**
 **mpv-x86_64-20210103-git** 本体（主程序mpv.exe）
