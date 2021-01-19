@@ -1,53 +1,78 @@
 ![](https://github.com/hooke007/MPV_lazy/blob/master/%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
 
-# _MPV懒人包_ v20210118（卒于话多，一周后解封）
+
+
+# _MPV懒人包（附简易整合过程）_ v20210118
+
+
 
 ## **内部组件及整合列表**
-**mpv-x86_64-20210103-git** 本体（主程序mpv.exe）
+  **=== mpv-x86_64-20210103-git** 本体
 
-**libEGL & libGLESv2**
+https://sourceforge.net/projects/mpv-player-windows/files/64bit/
 
-**VapourSynth64-Portable-R52** 环境支持
+（主程序`mpv.exe`所在位置新建`portable_config`文件夹）
 
-**python-3.8.7-embed-amd64** 环境支持
+  **=== libEGL & libGLESv2** 
+  
+通常你可以在Chromium/Firefox的安装目录里找到
 
-**ffmpeg-4.3.1-static** 独立程序
+两个`.dll`文件放在`mpv.exe`旁
 
+  **=== VapourSynth64-Portable-R52** 环境支持
 
+https://github.com/vapoursynth/vapoursynth/releases
 
-**Thumbnailer** 缩略图引擎
+便携版解压至`mpv.exe`所在位置（`vapoursynth64`文件夹应在`mpv.exe`旁）
 
-**on_top_only_while_playing** 播放时自动置顶（需配合配置文件中的--ontop参数）
+  **=== python-3.8.7-embed-amd64** 环境支持
 
-**autoload** 自动加载同级目录视频
+https://www.python.org/downloads/
 
-**open-file-dialog** 快捷键 `Ctrl+o` 手动加载额外的视频文件
+便携版解压至`mpv.exe`所在位置（`python.exe`应在`mpv.exe`旁）
 
-**playlistmanager** 高级播放列表
+  **=== ffmpeg-4.3.1-static** 独立程序
 
+https://ffmpeg.org/download.html#build-windows
 
-
-**Krig** 高级cscale
-
-**Anime4K_v3.1** 动漫方向的视频画面优化
-
-**ACNet_1.0.0** 动漫方向的人工智能视频画面优化
-
-**mvtools-v23-win64** 及附属补帧脚本
-
-**svpflow** 补帧引擎（发布帖有其他坛友的脚本）
+静态库版只需要把`ffmpeg.exe`放在`mpv.exe`旁
 
 
 
-**FSRCNNX** 快速超分辨率卷积神经网络 放大算法
+  **=== Thumbnailer** 缩略图引擎
 
-**ravu-zoom-r4** 快速准确的图像超分辨率算法（fscnnx的下位代替）
+  **=== on_top_only_while_playing** 播放时自动置顶（需配合配置文件中的--ontop参数）
 
-**SSimDownscaler** 高级缩小算法
+  **=== autoload** 自动加载同级目录视频
 
-**SSimSuperRes** 对mpv内置放大算法的修正
+  **=== open-file-dialog** 快捷键 `Ctrl+o` 手动加载额外的视频文件
 
-**Adaptive Sharpen** 自适应锐化
+  **=== playlistmanager** 高级播放列表
+
+
+
+  **=== Krig** 高级cscale
+
+  **=== Anime4K_v3.1** 动漫方向的视频画面优化
+
+  **=== ACNet_1.0.0** 动漫方向的人工智能视频画面优化
+
+  **=== mvtools-v23-win64** 及附属补帧脚本
+
+  **=== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
+
+
+
+  **=== FSRCNNX** 快速超分辨率卷积神经网络 放大算法
+
+  **=== ravu-zoom-r4** 快速准确的图像超分辨率算法（fscnnx的下位代替）
+
+  **=== SSimDownscaler** 高级缩小算法
+
+  **=== SSimSuperRes** 对mpv内置放大算法的修正
+
+  **=== Adaptive Sharpen** 自适应锐化
+
 
 
 # 其它
