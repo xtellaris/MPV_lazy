@@ -2,7 +2,7 @@
 
 
 
-# _MPV懒人包（附简易整合过程）_ v20210118
+# _MPV懒人包（附简易整合过程）_ v20210131
 
 
 
@@ -11,7 +11,7 @@
 
 https://sourceforge.net/projects/mpv-player-windows/files/64bit/
 
-（主程序`mpv.exe`所在位置新建`portable_config`文件夹）
+（主程序`mpv.exe`所在位置新建`\portable_config\`文件夹，该文件夹内放置`input.conf`和`mpv.conf`）
 
   **=== libEGL & libGLESv2** 
   
@@ -39,6 +39,8 @@ https://ffmpeg.org/download.html#build-windows
 
 
 
+脚本置于`\portable_config\scripts\`，脚本对应conf配置文件置于`\portable_config\script-opts\`
+
   **=== Thumbnailer** 缩略图引擎
 
   **=== on_top_only_while_playing** 播放时自动置顶（需配合配置文件中的--ontop参数）
@@ -51,27 +53,37 @@ https://ffmpeg.org/download.html#build-windows
 
 
 
+着色器置于`\portable_config\shaders\`
+
   **=== Krig** 高级cscale
 
   **=== Anime4K_v3.1** 动漫方向的视频画面优化
 
   **=== ACNet_1.0.0** 动漫方向的人工智能视频画面优化
 
-  **=== mvtools-v23-win64** 及附属补帧脚本
-
-  **=== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
-
-
-
   **=== FSRCNNX** 快速超分辨率卷积神经网络 放大算法
 
-  **=== ravu-zoom-r4** 快速准确的图像超分辨率算法（fscnnx的下位代替）
+  **=== RAVU** 快速准确的图像超分辨率算法（fscnnx的下位代替）
+  
+  **=== NNEDI3** 可当作放大算法
 
   **=== SSimDownscaler** 高级缩小算法
 
   **=== SSimSuperRes** 对mpv内置放大算法的修正
 
   **=== Adaptive Sharpen** 自适应锐化
+  
+  **=== CAS** 对比度自适应锐化
+  
+  **=== Noise static** 优化静态噪点
+
+
+
+补帧的dll置于`\vapoursynth64\plugins`，补帧脚本vpy可置于`\portable_config\`
+
+  **=== mvtools-v23-win64** 及附属补帧脚本
+
+  **=== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
 
 
 
