@@ -9,11 +9,11 @@ https://sourceforge.net/projects/mpv-player-windows/files/64bit/
 
 （主程序`mpv.exe`所在位置新建`\portable_config\`文件夹，该文件夹内放置`input.conf`和`mpv.conf`）
 
+  **=== 系列手册**
+
   **=== libEGL & libGLESv2** 
   
-通常你可以在Chromium/Firefox的安装目录里找到
-
-两个`.dll`文件放在`mpv.exe`旁
+通常你可以在Chromium/Firefox的根目录里找到，将两个`.dll`文件放在`mpv.exe`旁
 
   **=== VapourSynth64-Portable-R52** 环境支持
 
@@ -33,6 +33,12 @@ https://ffmpeg.org/download.html#build-windows
 
 静态库版只需要把`ffmpeg.exe`放在`mpv.exe`旁
 
+  **=== SourceHanSans.ttc** 思源黑体
+
+https://github.com/adobe-fonts/source-han-sans/releases
+
+直接安装该字体或置于`\fonts\`文件夹内
+
 ### 脚本置于`\portable_config\scripts\`，脚本对应conf配置文件置于`\portable_config\script-opts\`
 
   **== Thumbnailer** 缩略图引擎
@@ -45,7 +51,7 @@ https://ffmpeg.org/download.html#build-windows
 
   **== playlistmanager** 高级播放列表
 
-### 着色器置于`\portable_config\shaders\`
+### 着色器置于`\portable_config\shaders\` （来源见系列手册[01]）
 
   **== Krig** 高级cscale
 
@@ -69,9 +75,11 @@ https://ffmpeg.org/download.html#build-windows
   
   **== Noise static** 优化静态噪点
 
-### 补帧的dll置于`\vapoursynth64\plugins`，补帧脚本vpy可置于`\portable_config\`
+### 补帧的dll置于`\vapoursynth64\plugins\`，补帧脚本vpy可置于`\portable_config\`
 
   **== mvtools-v23-win64** 及附属补帧脚本
+  
+  https://github.com/dubhater/vapoursynth-mvtools/releases
 
   **== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
 
