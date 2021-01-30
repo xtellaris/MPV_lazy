@@ -39,7 +39,7 @@ https://ffmpeg.org/download.html#build-windows
 
 
 
-脚本置于`\portable_config\scripts\`，脚本对应conf配置文件置于`\portable_config\script-opts\`
+### 脚本置于`\portable_config\scripts\`，脚本对应conf配置文件置于`\portable_config\script-opts\`
 
   **=== Thumbnailer** 缩略图引擎
 
@@ -53,7 +53,7 @@ https://ffmpeg.org/download.html#build-windows
 
 
 
-着色器置于`\portable_config\shaders\`
+### 着色器置于`\portable_config\shaders\`
 
   **=== Krig** 高级cscale
 
@@ -79,7 +79,7 @@ https://ffmpeg.org/download.html#build-windows
 
 
 
-补帧的dll置于`\vapoursynth64\plugins`，补帧脚本vpy可置于`\portable_config\`
+### 补帧的dll置于`\vapoursynth64\plugins`，补帧脚本vpy可置于`\portable_config\`
 
   **=== mvtools-v23-win64** 及附属补帧脚本
 
