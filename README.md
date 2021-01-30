@@ -89,9 +89,11 @@ https://github.com/adobe-fonts/source-han-sans/releases
 
   **== mvtools-v23-win64** 及附属补帧脚本
   
-  https://github.com/dubhater/vapoursynth-mvtools/releases
+  https://github.com/dubhater/vapoursynth-mvtools/releases + https://gist.github.com/KCCat/1b3a7b7f085a066af3719859f88ded02
 
   **== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
+  
+  _闭源无法分发_
 
 ## Github不支持预览html 系列手册请下载后阅读
 
