@@ -1,6 +1,6 @@
 ![](https://github.com/hooke007/MPV_lazy/blob/master/%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
 
-# _MPV懒人包（附简易整合过程）_ v20210131
+# _MPV懒人包整合过程_ v20210131
 
 ## **内部组件及整合列表**
   **=== mpv-x86_64-20210103-git** 本体
@@ -83,11 +83,4 @@ https://github.com/adobe-fonts/source-han-sans/releases
 
   **== svpflow** 补帧引擎（发布帖有其他坛友的脚本）
 
-# 其它
-mpv懒人包的更新地址：https://bbs.vcb-s.com/thread-5843-1-1.html
-
-关于`mpv.conf`内参数设定的全面描述文档：https://mpv.io/manual/master/
-
-界面UI及`osc.conf`修改指路：https://bbs.vcb-s.com/thread-5982-1-1.html (适用mpv原版/BOX分支，现版本改动较大）
-
-Win10上我用过的最好的基于libmpv的第三方播放器：https://kikoplay.fun/ （官网）
+# Github不支持预览html 系列手册请下载后阅读
