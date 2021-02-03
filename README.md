@@ -1,4 +1,5 @@
 ![](https://github.com/hooke007/MPV_lazy/blob/master/%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
+![](https://github.com/hooke007/MPV_lazy/blob/master/%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
 
 # mpv播放器折腾记录
 
