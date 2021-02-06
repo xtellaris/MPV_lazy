@@ -1,7 +1,5 @@
 import vapoursynth as vs
-
 core = vs.core
-
 clip = video_in
 fps = container_fps if container_fps > 0.1 else 23.976
 
