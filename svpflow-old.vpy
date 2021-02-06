@@ -12,7 +12,7 @@ super_params = "{pel:2,gpu:1,scale:{up:2,down:4}}"
 analyse_params = "{block:{w:32,h:32,overlap:2},main:{levels:4,search:{type:4,distance:-8,coarse:{type:4,distance:-5,bad:{range:0}}},penalty:{plevel:1.3,pzero:110,pnbour:75}},refine:[{thsad:200,search:{type:4,distance:2}}]}"
 smoothfps_params = "{rate:{num:60,den:1,abs:true},algo:21,mask:{area:100},scene:{limits:{m1:1800,m2:3600,scene:5200,zero:100,blocks:45}}}"
 
-# num/den的含义(分子分母请使用整数，计算结果最好也是整数)，当abs:true时指定为具体帧数值，当abs:false时为补帧倍率
+# num/den的含义(分子分母请使用整数，计算结果最好也是整数)，当abs:true时指定为具体帧数值（vfr视频使用固定帧率可能跳出报错框），当abs:false时为补帧倍率
 
 def interpolate(clip):
     clip_f = clip.resize.Point(format=vs.YUV420P8, dither_type="random")
