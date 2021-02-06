@@ -4,7 +4,8 @@ clip = video_in
 vfps = int(container_fps*1e8)
 dfps = 60000
 
-#dfps设置为你的目标帧率60000即60fps
+##dfps = 设置为你的目标帧率，例 60000 即60fps。特殊值例如 display_fps/2*1000 即目标为显示器刷新率的一半帧率，值填 container_fps*2*1000 即倍帧
+##更高的帧率更加耗能，产生更多伪影，通常是不必要的。例如对于144hz的显示器来说，最多只需要补到72fps，剩下的让mpv.conf中的 --interpolation 平滑过渡到144fps
 
 def ffps(fps):
     rfps = int('%.0f' % fps)
