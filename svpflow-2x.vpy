@@ -11,7 +11,7 @@ elif clip.format.id == vs.YUV420P10:
     clip8 = clip.resize.Point(format=vs.YUV420P8)
 else:
     clip = clip.resize.Point(
-        format=vs.YUV420P10, dither_type="error_diffusion")
+        format=vs.YUV420P10, dither_type="random")
     clip8 = clip.resize.Point(format=vs.YUV420P8)
 
 super_params = "{pel:2,gpu:1,scale:{up:2,down:4}}"
