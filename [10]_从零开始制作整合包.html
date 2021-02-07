@@ -947,75 +947,6 @@ element.style {
 input:focus {
   border-color: var(--link-color);
 }
-@import "";
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: bold;
-  color: var(--text-color);
-}
-
-h1:after {
-  border-bottom: 2px solid var(--text-color);
-}
-
-h2 {
-  border-left: 9px solid var(--text-color);
-  border-bottom: 1px solid var(--text-color);
-}
-
-/* inline code */
-#write code,
-tt {
-  color: var(--text-color);
-  background-color: var(--purple-light-2);
-}
-
-#write .md-footnote {
-  color: var(--text-color);
-  background-color: var(--purple-light-2);
-}
-
-/* 引用 */
-blockquote {
-  border-left: 0.2rem solid #dfe2e5;
-}
-
-/* 链接 */
-a {
-  color: var(--text-color);
-  text-decoration: none;
-}
-#write a {
-  border-bottom: 1px solid var(--text-color);
-  color: var(--text-color);
-  text-decoration: none;
-}
-#write a:hover {
-  border-bottom: 1px solid #777;
-  color: #777;
-  text-decoration: none;
-}
-.md-content {
-  color: #777;
-}
-
-/* 表格 背景色 */
-table tr:nth-child(2n),
-thead {
-  background-color: rgba(238, 238, 238, 0.5);
-}
-table tr:nth-child(2n + 1),
-thead {
-  background-color: #fff;
-}
-#write table thead th {
-  background-color: #eee;
-}
 
 
  :root {--mermaid-font-zoom:2em ;} 
@@ -1031,9 +962,7 @@ thead {
 <a href='https://www.python.org/downloads/' target='_blank' class='url'>https://www.python.org/downloads/</a>
 <span>便携版解压至 </span><code>mpv.exe</code><span> 所在位置（ </span><code>python.exe</code><span> 应在 </span><code>mpv.exe</code><span> 旁）</span></p><p><span>  </span><strong><span>=== ffmpeg-static</span></strong>
 <a href='https://ffmpeg.org/download.html#build-windows' target='_blank' class='url'>https://ffmpeg.org/download.html#build-windows</a>
-<span>静态库版只需要把 </span><code>ffmpeg.exe</code><span> 放在 </span><code>mpv.exe</code><span> 旁</span></p><p><span>  </span><strong><span>=== SourceHanSans.ttc</span></strong>
-<a href='https://github.com/adobe-fonts/source-han-sans/releases' target='_blank' class='url'>https://github.com/adobe-fonts/source-han-sans/releases</a>
-<span>直接安装该字体或置于 </span><code>\fonts\</code><span> 文件夹内</span></p><p><span>▲ 按需下载组合使用：libEGL和libGLESv2是为了提供angle后端(</span><font color=orange><span>--gpu-context=angle</span></font><span>)支持；py是vs的运行环境，vs插件运行需要vs（本体编译时未包含）；ffmpeg加速缩略图生成（没有也正常工作只是速度慢）；mpv_lazy版将思源黑体作为osc渲染字体</span></p><p>&nbsp;</p><h2><a name="脚本" class="md-header-anchor"></a><span>脚本</span></h2><p><span>.lua置于 </span><code>\portable_config\scripts\</code><span> ，脚本对应.conf配置文件置于 </span><code>\portable_config\script-opts\</code></p><p><span>  </span><strong><span>== Thumbnailer</span></strong><span> 缩略图引擎</span>
+<span>静态库版只需要把 </span><code>ffmpeg.exe</code><span> 放在 </span><code>mpv.exe</code><span> 旁</span></p><p><span>▲ 按需下载组合使用：libEGL和libGLESv2是为了提供angle后端(</span><font color=orange><span>--gpu-context=angle</span></font><span>)支持；py是vs的运行环境，vs插件运行需要vs（本体编译时未包含）；ffmpeg加速缩略图生成（没有也正常工作只是速度慢）</span></p><p>&nbsp;</p><h2><a name="脚本" class="md-header-anchor"></a><span>脚本</span></h2><p><span>.lua置于 </span><code>\portable_config\scripts\</code><span> ，脚本对应.conf配置文件置于 </span><code>\portable_config\script-opts\</code></p><p><span>  </span><strong><span>== Thumbnailer</span></strong><span> 缩略图引擎</span>
 <a href='https://github.com/deus0ww/mpv-conf/tree/master/scripts' target='_blank' class='url'>https://github.com/deus0ww/mpv-conf/tree/master/scripts</a><span> + </span><a href='https://github.com/deus0ww/mpv-conf/tree/master/script-opts' target='_blank' class='url'>https://github.com/deus0ww/mpv-conf/tree/master/script-opts</a></p><p><span>  </span><strong><span>== on_top_only_while_playing</span></strong><span> 播放时自动置顶（需配合配置文件中的--ontop参数）</span>
 <a href='https://github.com/kungfubeaner/mpv-ontop-only-while-playing-lua' target='_blank' class='url'>https://github.com/kungfubeaner/mpv-ontop-only-while-playing-lua</a></p><p><span>  </span><strong><span>== autoload</span></strong><span> 自动加载同级目录视频</span>
 <a href='https://github.com/mpv-player/mpv/tree/master/TOOLS/lua' target='_blank' class='url'>https://github.com/mpv-player/mpv/tree/master/TOOLS/lua</a></p><p><span>  </span><strong><span>== open-file-dialog</span></strong><span> 快捷键 </span><code>Ctrl+o</code><span> 手动加载额外的视频文件</span>
