@@ -12,3 +12,25 @@
 Github不支持html预览，[xx]手册下载后阅读
 
 旧版BOX界面 https://github.com/hooke007/MPV_lazy_osc
+
+```
+本地文件树简易结构
+    ...\mpv-lazy\portable_config\
+        input.conf
+        mpv.conf
+        mvtools-high.vpy
+        mvtools-standard.vpy
+        svpflow-2x.vpy
+        svpflow-old.vpy
+
+    ...\mpv-lazy\portable_config\script-opts\
+            console.conf
+            osc.conf
+            playlistmanager.conf
+            stats.conf
+            thumbnailer.conf
+
+    ...\mpv-lazy\portable_config\shaders\
+            noise_static_chroma.hook
+            noise_static_luma.hook
+```
