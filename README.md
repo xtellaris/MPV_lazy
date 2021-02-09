@@ -21,7 +21,7 @@ Github不支持html预览，[xx]手册下载后阅读
         mvtools-high.vpy
         mvtools-standard.vpy
         svpflow-2x.vpy
-        svpflow-old.vpy
+        svpflow-8b.vpy
 
     ...\mpv-lazy\portable_config\script-opts\
             console.conf
