@@ -11,7 +11,7 @@
 
 Github不支持html预览，[xx]手册下载后阅读
 
-旧版BOX界面 https://github.com/hooke007/MPV_lazy_osc
+旧版BOX界面和缩略图脚本 https://github.com/hooke007/MPV_lazy_osc
 
 ```
 本地文件树简易结构
