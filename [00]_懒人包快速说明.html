@@ -945,7 +945,7 @@ thead {
 }
 
 
- :root {--mermaid-font-zoom:2em ;} 
+ :root {--mermaid-font-zoom:1em ;} 
 </style>
 </head>
 <body class='typora-export os-windows'>
@@ -956,55 +956,57 @@ thead {
 <span>  </span><strong><span>ffmpeg-4.3.1-full-static</span></strong><span> 独立程序</span>
 <span>  </span><strong><span>系列手册</span></strong></p><p><span>脚本</span>
 <span>    </span><strong><span>Thumbnailer</span></strong><span> 缩略图引擎</span>
-<span>    </span><strong><span>on_top_only_while_playing</span></strong><span> 播放时自动置顶（需配合配置文件中的--ontop参数）</span>
+<span>    </span><strong><span>on_top_only_while_playing</span></strong><span> 播放时自动置顶（需配合mpv.conf配置文件中的--ontop参数）</span>
 <span>    </span><strong><span>autoload</span></strong><span> 自动加载同级目录视频</span>
 <span>    </span><strong><span>open-file-dialog</span></strong><span> 快捷键 </span><code>Ctrl+o</code><span> 手动加载额外的视频文件</span>
-<span>    </span><strong><span>playlistmanager</span></strong><span> 高级播放列表</span>
+<span>    </span><strong><span>playlistmanager</span></strong><span> 高级播放列表（适当精简）</span>
 <span>    </span><strong><span>mvtools-v23-win64</span></strong><span> 及附属补帧脚本</span>
 <span>    </span><strong><span>svpflow</span></strong><span> 补帧引擎（发布帖有其他坛友的脚本）</span></p><p><span>着色器</span>
 <span>    </span><strong><span>Krig</span></strong><span> 高级cscale色度升频</span>
 <span>    </span><strong><span>Anime4K_v3.1</span></strong><span> 动漫方向的视频画面优化</span>
 <span>    </span><strong><span>ACNet_1.0.0</span></strong><span> 动漫方向的人工智能视频画面优化</span>
 <span>    </span><strong><span>FSRCNNX</span></strong><span> 快速超分辨率卷积神经网络 放大算法</span>
-<span>    </span><strong><span>RAVU</span></strong><span> 快速准确的图像超分辨率算法（fscnnx的下位代替）</span>
+<span>    </span><strong><span>RAVU</span></strong><span> 快速准确的图像超分辨率算法</span>
 <span>    </span><strong><span>NNEDI3</span></strong><span> 可当作放大算法</span>
 <span>    </span><strong><span>SSimDownscaler</span></strong><span> 高级缩小算法</span>
 <span>    </span><strong><span>SSimSuperRes</span></strong><span> 对mpv内置放大算法的修正</span>
 <span>    </span><strong><span>Adaptive Sharpen</span></strong><span> 自适应锐化</span>
 <span>    </span><strong><span>CAS</span></strong><span> 对比度自适应锐化</span>
-<span>    </span><strong><span>Noise static</span></strong><span> 优化静态噪点</span></p><p>&nbsp;</p><ul><li><span>载入视频时默认暂停，需手动点击开始播放（ </span><code>鼠标右键</code><span> 或 </span><code>空格键</code><span> 或 </span><code>p</code><span> ），可适当留时间和性能给缩略图缓存完毕再开始播放（移动至进度条查看建立的完成度）</span></li><li><span>默认不开启</span><strong><span>Krig</span></strong><span>，手动使用 </span><code>CTRL+1</code><span> 切换，更多相关注意事项见</span><code>input.conf</code></li><li><span>默认不开启</span><strong><span>RAVU</span></strong><span>,手动使用 </span><code>CTRL+2</code><span> 选择预设方案</span></li><li><span>默认不开启</span><strong><span>FSRCNNX</span></strong><span>,手动使用 </span><code>CTRL+3</code><span> 选择预设方案</span></li><li><span>默认不开启</span><strong><span>Anime4k</span></strong><span>，手动使用 </span><code>CTRL+4</code><span> 选择预设方案，</span><strong><span>CTRL+`</span></strong><span> 为清除所有已加载的glsl/hook着色器</span></li><li><span>默认不开启</span><strong><span>补帧</span></strong><span>算法，</span><code>CTRL+6</code><span> 开启/关闭mvtools补帧方案通用版；</span><code>CTRL+7</code><span> 开启/关闭mvtools补帧方案高级版（没有变态的CPU慎用）。</span><code>CTRL+8</code><span> 开启svpflow倍帧滤镜2d动画版</span><font color=blue><span>（新）</span></font><span>，</span><code>CTRL+9</code><span> 开启svpflow补帧滤镜旧版（原-anime）。</span><font color=red><span>同一时间只能开启一个补帧滤镜</span></font><span>。</span><code>CTRL+0</code><span> 清除所有已加载的vf滤镜</span></li><li><span>默认不预设其余滤镜、着色器，如何设置可参考 </span><code>input.conf</code><span> 和 </span><code>mpv.conf</code><span> 的相关参数。</span></li></ul><h2><a name="注意事项" class="md-header-anchor"></a><strong><span>注意事项</span></strong></h2><p><font color=red><span>请不要放在中文目录下运行！！！</span></font><span>非Administrator用户若放在C盘须确保安置路径具有</span><font color=orange><span>写入权限</span></font><span>（可能引起脚本无效化）</span></p><p><font color=orange><span>广色域屏</span></font><span>用户使用前应进行色彩管理相关设定（参见mpv.conf中的 </span><code>视频</code><span> 部分）</span></p><p><span>想让其作为默认播放器使用请先运行如下批处理文件，再修改win10视频类的默认打开文件</span>
+<span>    </span><strong><span>Noise static</span></strong><span> 优化静态噪点</span></p><p>&nbsp;</p><ul><li><span>载入视频时默认暂停，需手动点击开始播放（ </span><code>鼠标右键</code><span> 或 </span><code>空格键</code><span> 或 </span><code>p</code><span> ），可适当留时间和性能给缩略图缓存完毕再开始播放（移动至进度条查看建立的完成度）</span></li><li><span>默认不开启</span><strong><span>Krig</span></strong><span>，手动使用 </span><code>CTRL+1</code><span> 切换，更多相关注意事项见</span><code>input.conf</code></li><li><span>默认不开启</span><strong><span>RAVU</span></strong><span>,手动使用 </span><code>CTRL+2</code><span> 选择预设方案</span></li><li><span>默认不开启</span><strong><span>FSRCNNX</span></strong><span>,手动使用 </span><code>CTRL+3</code><span> 选择预设方案</span></li><li><span>默认不开启</span><strong><span>Anime4k</span></strong><span>，手动使用 </span><code>CTRL+4</code><span> 选择预设方案，</span><strong><span>CTRL+`</span></strong><span> 为清除所有已加载的glsl/hook着色器</span></li><li><span>默认不开启</span><strong><span>补帧</span></strong><span>算法，</span><code>CTRL+6</code><span> 开启/关闭mvtools补帧通用版；</span><code>CTRL+7</code><span> 开启/关闭mvtools补帧高级版（没有变态的CPU慎用）。</span><code>CTRL+8</code><span> 开启/关闭svpflow倍帧2d动画版（适合动态帧率和10bit输出），</span><code>CTRL+9</code><span> 开启/关闭svpflow补帧8bit位深版（低开销）。</span><font color=red><span>同一时间只能开启一个补帧滤镜</span></font><span>。</span><code>CTRL+0</code><span> 清除所有已加载的vf滤镜</span></li><li><span>默认不预设其余滤镜、着色器，如何设置可参考 </span><code>input.conf</code><span> 和 </span><code>mpv.conf</code><span> 的相关参数。</span></li></ul><h2><a name="注意事项" class="md-header-anchor"></a><strong><span>注意事项</span></strong></h2><p><font color=red><span>请不要放在中文目录下运行！！！</span></font><span>非Administrator用户若放在C盘须确保安置路径具有</span><font color=orange><span>写入权限</span></font><span>（可能引起脚本无效化）</span></p><p><font color=orange><span>广色域屏</span></font><span>用户使用前应进行色彩管理相关设定（参见mpv.conf中的 </span><code>视频</code><span> 部分）</span></p><p><span>想让其作为默认播放器使用请先运行如下批处理文件，再修改win10视频类的默认打开文件</span>
 <code>X:\xxxxx\mpv-lazy\installer\mpv-install.bat</code>
-<span>要从计算机中删除此批处理的所有痕迹，请以管理员身份运行同目录下的 </span><code>mpv-uninstall.bat</code>
-<span>移动 </span><code>mpv.exe</code><span> 文件的路径后，需要重新执行该批处理</span></p><p><span>有MPV使用基础可以自行修改配置文件以调整性能占用（每行首字为 # 的是不启用的）</span>
+<span>若移动 </span><code>mpv.exe</code><span> 文件的路径后，需要重新执行该批处理来正确关联格式</span>
+<span>要从计算机中删除此批处理的所有痕迹，以管理员身份运行同目录下的 </span><code>mpv-uninstall.bat</code></p><p><span>有MPV使用基础可以自行修改配置文件以调整性能占用（每行首字为 # 的是不启用的）</span>
 <code>X:\xxxxx\mpv-lazy\portable_config\mpv.conf</code>
 <span>而同目录下的 </span><code>input.conf</code><span> 则是当前的快捷预设方案</span></p><p><span>mvtools补帧方案的脚本中，可自行修改补帧帧率（默认为 </span><code>dfps = 60000</code><span> 即60.000帧）</span>
 <span>例：</span><code>X:\xxxxx\mpv-lazy\portable_config\mvtools-xxxx.vpy</code>
-<span>svpflow补帧脚本也可设置，甚至可以调用显卡加速，具体方法用记事本打开查看</span>
-<code>X:\xxxxx\mpv-lazy\portable_config\svpflow-xxxx.vpy</code></p><p><span>缩略图缓存文件夹</span>
-<code>C:\Users\你的用户名\AppData\Local\Temp\Thumbnailer</code></p><p><span>▲ 对 </span><code>X:\xxxxx\mpv-lazy\portable_config\shaders\</code><span> 文件夹中的着色器/滤镜见补充说明 </span><font color=green><span>[01]</span></font>
-<span>▲ 其它部分常见问题解决途径见发布页FAQ</span></p><h2><a name="鼠标控制-键盘快捷键" class="md-header-anchor"></a><strong><span>鼠标控制 键盘快捷键</span></strong></h2><p><code>左键</code><span> 双击---切换---全屏/窗口化</span>
+<span>svpflow补帧脚本也可设置，甚至可以调用显卡加速，具体方法用编辑器（notepad3这类软件你没有就用记事本凑活）打开查看</span>
+<code>X:\xxxxx\mpv-lazy\portable_config\svpflow-xxxx.vpy</code></p><p><span>缩略图缓存文件夹，默认设置为正常退出程序即自动清理</span>
+<code>C:\Users\你的用户名\AppData\Local\Temp\Thumbnailer\</code></p><p><span>▲ 对 </span><code>X:\xxxxx\mpv-lazy\portable_config\shaders\</code><span> 文件夹中的着色器/滤镜见补充说明 </span><font color=green><span>[01]</span></font>
+<span>▲ 其它常见问题的解决途径见 </span><strong><span>发布页FAQ</span></strong></p><p>&nbsp;</p><h2><a name="鼠标控制-键盘快捷键" class="md-header-anchor"></a><strong><span>鼠标控制 键盘快捷键</span></strong></h2><p><code>左键</code><span> 双击---切换---全屏/窗口化</span>
 <code>右键</code><span> 单机---切换---暂停/播放</span>
-<code>滚轮向上/向下</code><span> 向前/向后搜索10秒</span></p><p><code>空格</code><span> 暂停/播放</span>
+<code>滚轮向上/向下</code><span> 向前/向后搜索10秒</span>
+<code>空格</code><span> 暂停/播放</span>
 <code>1</code><span>  </span><code>2</code><span> 调整对比度</span>
 <code>3</code><span>  </span><code>4</code><span> 调整亮度</span>
 <code>5</code><span>  </span><code>6</code><span> 调整伽玛</span>
 <code>7</code><span>  </span><code>8</code><span> 调整饱和度</span>
 <code>9</code><span>  </span><code>0</code><span> 调整音量</span>
-<code>F8</code><span> 显示</span><s><span>简易播放列表</span></s><span>（在osc的前后切换按钮上 </span><code>鼠标右键</code><span> 也可）已替换为</span><font color=orange><span>高级播放列表</span></font><span>，具体见下一节</span>
 <code>[</code><span>  </span><code>]</code><span> 调整播放速度</span>
 <code>Backspace</code><span> 重置播放速度</span>
+<code>F8</code><span> 显示</span><s><span>简易播放列表</span></s><span>（在osc的前后切换按钮上 </span><code>鼠标右键</code><span> 也可）已替换为</span><font color=orange><span>高级播放列表</span></font><span>，具体见下一节</span>
 <code>Shift+t</code><span> 手动播放器置顶（依然受on_top_only_while_playing脚本影响）</span>
 <code>f</code><span> 手动全屏</span>
-<code>Alt</code><span>+</span><code>1</code><span> 将视频窗口调整为原始大小</span>
+<code>Alt</code><span> + </span><code>1</code><span> 将视频窗口调整为原始大小</span>
 <code>s</code><span> 截图</span>
 <code>i</code><span> 显示有关当前播放文件的</span><font color=orange><span>统计信息stats</span></font><span>，例如编解码器，帧速率，丢帧数等。 此时按 </span><code>1</code><span> </span><code>2</code><span> </span><code>3</code><span> </span><code>4</code><span> 分别显示不同页面的信息</span>
-<code>Shift</code><span>+</span><code>i</code><span> 作用同上，此时统计信息常驻，再次按下关闭</span>
-<span>` 打开控制台，此时按 Esc 关闭</span></p><p><span>更多操作及自定义见 </span><code>input.conf</code></p><h2><a name="高级播放列表操作" class="md-header-anchor"></a><strong><span>高级播放列表操作</span></strong></h2><p><code>Shift</code><span>+</span><code>Enter</code><span> 打开高级播放列表，此时：（以下按键皆为动态绑定）</span>
-<span>  </span><code>↑</code><span>  </span><code>↓</code><span> 选择条目（当选中时，功能改变为移动该条目在列表中的位置）</span>
-<span>  </span><code>←</code><span>  </span><code>→</code><span> 选中/取消选中 当前选择的条目</span>
-<span>  </span><code>Backspace</code><span> 移除当前选择/选中的条目</span>
-<span>  </span><code>Enter</code><span> 播放当前选择/选中的条目</span>
-<span>  </span><code>Esc</code><span> 关闭高级播放列表（此时以上按键不再绑定，恢复其原来的功能）</span></p><p>&nbsp;</p><h1><a name="其它" class="md-header-anchor"></a><span>其它</span></h1><p><span>mpv懒人包的更新地址：</span><a href='https://bbs.vcb-s.com/thread-5843-1-1.html' target='_blank' class='url'>https://bbs.vcb-s.com/thread-5843-1-1.html</a></p><p><span>关于 </span><code>mpv.conf</code><span> 内参数设定的最新的描述文档：</span><a href='https://mpv.io/manual/master/' target='_blank' class='url'>https://mpv.io/manual/master/</a><span> （ </span><font color=green><span>[09]</span></font><span> 手册更新不如网页版及时）</span>
+<code>Shift</code><span> + </span><code>i</code><span> 作用同上，此时统计信息常驻，再次按下关闭</span>
+<span>` 打开控制台，此时按 Esc 关闭</span></p><p><span>更多操作及自定义见 </span><code>input.conf</code></p><h2><a name="高级播放列表操作" class="md-header-anchor"></a><strong><span>高级播放列表操作</span></strong></h2><p><code>Shift</code><span> + </span><code>Enter</code><span> 打开高级播放列表，此时：（以下按键皆为动态绑定）</span>
+<span>    </span><code>↑</code><span>  </span><code>↓</code><span> 选择条目（当选中时，功能改变为移动该条目在列表中的位置）</span>
+<span>    </span><code>←</code><span>  </span><code>→</code><span> 选中/取消选中 当前选择的条目</span>
+<span>    </span><code>Backspace</code><span> 移除当前选择/选中的条目</span>
+<span>    </span><code>Enter</code><span> 播放当前选择/选中的条目</span>
+<span>    </span><code>Esc</code><span> 关闭高级播放列表（此时以上按键不再绑定，恢复其原来的功能）</span></p><p>&nbsp;</p><h1><a name="其它" class="md-header-anchor"></a><span>其它</span></h1><p><span>mpv-lazy版懒人包的更新地址：</span><a href='https://bbs.vcb-s.com/thread-5843-1-1.html' target='_blank' class='url'>https://bbs.vcb-s.com/thread-5843-1-1.html</a>
+<span>部分零散文件和折腾记录：</span><a href='https://github.com/hooke007/MPV_lazy' target='_blank' class='url'>https://github.com/hooke007/MPV_lazy</a></p><p><span>关于 </span><code>mpv.conf</code><span> 内参数设定的最新的描述文档：</span><a href='https://mpv.io/manual/master/' target='_blank' class='url'>https://mpv.io/manual/master/</a><span> （ </span><font color=green><span>[09]</span></font><span> 手册更新不如网页版及时）</span>
 <span>界面UI及 </span><code>osc.conf</code><span> 修改指路：</span><a href='https://bbs.vcb-s.com/thread-5982-1-1.html' target='_blank' class='url'>https://bbs.vcb-s.com/thread-5982-1-1.html</a><span> （适用mpv原版/BOX分支，现版本改动较大）</span></p><p><span>Win10上我用过的最好的基于libmpv的第三方播放器：</span><a href='https://kikoplay.fun/' target='_blank' class='url'>https://kikoplay.fun/</a><span> （官网）</span></p></div>
 </body>
 </html>
