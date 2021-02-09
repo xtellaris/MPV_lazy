@@ -1,3 +1,5 @@
+##此版通过统一转8bit大幅降低补帧消耗
+
 import vapoursynth as vs
 from vapoursynth import core
 core = vs.core
