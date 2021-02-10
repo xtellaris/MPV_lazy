@@ -31,6 +31,9 @@ Github不支持html预览，[xx]手册下载后阅读
             thumbnailer.conf
 
     ...\mpv-lazy\portable_config\shaders\
+            FSRCNNX_x2_8-0-4-1.glsl
+            FSRCNNX_x2_8-0-4-1_LineArt.glsl
+            FSRCNNX_x2_16-0-4-1.glsl
             noise_static_chroma.hook
             noise_static_luma.hook
 ```
