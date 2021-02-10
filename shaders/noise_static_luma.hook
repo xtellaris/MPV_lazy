@@ -1,7 +1,7 @@
 //!HOOK LUMA
 //!HOOK RGB
 //!BIND HOOKED
-//!DESC NSL
+//!DESC Reduce static noise (luma)
 
 // Change this to tune the strength of the noise
 // Apparently this has to be float on some setups
