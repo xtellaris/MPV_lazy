@@ -16,7 +16,7 @@ def ffps(fps):
     return vfps, vden
 
 
-if (container_fps <= 30):
+if (container_fps <= 31):
     vfps,vden = ffps(container_fps)
     print(container_fps, vfps, vden)
     
