@@ -1,6 +1,6 @@
 //!HOOK CHROMA
 //!BIND HOOKED
-//!DESC NSC
+//!DESC Reduce static noise (chroma)
 
 // Change this to tune the strength of the noise
 // Apparently this has to be float on some setups
