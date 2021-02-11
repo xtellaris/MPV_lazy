@@ -23,6 +23,9 @@ Github不支持html预览，[xx]手册下载后阅读
         svpflow-2x.vpy
         svpflow-8b.vpy
 
+    ...\mpv-lazy\portable_config\scripts\
+            cycle-adevice.lua
+
     ...\mpv-lazy\portable_config\script-opts\
             console.conf
             osc.conf
