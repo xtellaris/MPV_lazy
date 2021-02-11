@@ -19,7 +19,7 @@ local function cycle_adevice(s, e, d)
 				if string.find(deviceList[s].name, api, 1, true) then
 					mp.set_property("audio-device",deviceList[s].name)
 					deviceList[s].description = "■ "..deviceList[s].description
-					local list = "音频输出：\n"
+					local list = "音频输出设备：\n"
 					for i=1,#deviceList do
 						if string.find(deviceList[i].name, api, 1, true) then
 							if deviceList[i].name~=deviceList[s].name then list = list.."□ " end
