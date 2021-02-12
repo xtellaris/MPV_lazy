@@ -1,25 +1,30 @@
 ###这是另一种mpv.conf的写法
 ###将所有参数组合配置化(profile)，通用区只用单一参数 --profile=<value> 进行灵活搭配
-##在首个被启用的配置[xxx]所在行之前的参数都是通用参数，在两个配置[profile-x]和[profile-y]所在行之间的参数都属于[profile-x]
+###在首个被启用的配置[xxx]所在行之前的参数都是通用参数，在两个配置[profile-x]和[profile-y]所在行之间的参数都属于[profile-x]
 
-##⇘⇘通用参数区
+###############
+## 通用参数区 ##
+###############
+
 #profile=profile-1,profile-2,profile-3
-##这是官方推荐写法，执行顺序从左到右，但不易读和修改，因此换用下面的写法，执行顺序从上到下。各profile中如果有参数重复，实际生效的为后来的参数
+##这是 --profile=<value> 的官方推荐写法，执行顺序从左到右，但不易读和修改，因此换用下面的写法，执行顺序从上到下
 
 profile=Base-1
 profile=A-1
 profile=V-0
-profile=Icc-0
+#profile=Icc-0
+#profile=Deband-1
 profile=Smooth-2
 profile=Sub-2
 profile=Screenshot-3
 
 
+###############
+## 常规配置区 ##
+###############
 
-##⇘⇘常规配置区
-
-#[示例常规配置] # 配置名，支持中文
-#profile-desc=支持中文 # 可选参数。配置描述，随意填写
+#[示例常规配置] # 配置名。支持中文
+#profile-desc=这是举例 # （可选参数）配置描述，支持中文，随意填写
 #自定义参数1
 #自定义参数2
 #......
@@ -32,6 +37,7 @@ hidpi-window-scale=no
 keep-open=yes
 hr-seek-framedrop=no
 save-position-on-quit=no
+gpu-shader-cache-dir="~~/shaders_cache"
 
 [Base-2]
 vo=gpu
@@ -66,8 +72,7 @@ linear-downscaling
 sigmoid-upscaling
 
 [V-2]
-gpu-shader-cache-dir="~~/shaders_cache"
-glsl-shaders="~~/shaders/KrigBilateral.glsl;~~/shaders/ravu-zoom-r4.hook"
+glsl-shaders="~~/shaders/ravu-zoom-r4-chroma.hook;~~/shaders/ravu-zoom-r4.hook"
 
 [Icc-0]
 target-prim=dci-p3
@@ -78,6 +83,13 @@ icc-profile-auto
 #icc-3dlut-size=256x256x256
 icc-cache-dir="~~/icc_cache"
 #vf=format:gamma=gamma2.2
+
+[Deband-1]
+deband
+deband-iterations=2
+deband-threshold=32
+deband-range=14
+deband-grain=12
 
 [Smooth-1]
 video-sync=display-resample
@@ -161,5 +173,77 @@ log-file="~~desktop/mpv-BenchMark.log"
 
 
 
-##⇘⇘条件配置区
-#WIP。。。。。。。。。。
+###############
+## 条件配置区 ##
+###############
+
+#[示例条件配置] # 配置名。支持中文
+#profile-desc=这是举例 # （可选参数）配置描述，支持中文，随意填写
+#profile-restore=copy # 此参数一般用于回归触发前的通用参数（关闭此项将保留该配置参数并覆盖通用参数）
+#profile-cond=??? # 触发该配置的条件。可用的属性列表：https://mpv.io/manual/master/#property-list
+#自定义参数1
+#自定义参数2
+#......
+
+[N-fs-p]
+profile-desc=切换到非全屏状态时暂停
+profile-restore=copy
+profile-cond=not fullscreen
+pause
+
+[Short-loop]
+profile-desc=短时长文件自动循环播放
+profile-restore=copy
+profile-cond=duration<=150
+loop-file=inf
+
+[Deband-0]
+profile-desc=YUV420P10及以上的源关闭去色带
+profile-restore=copy
+profile-cond=p["video-params/average-bpp"]>=24
+deband=no
+
+[HDR2SDR]
+profile-desc=高转标准动态范围
+profile-restore=copy
+profile-cond=p["video-params/primaries"]=="bt.2020"
+blend-subtitles=no
+#tone-mapping=bt.2390
+hdr-compute-peak=yes
+cscale=bilinear
+scale=bilinear
+dscale=bilinear
+deband=no
+vf=""
+glsl-shaders=""
+
+[SD-ex]
+profile-desc=低清源增强
+profile-restore=copy
+profile-cond=height<720 and width<1280
+deband
+deband-iterations=3
+deband-threshold=48
+deband-range=12
+deband-grain=0
+glsl-shaders="~~/shaders/KrigBilateral.glsl;~~/shaders/noise_static_chroma.hook;~~/shaders/noise_static_luma.hook;~~/shaders/nnedi3-nns64-win8x4.hook"
+
+[HD++]
+profile-desc=高清源选项
+profile-restore=copy
+profile-cond=(height>=720 or height<1080) and (width>=1280 or width<1920)
+cscale=sinc
+cscale-window=blackman
+cscale-radius=3
+glsl-shaders="~~/shaders/FSRCNNX_x2_8-0-4-1.glsl"
+
+[2K++]
+profile-desc=超清源选项
+profile-restore=copy
+profile-cond=height>1440 and width>2560
+cscale=catmull_rom
+scale=spline36
+dscale=mitchell
+linear-downscaling=no
+glsl-shaders="~~/shaders/SSimDownscaler.glsl"
+deband=no
