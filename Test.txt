@@ -1,6 +1,7 @@
 ###这是另一种mpv.conf的写法
 ###将所有参数组合配置化(profile)，通用区只用单一参数 --profile=<value> 进行灵活搭配
 ###在首个被启用的配置[xxx]所在行之前的参数都是通用参数，在两个配置[profile-x]和[profile-y]所在行之间的参数都属于[profile-x]
+###常规配置不会自动触发，通过组合调用后实际构成一套完整的通用参数
 
 ###############
 ## 通用参数区 ##
@@ -10,13 +11,17 @@
 ##这是 --profile=<value> 的官方推荐写法，执行顺序从左到右，但不易读和修改，因此换用下面的写法，执行顺序从上到下
 
 profile=Base-1
-profile=A-1
+profile=A-2
 profile=V-0
-#profile=Icc-0
+#profile=Icc-1
 #profile=Deband-1
 profile=Smooth-2
 profile=Sub-2
 profile=Screenshot-3
+
+#profile=BenchMark # 此配置应单独使用
+#log-file="~~desktop/mpv-test.log"
+
 
 
 ###############
@@ -149,7 +154,7 @@ screenshot-directory=~~desktop/
 
 
 [BenchMark]
-##此配置建议单独使用
+##此配置应单独使用
 window-scale=0.5
 #vo=gpu
 #gpu-api=vulkan
