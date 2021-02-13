@@ -1,3 +1,5 @@
+##中等消耗。默认设置为倍帧，倍帧操作适合动态帧率VFR视频时补帧，不会出现后期大幅度的音画不同步现象
+
 import vapoursynth as vs
 core = vs.core
 clip = video_in
