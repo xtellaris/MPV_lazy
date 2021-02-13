@@ -1,3 +1,5 @@
+##中等消耗。偏保守型补帧策略，片源类型的适用性较广
+
 import vapoursynth as vs
 core = vs.core
 clip = video_in
