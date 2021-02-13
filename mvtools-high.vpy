@@ -1,4 +1,4 @@
-###建议线程数大于12的高端处理器使用此脚本进行补帧测试
+##极高消耗，建议线程数大于12的高端处理器使用此脚本进行补帧测试。实际效果不会和标准版拉开明显差距
 
 import vapoursynth as vs
 core = vs.core
@@ -21,6 +21,7 @@ if not (container_fps > 46):
                            badrange=-1,badsad=10000,
                           )
     clip = core.mv.BlockFPS(clip,sup,bvec,fvec,num=60,den=1,mode=2,ml=1020.0,thscd1=16320,thscd2=255)
-##num/den的结果为目标帧率值
+
+##num/den的结果为目标帧率值，无法执行整数倍帧计算。
 
 clip.set_output()
