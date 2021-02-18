@@ -1,4 +1,4 @@
-##源转8位，倍帧，低开销
+##倍帧，低开销（高于32帧的源自动忽略）
 
 import vapoursynth as vs
 core = vs.core
