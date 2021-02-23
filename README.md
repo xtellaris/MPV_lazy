@@ -18,18 +18,13 @@ Github不支持html预览，[xx]手册下载后阅读
     ...\mpv-lazy\
         mpv.exe & mpv.com
         mpv-BenchMark.conf
-        mpv-纯净模式.bat
-        mpv-跑分模式.bat
+        mpv-？？模式.bat
 
     ...\mpv-lazy\portable_config\
             input.conf
             mpv.conf
-            mvtools-fast.vpy
-            mvtools-standard.vpy
-            mvtools-high.vpy
-            svpflow-2x.vpy
-            svpflow-8b.vpy
-            svpflow-@Starlight.vpy
+            mvtools-???.vpy
+            svpflow-???.vpy
 
     ...\mpv-lazy\portable_config\scripts\
                 cycle-adevice.lua
@@ -42,9 +37,6 @@ Github不支持html预览，[xx]手册下载后阅读
                 thumbnailer.conf
 
     ...\mpv-lazy\portable_config\shaders\
-                FSRCNNX_x2_8-0-4-1.glsl
-                FSRCNNX_x2_8-0-4-1_LineArt.glsl
-                FSRCNNX_x2_16-0-4-1.glsl
-                noise_static_chroma.hook
-                noise_static_luma.hook
+                ?????.glsl
+                ?????.hook
 ```
