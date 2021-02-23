@@ -16,7 +16,10 @@ Github不支持html预览，[xx]手册下载后阅读
 ```
 本地文件树简易结构
     ...\mpv-lazy\
+        mpv.exe & mpv.com
+        mpv-BenchMark.conf
         mpv-纯净模式.bat
+        mpv-跑分模式.bat
 
     ...\mpv-lazy\portable_config\
             input.conf
