@@ -15,28 +15,31 @@ Github不支持html预览，[xx]手册下载后阅读
 
 ```
 本地文件树简易结构
+    ...\mpv-lazy\
+        mpv-纯净模式.bat
+
     ...\mpv-lazy\portable_config\
-        input.conf
-        mpv.conf
-        mvtools-fast.vpy
-        mvtools-standard.vpy
-        svpflow-2x.vpy
-        svpflow-8b.vpy
+            input.conf
+            mpv.conf
+            mvtools-fast.vpy
+            mvtools-standard.vpy
+            svpflow-2x.vpy
+            svpflow-8b.vpy
 
     ...\mpv-lazy\portable_config\scripts\
-            cycle-adevice.lua
+                cycle-adevice.lua
 
     ...\mpv-lazy\portable_config\script-opts\
-            console.conf
-            osc.conf
-            playlistmanager.conf
-            stats.conf
-            thumbnailer.conf
+                console.conf
+                osc.conf
+                playlistmanager.conf
+                stats.conf
+                thumbnailer.conf
 
     ...\mpv-lazy\portable_config\shaders\
-            FSRCNNX_x2_8-0-4-1.glsl
-            FSRCNNX_x2_8-0-4-1_LineArt.glsl
-            FSRCNNX_x2_16-0-4-1.glsl
-            noise_static_chroma.hook
-            noise_static_luma.hook
+                FSRCNNX_x2_8-0-4-1.glsl
+                FSRCNNX_x2_8-0-4-1_LineArt.glsl
+                FSRCNNX_x2_16-0-4-1.glsl
+                noise_static_chroma.hook
+                noise_static_luma.hook
 ```
