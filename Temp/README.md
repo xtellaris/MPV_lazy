@@ -16,4 +16,5 @@ Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicu
 ```
 （当然也别忘了和可能是目前最好的色度升频算法 **KrigBilateral** 作对比）
 
-我的测试结果：从左上到右下分别是 无损源 bilinear catmull_rom KrigBilateral
+我的简单测试结果：从左上到右下分别是 无损源 bilinear catmull_rom KrigBilateral
+![](https://github.com/hooke007/MPV_lazy/blob/master/Temp/444-bilinear-catrom-krig-ty.png)
