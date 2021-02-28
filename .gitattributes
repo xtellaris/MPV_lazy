@@ -1,7 +1,7 @@
-*.bat       linguist-language      = Batchfile
-*.glsl      linguist-language      = GLSL
-*.hook      linguist-language      = GLSL
-*.html      linguist-language      = HTML
-*.lua       linguist-language      = Lua
-*.md        linguist-language      = Markdown
-*.vpy       linguist-language      = Python
+*.bat linguist-language=Batchfile
+*.glsl linguist-language=GLSL
+*.hook linguist-language=GLSL
+*.html linguist-language=HTML
+*.lua linguist-language=Lua
+*.md linguist-language=Markdown
+*.vpy linguist-language=Python
