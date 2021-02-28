@@ -2,6 +2,7 @@
 *.glsl linguist-language=GLSL
 *.hook linguist-language=GLSL
 *.html linguist-language=HTML
+*.conf linguist-language=INI
 *.lua linguist-language=Lua
 *.md linguist-language=Markdown
 *.vpy linguist-language=Python
