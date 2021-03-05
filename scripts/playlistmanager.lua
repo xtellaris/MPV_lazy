@@ -1,3 +1,8 @@
+--[[
+source: https://github.com/jonniek/mpv-playlistmanager
+高级播放列表，用于替换内置的过于简洁的列表
+]]--
+
 local settings = {
 
   -- #### FUNCTIONALITY SETTINGS
