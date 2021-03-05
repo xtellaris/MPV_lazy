@@ -976,11 +976,12 @@ end
 
 mp.register_script_message("playlistmanager", handlemessage)
 
-mp.add_key_binding("CTRL+p", "sortplaylist", sortplaylist)
-mp.add_key_binding("CTRL+P", "shuffleplaylist", shuffleplaylist)
-mp.add_key_binding("CTRL+R", "reverseplaylist", reverseplaylist)
-mp.add_key_binding("P", "loadfiles", playlist)
-mp.add_key_binding("p", "saveplaylist", save_playlist)
+--屏蔽暂时用不到的列表自动排序等功能的快捷键
+--mp.add_key_binding("CTRL+p", "sortplaylist", sortplaylist)
+--mp.add_key_binding("CTRL+P", "shuffleplaylist", shuffleplaylist)
+--mp.add_key_binding("CTRL+R", "reverseplaylist", reverseplaylist)
+--mp.add_key_binding("P", "loadfiles", playlist)
+--mp.add_key_binding("p", "saveplaylist", save_playlist)
 mp.add_key_binding("SHIFT+ENTER", "showplaylist", toggle_playlist)
 
 mp.register_event("file-loaded", on_loaded)
