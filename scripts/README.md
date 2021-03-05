@@ -1,6 +1,6 @@
 
 # LICENSE
-## autoload.lua
+## autoload.lua & ontop-playback.lua
 ```
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
