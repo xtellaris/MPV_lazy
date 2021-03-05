@@ -1,8 +1,10 @@
+-- source: https://github.com/elig0n/mpv-open-file-dialog
 -- To the extent possible under law, the author(s) have dedicated all copyright
 -- and related and neighboring rights to this software to the public domain
 -- worldwide. This software is distributed without any warranty. See
 -- <https://creativecommons.org/publicdomain/zero/1.0/> for a copy of the CC0
 -- Public Domain Dedication, which applies to this software.
+-- 快捷键 Ctrl+o 在mpv中唤起一个windows打开文件的窗口用于快速加载文件
 
 utils = require 'mp.utils'
 
