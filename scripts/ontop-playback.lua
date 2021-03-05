@@ -1,5 +1,8 @@
---使用此脚本后 --ontop 仅在播放状态时启用置顶，暂停自动取消置顶
---同功能的 on_top_only_while_playing.lua 脚本存在以暂停状态启动mpv时无法识别的问题
+--[[
+source: https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/ontop-playback.lua
+使用此脚本后 --ontop 仅在播放状态时启用置顶，暂停自动取消置顶
+同功能的 on_top_only_while_playing.lua 脚本存在以暂停状态启动mpv时无法识别的问题
+--]]
 
 local was_ontop = false
 
