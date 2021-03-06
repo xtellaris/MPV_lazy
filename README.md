@@ -6,8 +6,7 @@
 
 MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
 
-这里是一些备份，原内容已迁移至仓库内 [10]_从零开始制作整合包.html (Github不支持网页预览，手册下载后阅读）
-
+这里是一些备份，原内容已迁移至仓库内 [10]_从零开始制作整合包.html (Github不支持网页预览，手册下载后阅读）  
 建议直接下载原档后修改，自行新建文本编辑注意编码格式应为UTF-8，换行符为Unix，否则MPV可能无法识别
 
 旧版BOX界面和缩略图脚本 https://github.com/hooke007/MPV_lazy_osc
@@ -26,9 +25,14 @@ MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
             svpflow-???.vpy
 
     ...\mpv-lazy\portable_config\scripts\
+                autoload.lua
                 cycle-adevice.lua
+                ontop-playback.lua
+                open-file-dialog.lua
+                playlistmanager.lua
 
     ...\mpv-lazy\portable_config\script-opts\
+                autoload.conf
                 console.conf
                 osc.conf
                 playlistmanager.conf
