@@ -3,7 +3,8 @@
 # LICENSE
 
 ## FSRCNNX
-只修改了`描述`便于使用`stats.lua`查看时容易区分不同着色器
+修改了`描述`便于使用`stats.lua`查看时容易区分不同着色器  
+修改了倍率限制进行统一
 ```
 MIT License
 
