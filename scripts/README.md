@@ -1,6 +1,6 @@
-
-# LICENSE
-## autoload.lua & ontop-playback.lua
+# SOURCE & LICENSE
+## autoload & ontop-playback
+https://github.com/mpv-player/mpv/tree/master/TOOLS/lua
 ```
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
@@ -506,7 +506,11 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 ```
 
+## cycle-adevice
+https://gist.github.com/bitingsock/ad58ee5da560ecb922fa4a867ac0ecfd
+
 ## mpv-playlistmanager
+https://github.com/jonniek/mpv-playlistmanager
 ```
 This is free and unencumbered software released into the public domain.
 
@@ -533,3 +537,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
 ```
+
+## open-file-dialog
+https://github.com/rossy/mpv-open-file-dialog
+
+## Thumbnailer
+https://github.com/deus0ww/mpv-conf/tree/master/scripts
