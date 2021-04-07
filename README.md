@@ -31,6 +31,9 @@ MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
                 ontop-playback.lua
                 open-file-dialog.lua
                 playlistmanager.lua
+                Thumbnailer.lua
+                Thumbnailer_OSC.lua
+                Thumbnailer_Worker.lua
 
     ...\mpv-lazy\portable_config\script-opts\
                 autoload.conf
