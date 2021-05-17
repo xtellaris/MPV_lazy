@@ -1,10 +1,11 @@
--- source: https://github.com/elig0n/mpv-open-file-dialog
+-- Source: https://github.com/elig0n/mpv-open-file-dialog
 -- To the extent possible under law, the author(s) have dedicated all copyright
 -- and related and neighboring rights to this software to the public domain
 -- worldwide. This software is distributed without any warranty. See
 -- <https://creativecommons.org/publicdomain/zero/1.0/> for a copy of the CC0
 -- Public Domain Dedication, which applies to this software.
--- 快捷键 Ctrl+o 在mpv中唤起一个windows打开文件的窗口用于快速加载文件
+-- 自定义快捷键 在mpv中唤起一个打开文件的窗口用于快速加载文件
+-- 示例：在 input.conf 中单独另起一行写入 Ctrl+o  script-binding  open_file/open_dialog  #即为该按键方案打开对话框
 
 utils = require 'mp.utils'
 
@@ -17,7 +18,7 @@ function is_windows()
   end
 end
 
-function open_file_dialog_windows()
+function open_dialog_windows()
 	local was_ontop = mp.get_property_native("ontop")
 	if was_ontop then mp.set_property_native("ontop", false) end
 	local res = utils.subprocess({
@@ -53,7 +54,7 @@ function open_file_dialog_windows()
 	end
 end
 
-function open_file_dialog_linux()
+function open_dialog_linux()
 	local was_ontop = mp.get_property_native("ontop")
 	if was_ontop then mp.set_property_native("ontop", false) end
     local res = utils.subprocess({ args = {"yad", "--file"}, capture_stdout='yes', capture_stderr='yes', cancellable = false, })
@@ -67,12 +68,12 @@ function open_file_dialog_linux()
 	end
 end
 
-function open_file_dialog()
+function open_dialog()
     if is_windows() then
-        open_file_dialog_windows()
+        open_dialog_windows()
     else
-        open_file_dialog_linux() 
+        open_dialog_linux() 
     end 
 end 
  
-mp.add_key_binding('ctrl+o', 'open-file-dialog', open_file_dialog)
+mp.add_key_binding(nil, 'open_file', open_dialog)
