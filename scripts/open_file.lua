@@ -5,7 +5,7 @@
 -- <https://creativecommons.org/publicdomain/zero/1.0/> for a copy of the CC0
 -- Public Domain Dedication, which applies to this software.
 -- 自定义快捷键 在mpv中唤起一个打开文件的窗口用于快速加载文件
--- 示例：在 input.conf 中单独另起一行写入 Ctrl+o  script-binding  open_file/open_dialog  #即为该按键方案打开对话框
+-- 示例：在 input.conf 中单独另起一行写入 CTRL+o  script-binding  open_file/open_dialog  #即为该按键方案打开对话框
 
 utils = require 'mp.utils'
 
@@ -72,8 +72,8 @@ function open_dialog()
     if is_windows() then
         open_dialog_windows()
     else
-        open_dialog_linux() 
-    end 
-end 
- 
-mp.add_key_binding(nil, 'open_file', open_dialog)
+        open_dialog_linux()
+    end
+end
+
+mp.add_key_binding(nil, 'open_dialog', open_dialog)
