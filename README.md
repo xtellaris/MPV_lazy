@@ -1,8 +1,8 @@
 # mpv播放器折腾记录
 从萌新到大白，<s>用前嫌麻烦</s> 用后真香系列
 
-![](https://github.com/hooke007/MPV_lazy/blob/master/%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
-![](https://github.com/hooke007/MPV_lazy/blob/master/%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
+![](%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
+![](%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
 
 MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
 
