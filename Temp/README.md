@@ -1,5 +1,4 @@
 # 杂物
-
 ## 快速对比不同cscale（色度升频）算法
 一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有444的母源作为基准参考线。
 
@@ -16,5 +15,14 @@ Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicu
 ```
 （当然也别忘了和可能是目前最好的色度升频算法 **KrigBilateral** 作对比）
 
-我的简单测试结果：从左上到右下分别是 无损源 bilinear catmull_rom KrigBilateral
+我的简单测试结果 —— 从左上到右下分别是：  
+无损源 bilinear catmull_rom KrigBilateral
 ![](444-bilinear-catrom-krig-ty.png)
+
+## fontconfig
+https://mpv.io/manual/master/#options-sub-font-provider  
+fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉它的相关文件，这里仅留作备份。  
+
+如需使用，下载 **font.conf** 放在设置目录下（mpv.conf所在位置）  
+编辑 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
+并在 **mpv.conf** 使用这个参数 `--sub-font-provider=fontconfig`
