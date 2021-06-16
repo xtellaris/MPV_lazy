@@ -76,7 +76,7 @@ local user_opts = {
 }
 
 -- read options from config and command-line
-opt.read_options(user_opts, "osc", function(list) update_options(list) end)
+opt.read_options(user_opts, "Thumbnailer_OSC", function(list) update_options(list) end)
 
 
 
