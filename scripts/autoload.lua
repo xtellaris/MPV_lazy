@@ -1,5 +1,6 @@
 --[[
-source: https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
+SOURCE_https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
+COMMIT_20200214_e162bcb
 自动加载当前目录的所有文件到播放列表
 根据mpv的机制，切换目录会清空当前列表
 --]]
@@ -44,11 +45,11 @@ EXTENSIONS_VIDEO = Set {
 }
 
 EXTENSIONS_AUDIO = Set {
-    'aac', 'alac', 'ape', 'flac', 'm4a', 'mp3', 'ogg', 'ogm', 'opus', 'wav', 'wma'
+    'aac', 'alac', 'ape', 'flac', 'm4a', 'mka', 'mp3', 'ogg', 'ogm', 'opus', 'wav', 'wma'
 }
 
 EXTENSIONS_IMAGES = Set {
-    'apng', 'avif', 'bmp', 'gif', 'heic', 'heif', 'jpeg', 'jpg', 'png', 'svg', 'tif', 'tiff', 'uci', 'webp'
+    'apng', 'avif', 'bmp', 'gif', 'heic', 'heif', 'jfif', 'jpeg', 'jpg', 'png', 'svg', 'tif', 'tiff', 'uci', 'webp'
 }
 
 EXTENSIONS = Set {}
