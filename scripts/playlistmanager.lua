@@ -1,7 +1,8 @@
 --[[
-Source: https://github.com/jonniek/mpv-playlistmanager
+SOURCE_https://github.com/jonniek/mpv-playlistmanager
+COMMIT_20210609_1e9d4fa
 高级播放列表，用于替换内置的过于简洁的列表
-自定义快捷键方案，示例在 input.conf 中另起一行：
+自定义快捷键方案示例，在 input.conf 中另起一行：
 SHIFT+ENTER  script-binding  playlistmanager/show_list
 列表中的操作为动态绑定，编辑 playlistmanager.conf 修改预设键位
 ]]--
@@ -538,9 +539,8 @@ end
 
 function write_watch_later(force_write)
   if mp.get_property_bool("save-position-on-quit") or force_write then
-    print("WRITING WATHC LATER FIEL")
-	  mp.command("write-watch-later-config")
-	end
+    mp.command("write-watch-later-config")
+  end
 end
 
 function playlist_next(force_write)
