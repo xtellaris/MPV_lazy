@@ -15,7 +15,7 @@ MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包
 
 ## 本地文件树结构
 我使用的是便携设置 https://mpv.io/manual/master/#files-on-windows  
-此时在mpv.conf中 `~~/`引用的绝对路径即指向 `...\mpv-lazy\portable_config\`
+此时在 `mpv.conf` 中 `~~/`引用的相对路径即指向 `...\mpv-lazy\portable_config\`
 ```
     ...\mpv-lazy\
         mpv.exe & mpv.com
@@ -53,7 +53,7 @@ MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包
                 ?????.hook
 ```
 我也使用便携版Python和VapourSynth  
-即解压所有包内文件到mpv.exe的同级
+即解压所有包内文件到 `mpv.exe` 的同级
 ```
     ...\mpv-lazy\
         python.exe
