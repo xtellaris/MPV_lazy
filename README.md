@@ -13,7 +13,9 @@ MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包
 
 旧版BOX界面和缩略图脚本 https://github.com/hooke007/MPV_lazy_osc
 
-## 本地文件树简易结构
+## 本地文件树结构
+我使用的是便携设置 https://mpv.io/manual/master/#files-on-windows  
+此时在mpv.conf中 `~~/`引用的绝对路径即指向 `...\mpv-lazy\portable_config\`
 ```
     ...\mpv-lazy\
         mpv.exe & mpv.com
@@ -49,4 +51,15 @@ MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包
     ...\mpv-lazy\portable_config\shaders\
                 ?????.glsl
                 ?????.hook
+```
+我也使用便携版Python和VapourSynth  
+即解压所有包内文件到mpv.exe的同级
+```
+    ...\mpv-lazy\
+        python.exe
+        VapourSynth.dll
+        xxxx.py
+        等等文件
+    ...\mpv-lazy\vapoursynth64\plugins\
+                这里放置自行添加的vs插件
 ```
