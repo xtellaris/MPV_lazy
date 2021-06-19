@@ -4,16 +4,17 @@
 ![](%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
 ![](%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
 
-MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
+MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包  
+各文件夹内md也有进一步的说明
 
-这里是一些备份，原内容（_系列手册）已迁移至 https://hooke007.github.io
+这里是我的设置备份，原内容（_系列手册）已迁移至 [我的主页#系列手册](https://hooke007.github.io/#%E7%B3%BB%E5%88%97%E6%89%8B%E5%86%8C)
 
 建议直接下载本仓库内的原档文件进行修改，自行新建文本编辑注意编码格式应为UTF-8，换行符为Unix，否则MPV可能无法识别
 
 旧版BOX界面和缩略图脚本 https://github.com/hooke007/MPV_lazy_osc
 
+## 本地文件树简易结构
 ```
-本地文件树简易结构
     ...\mpv-lazy\
         mpv.exe & mpv.com
         mpv-BenchMark.conf
@@ -42,6 +43,8 @@ MPV播放器介绍 https://github.com/mpv-player/mpv （右上方附有懒人包
                 playlistmanager.conf
                 stats.conf
                 thumbnailer.conf
+                Thumbnailer_OSC.conf
+                ytdl_hook.conf
 
     ...\mpv-lazy\portable_config\shaders\
                 ?????.glsl
