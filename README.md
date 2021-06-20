@@ -65,5 +65,5 @@ MPV播放器 https://github.com/mpv-player/mpv
 ```
 
 ## 懒人包
-懒人包是解压即可使用的完整解决方案  
-下载见 [release](https://github.com/hooke007/MPV_lazy/releases)
+懒人包是解压即可使用的完整解决方案 [快速说明](https://hooke007.github.io/mpv-lazy/[00]_%E6%87%92%E4%BA%BA%E5%8C%85%E5%BF%AB%E9%80%9F%E8%AF%B4%E6%98%8E.html)  
+下载见 [Releases](https://github.com/hooke007/MPV_lazy/releases)
