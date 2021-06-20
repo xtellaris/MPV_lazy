@@ -4,8 +4,8 @@
 ![](%E7%95%8C%E9%9D%A2%E5%AF%B9%E6%AF%94.jpg)
 ![](%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
 
-MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包  
-各文件夹内md也有进一步的说明
+MPV播放器 https://github.com/mpv-player/mpv  
+各文件夹内的md也有进一步的说明
 
 这里是我的设置备份，原内容（_系列手册）已迁移至 [我的主页#系列手册](https://hooke007.github.io/#%E7%B3%BB%E5%88%97%E6%89%8B%E5%86%8C)
 
@@ -63,3 +63,7 @@ MPV播放器 https://github.com/mpv-player/mpv （右上方附有懒人包
     ...\mpv-lazy\vapoursynth64\plugins\
                 这里放置自行添加的vs插件
 ```
+
+## 懒人包
+懒人包是解压即可使用的完整解决方案  
+下载见 [release](https://github.com/hooke007/MPV_lazy/releases)
