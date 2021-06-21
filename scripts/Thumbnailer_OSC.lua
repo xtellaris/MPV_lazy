@@ -84,7 +84,7 @@ opt.read_options(user_opts, "Thumbnailer_OSC", function(list) update_options(lis
 
 
 
--- 同步 deus0ww - 2021-06-16
+-- 同步 deus0ww - 2021-06-21
 
 ------------
 -- tn_osc --
@@ -2749,7 +2749,14 @@ function render()
     end
 
     -- init management
-    if state.initREQ then
+    if state.active_element then
+        -- mouse is held down on some element - keep ticking and igore initReq
+        -- till it's released, or else the mouse-up (click) will misbehave or
+        -- get ignored. that's because osc_init() recreates the osc elements,
+        -- but mouse handling depends on the elements staying unmodified
+        -- between mouse-down and mouse-up (using the index active_element).
+        request_tick()
+    elseif state.initREQ then
         osc_init()
         state.initREQ = false
 
@@ -2967,8 +2974,10 @@ function process_event(source, what)
         if element_has_action(elements[n], action) then
             elements[n].eventresponder[action](elements[n])
         end
-        request_tick()
     end
+
+    -- ensure rendering after any (mouse) event - icons could change etc
+    request_tick()
 end
 
 
@@ -3031,7 +3040,7 @@ function tick()
         ass:new_event()
         ass:pos(320, icon_y+100)
         ass:an(8)
-        ass:append("拖入文件或网址进行播放\n Ctrl+o 快速打开")
+        ass:append("拖入文件或网址进行播放")
         set_osd(640, 360, ass.text)
 
         if state.showhide_enabled then
