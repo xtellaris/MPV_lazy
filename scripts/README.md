@@ -1,5 +1,19 @@
+该文件夹下存放mpv的脚本
+
+| 脚本名 | 简要说明 |
+| --- | --- |
+| autoload.lua | 自动加载同级目录的文件 |
+| cycle_adevice.lua | 仅在播放时启用置顶 |
+| ontop_playback.lua | 快捷键切换音频 |
+| open_file.lua | 快捷键载入文件 |
+| playlistmanager.lua | 高级播放列表 |
+| Thumbnailer*.lua (3).lua | 缩略图引擎 |
+
+所有脚本均无预绑定的静态键位，查看 [input.conf](https://github.com/hooke007/MPV_lazy/blob/master/input.conf)  的"LUA脚本"部分示例参考  
+playlistmanager.lua存在动态绑定键位，查看对应配置文件 [playlistmanager.conf](https://github.com/hooke007/MPV_lazy/blob/master/script-opts/playlistmanager.conf) 的相关部分
+
 # SOURCE & LICENSE
-## autoload & ontop-playback
+## autoload & ontop_playback
 https://github.com/mpv-player/mpv/tree/master/TOOLS/lua
 ```
                   GNU LESSER GENERAL PUBLIC LICENSE
@@ -506,10 +520,10 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 ```
 
-## cycle-adevice
+## cycle_adevice
 https://gist.github.com/bitingsock/ad58ee5da560ecb922fa4a867ac0ecfd
 
-## mpv-playlistmanager
+## playlistmanager
 https://github.com/jonniek/mpv-playlistmanager
 ```
 This is free and unencumbered software released into the public domain.
@@ -538,7 +552,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 ```
 
-## open-file-dialog
+## open_file
 https://github.com/rossy/mpv-open-file-dialog
 
 ## Thumbnailer
