@@ -9,8 +9,8 @@
 | playlistmanager.lua | 高级播放列表 |
 | Thumbnailer*.lua (3) | 缩略图引擎 |
 
-所有脚本均无预绑定的静态键位，查看 [input.conf](https://github.com/hooke007/MPV_lazy/blob/master/input.conf)  的"LUA脚本"部分示例参考  
-playlistmanager.lua存在动态绑定键位，查看对应配置文件 [playlistmanager.conf](https://github.com/hooke007/MPV_lazy/blob/master/script-opts/playlistmanager.conf) 的相关部分
+所有脚本均无预绑定的静态键位，查看 [input.conf](../input.conf)  的"LUA脚本"部分示例参考  
+playlistmanager.lua存在动态绑定键位，查看对应配置文件 [playlistmanager.conf](../script-opts/playlistmanager.conf) 的相关部分
 
 # SOURCE & LICENSE
 ## autoload & ontop_playback
