@@ -1,6 +1,9 @@
 --[[
-Source: https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
-略做更改，区别不大
+SOURCE_https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
+COMMIT_20210623_7def46c
+SOURCE_https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
+COMMIT_20210622_76b1ac5
+缩略图引擎的OSC部分
 --]]
 
 local orig_osc = mp.get_property('osc')
@@ -84,7 +87,6 @@ opt.read_options(user_opts, "Thumbnailer_OSC", function(list) update_options(lis
 
 
 
--- 同步 deus0ww - 2021-06-21
 
 ------------
 -- tn_osc --
@@ -1072,7 +1074,37 @@ end
 -- Element Rendering
 --
 
+-- returns nil or a chapter element from the native property chapter-list
+function get_chapter(possec)
+    local cl = mp.get_property_native("chapter-list", {})
+    local ch = nil
+
+    -- chapters might not be sorted by time. find nearest-before/at possec
+    for n=1, #cl do
+        if possec >= cl[n].time and (not ch or cl[n].time > ch.time) then
+            ch = cl[n]
+        end
+    end
+    return ch
+end
+
 function render_elements(master_ass)
+
+    -- when the slider is dragged or hovered and we have a target chapter name
+    -- then we use it instead of the normal title. we calculate it before the
+    -- render iterations because the title may be rendered before the slider.
+    state.forced_title = nil
+    local se, ae = state.slider_element, elements[state.active_element]
+    if se and (ae == se or (not ae and mouse_hit(se))) then
+        local dur = mp.get_property_number("duration", 0)
+        if dur > 0 then
+            local possec = get_slider_value(se) * dur / 100 -- of mouse pos
+            local ch = get_chapter(possec)
+            if ch and ch.title and ch.title ~= "" then
+                state.forced_title = "Chapter: " .. ch.title
+            end
+        end
+    end
 
     for n=1, #elements do
         local element = elements[n]
@@ -2226,7 +2258,8 @@ function osc_init()
     ne = new_element("title", "button")
 
     ne.content = function ()
-        local title = mp.command_native({"expand-text", user_opts.title})
+        local title = state.forced_title or
+                      mp.command_native({"expand-text", user_opts.title})
         -- escape ASS, and strip newlines and trailing slashes
         title = title:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{")
         return not (title == "") and title or "mpv"
@@ -2403,6 +2436,7 @@ function osc_init()
     ne = new_element("seekbar", "slider")
 
     ne.enabled = not (mp.get_property("percent-pos") == nil)
+    state.slider_element = ne.enabled and ne or nil  -- used for forced_title
     ne.slider.markerF = function ()
         local duration = mp.get_property_number("duration", nil)
         if not (duration == nil) then
