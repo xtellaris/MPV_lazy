@@ -26,3 +26,7 @@ fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包�
 如需使用，下载 **font.conf** 放在设置目录下（mpv.conf所在位置）  
 编辑 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
 并在 **mpv.conf** 使用这个参数 `--sub-font-provider=fontconfig`
+
+## 极简的设置参数
+参考 [mpv-lite.conf](mpv-lite.conf)
+只保证使用mpv最基础的需求（这玩意真的有必要留着吗...)
