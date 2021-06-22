@@ -5,13 +5,14 @@
 ![](%E9%AB%98%E7%BA%A7%E6%92%AD%E6%94%BE%E5%88%97%E8%A1%A8.png)
 
 MPV播放器 https://github.com/mpv-player/mpv  
-各文件夹内的md也有进一步的说明
 
-这里是我的设置备份，原内容（_系列手册）已迁移至 [我的主页#系列手册](https://hooke007.github.io/#%E7%B3%BB%E5%88%97%E6%89%8B%E5%86%8C)
-
-建议直接下载本仓库内的原档文件进行修改，自行新建文本编辑注意编码格式应为UTF-8，换行符为Unix，否则MPV可能无法识别
-
+这里是我的个人设置备份  
+各文件夹内的md也有进一步的说明  
+建议直接下载本仓库内的原档文件进行修改，自行新建文本编辑注意编码格式应为UTF-8，换行符为Unix，否则MPV可能无法识别  
 旧版BOX界面和缩略图脚本 https://github.com/hooke007/MPV_lazy_osc
+
+原lazy系列手册已迁移至 [我的主页#系列手册](https://hooke007.github.io/#%E7%B3%BB%E5%88%97%E6%89%8B%E5%86%8C)  
+从零开始接触mpv且不使用懒人包的话可以参考这个：https://hooke007.github.io/mpv-lazy/mpv.html
 
 ## 本地文件树结构
 我使用的是便携设置 https://mpv.io/manual/master/#files-on-windows  
@@ -26,6 +27,7 @@ MPV播放器 https://github.com/mpv-player/mpv
             input.conf
             mpv.conf
             mvtools-???.vpy
+            profiles.conf
             svpflow-???.vpy
 
     ...\mpv-lazy\portable_config\scripts\
