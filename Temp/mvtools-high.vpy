@@ -1,3 +1,4 @@
+##SOURCE_https://gist.github.com/KCCat/1b3a7b7f085a066af3719859f88ded02
 ##极高消耗，建议线程数高于16的高端处理器使用此脚本进行补帧测试。
 
 import vapoursynth as vs
