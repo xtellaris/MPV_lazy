@@ -1,6 +1,6 @@
 # 杂物
 ## 快速对比不同cscale（色度升频）算法
-一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有444的母源作为基准参考线。
+一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有特殊母源作为基准参考线。
 
 **chroma-444.png** 当基准， **chroma-420.jpg** 是经过预处理的色度半采样成品，分别打开多个mpv空窗口，分别拖入进行对比。
 
@@ -21,12 +21,20 @@ Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicu
 
 ## fontconfig
 https://mpv.io/manual/master/#options-sub-font-provider  
-fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉它的相关文件，这里仅留作备份。  
+fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉它的相关文件，这里仅留作备份。
 
 如需使用，下载 **font.conf** 放在设置目录下（mpv.conf所在位置）  
-编辑 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
-并在 **mpv.conf** 使用这个参数 `--sub-font-provider=fontconfig`
+编辑修改 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
+并在 **mpv.conf** 使用以下参数
+```
+sub-font-provider=fontconfig
+```
 
 ## 极简的设置参数
-参考 [mpv-lite.conf](mpv-lite.conf)
+参考 [mpv-lite.conf](mpv-lite.conf)  
 只保证使用mpv最基础的需求（这玩意真的有必要留着吗...)
+
+## MAC上使用mpv相关
+查看 [mpv-mac.md](mpv-mac.md)  
+开发与贡献人员的匮乏让它远没有在win平台上好用  
+至于脚本和vs插件之类适配mac的就更少了...
