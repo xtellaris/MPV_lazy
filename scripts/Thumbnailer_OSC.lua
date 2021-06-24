@@ -1,8 +1,8 @@
 --[[
 SOURCE_https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
-COMMIT_20210623_7def46c
+COMMIT_20210706_11c840d
 SOURCE_https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_20210622_76b1ac5
+COMMIT_20210705_d2dd4ca
 缩略图引擎的OSC部分
 --]]
 
@@ -3293,6 +3293,7 @@ function visibility_mode(mode, no_osd)
     end
 
     user_opts.visibility = mode
+    utils.shared_script_property_set("osc-visibility", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
         mp.osd_message("OSC visibility: " .. mode)
