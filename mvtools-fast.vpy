@@ -2,12 +2,14 @@
 
 import vapoursynth as vs
 core = vs.core
+clip = video_in
+
+vden = 1000
+dden = 1000
 
 if (container_fps < 32):
-    clip = video_in.resize.Bilinear(format=vs.YUV420P8)
-    vden = 1000
+    clip = clip.resize.Point(format=vs.YUV420P8)
     vfps = container_fps*vden
-    dden = 1000
     dfps = container_fps*2*dden
 
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
