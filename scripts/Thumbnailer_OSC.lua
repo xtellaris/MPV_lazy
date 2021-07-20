@@ -4,6 +4,9 @@ COMMIT_20210706_11c840d
 SOURCE_https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
 COMMIT_20210705_d2dd4ca
 缩略图引擎的OSC部分
+
+示例在 input.conf 中写入：
+SHIFT+DEL  script-binding Thumbnailer_OSC/visibility  # 切换 Thumbnailer_OSC的可见性
 --]]
 
 local orig_osc = mp.get_property('osc')
@@ -3296,7 +3299,7 @@ function visibility_mode(mode, no_osd)
     utils.shared_script_property_set("osc-visibility", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
-        mp.osd_message("OSC visibility: " .. mode)
+        mp.osd_message("Thumbnailer_OSC的可见性：" .. mode)
     end
 
     -- Reset the input state on a mode change. The input state will be
