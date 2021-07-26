@@ -25,6 +25,7 @@ MPV播放器 https://github.com/mpv-player/mpv
     ...\mpv-lazy\
         mpv.exe & mpv.com
         mpv-BenchMark.conf
+        mpv-test.conf
         mpv-？？模式.bat
 
     ...\mpv-lazy\portable_config\
@@ -65,12 +66,18 @@ MPV播放器 https://github.com/mpv-player/mpv
         python.exe
         VapourSynth.dll
         xxxx.py
-        等等文件
+        <等等文件>
+
     ...\mpv-lazy\vapoursynth64\plugins\
-                这里放置自行添加的vs插件
+                <这里放置自行添加的vs插件>
 ```
-
-
+youtube-dl或YT-DLP和FFmpeg也被我顺手放一起
+```
+    ...\mpv-lazy\
+        ffmpeg.exe
+        youtube-dl.exe
+        yt-dlp.exe
+```
 
 ## 懒人包
 
