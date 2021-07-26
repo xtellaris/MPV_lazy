@@ -4,7 +4,7 @@
 
 一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有特殊的母源作为参考。
 
-**chroma-444.png** 当基准， **chroma-420.jpg** 是经过预处理的色度半采样成品，分别打开多个mpv空窗口，分别拖入进行对比。
+[**chroma-444.png**](chroma-444.png) 当基准， [**chroma-420.jpg**](chroma-420.jpg) 是经过预处理的色度半采样成品，分别打开多个mpv空窗口，分别拖入进行对比。
 
 在开始比较前，你可能需要做以下准备：  
 在 **mpv.conf** 中设置 防止1秒读图后自动关闭
@@ -18,16 +18,14 @@ Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicu
 不嫌烦的话，也可以在运行时调出控制台console，输入例如 `set cscale ewa_lanczos` 的命令手动切换某个算法  
 （当然也别忘了和可能是目前最好的色度升频着色器 **KrigBilateral** 作对比）
 
-我的简单测试结果 —— 从左上到右下分别是：  
-无损源 bilinear catmull_rom KrigBilateral
-![](chroma-diff.png)
+我的简单测试 [**结果**](chroma-diff.png) —— 从左上到右下分别是：无损源 bilinear catmull_rom KrigBilateral
 
 ## FONTCONFIG
 
 https://mpv.io/manual/master/#options-sub-font-provider  
 fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉了它的相关文件，这里仅留作备份。
 
-如需使用，下载 **font.conf** 放在设置目录下（ **mpv.conf** 所在位置）  
+如需使用，下载 [**font.conf**](font.conf) 放在设置目录下（ **mpv.conf** 所在位置）  
 编辑修改 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
 并在 **mpv.conf** 使用以下参数
 ```
@@ -56,3 +54,9 @@ sub-font-provider=fontconfig
 开发与贡献人员的匮乏让它远没有在win平台上好用  
 至于脚本和vs插件之类适配mac的就更少了...
 
+## lut3d
+
+在mpv测试粉嫩少女的3dlut调色预设 [pinkgirl.cube](pinkgirl.cube) ：  
+`vo_gpu` 使用 `vf=lut3d` 视频滤镜配合 `hwdec=no` 使用  
+`vo_placebo` 使用 `lut=<file>` 即可  
+点击预览 Fate-UBW24 [远坂凛](pg-rin.jpg) [阿尔托莉雅](pg-saber.jpg)
