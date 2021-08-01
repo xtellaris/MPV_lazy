@@ -25,7 +25,7 @@ Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicu
 https://mpv.io/manual/master/#options-sub-font-provider  
 fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉了它的相关文件，这里仅留作备份。
 
-如需使用，下载 [**font.conf**](font.conf) 放在设置目录下（ **mpv.conf** 所在位置）  
+如需使用，下载 [**fonts.conf**](fonts.conf) 放在设置目录下（ **mpv.conf** 所在位置）  
 编辑修改 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
 并在 **mpv.conf** 使用以下参数
 ```
