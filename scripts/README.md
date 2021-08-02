@@ -3,8 +3,8 @@
 | 脚本名 | 简要说明 |
 | --- | --- |
 | autoload.lua | 自动加载同级目录的文件 |
-| cycle_adevice.lua | 仅在播放时启用置顶 |
-| ontop_playback.lua | 快捷键切换音频 |
+| cycle_adevice.lua | 快捷键切换音频 |
+| ontop_playback.lua | 仅在播放时启用置顶 |
 | open_file.lua | 快捷键载入文件 |
 | playlistmanager.lua | 高级播放列表 |
 | Thumbnailer*.lua (3) | 缩略图引擎 |
