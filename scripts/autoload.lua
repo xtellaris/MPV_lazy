@@ -1,6 +1,7 @@
 --[[
-SOURCE_https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
+SOURCE_ https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
 COMMIT_20210624_ee27629
+
 自动加载当前目录的所有文件到播放列表
 根据mpv的机制，切换目录会清空当前列表
 --]]

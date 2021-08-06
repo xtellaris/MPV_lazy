@@ -1,11 +1,17 @@
--- Source: https://github.com/elig0n/mpv-open-file-dialog
--- To the extent possible under law, the author(s) have dedicated all copyright
--- and related and neighboring rights to this software to the public domain
--- worldwide. This software is distributed without any warranty. See
--- <https://creativecommons.org/publicdomain/zero/1.0/> for a copy of the CC0
--- Public Domain Dedication, which applies to this software.
--- 自定义快捷键 在mpv中唤起一个打开文件的窗口用于快速加载文件
--- 示例：在 input.conf 中单独另起一行写入 CTRL+o  script-binding  open_file/open_dialog  #即为该按键方案打开对话框
+--[[
+SOURCE_ https://github.com/elig0n/mpv-open-file-dialog
+COMMIT_20200415_373e7fa
+
+To the extent possible under law, the author(s) have dedicated all copyright
+and related and neighboring rights to this software to the public domain
+worldwide. This software is distributed without any warranty. See
+<https://creativecommons.org/publicdomain/zero/1.0/> for a copy of the CC0
+Public Domain Dedication, which applies to this software.
+
+自定义快捷键 在mpv中唤起一个打开文件的窗口用于快速加载文件
+示例：在 input.conf 中单独另起写入下一行的内容即为该按键方案打开对话框
+CTRL+o   script-binding   open_file/open_dialog
+]]--
 
 utils = require 'mp.utils'
 

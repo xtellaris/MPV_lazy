@@ -1,9 +1,10 @@
 --[[
-SOURCE_https://github.com/jonniek/mpv-playlistmanager
-COMMIT_20210609_1e9d4fa
+SOURCE_ https://github.com/jonniek/mpv-playlistmanager
+COMMIT_20210618_1c2c880
+
 高级播放列表，用于替换内置的过于简洁的列表
 自定义快捷键方案示例，在 input.conf 中另起一行：
-SHIFT+ENTER  script-binding  playlistmanager/show_list
+SHIFT+ENTER  script-binding  playlistmanager/showplaylist
 列表中的操作为动态绑定，编辑 playlistmanager.conf 修改预设键位
 ]]--
 
@@ -86,6 +87,9 @@ local settings = {
 
   --Use ~ for home directory. Leave as empty to use mpv/playlists
   playlist_savepath = "",
+
+  --save playlist automatically after current file was unloaded
+  save_playlist_on_file_end = false,
 
 
   --show playlist or filename every time a new file is loaded
@@ -299,6 +303,7 @@ function on_loaded()
 end
 
 function on_closed()
+  if settings.save_playlist_on_file_end then save_playlist() end
   strippedname = nil
   path = nil
   directory = nil
@@ -985,12 +990,12 @@ end
 mp.register_script_message("playlistmanager", handlemessage)
 
 --暂时不用的功能
---mp.add_key_binding(nil, "sort_list", sortplaylist)
---mp.add_key_binding(nil, "shuffle_list", shuffleplaylist)
---mp.add_key_binding(nil, "reverse_list", reverseplaylist)
+--mp.add_key_binding(nil, "sortplaylist", sortplaylist)
+--mp.add_key_binding(nil, "shuffleplaylist", shuffleplaylist)
+--mp.add_key_binding(nil, "reverseplaylist", reverseplaylist)
 --mp.add_key_binding(nil, "loadfiles", playlist)
---mp.add_key_binding(nil, "save_list", save_playlist)
-mp.add_key_binding(nil, "show_list", toggle_playlist)
+--mp.add_key_binding(nil, "saveplaylist", save_playlist)
+mp.add_key_binding(nil, "showplaylist", toggle_playlist)
 
 mp.register_event("file-loaded", on_loaded)
 mp.register_event("end-file", on_closed)
