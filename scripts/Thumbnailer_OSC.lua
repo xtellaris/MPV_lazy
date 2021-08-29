@@ -1,7 +1,7 @@
 --[[
-SOURCE_https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
+SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
 COMMIT_20210706_11c840d
-SOURCE_https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
+SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
 COMMIT_20210705_d2dd4ca
 缩略图引擎的OSC部分
 
@@ -812,7 +812,7 @@ end
 -- Tracklist Management
 --
 
-local nicetypes = {video = "Video", audio = "Audio", sub = "Subtitle"}
+local nicetypes = {video = "视频", audio = "音频", sub = "字幕"}
 
 -- updates the OSC internal playlists, should be run each time the track-layout changes
 function update_tracklist()
@@ -880,9 +880,9 @@ function set_track(type, next)
     mp.commandv("set", type, new_track_mpv)
 
         if (new_track_osc == 0) then
-        show_message(nicetypes[type] .. " Track: none")
+        show_message(nicetypes[type] .. "轨：<禁用>")
     else
-        show_message(nicetypes[type]  .. " Track: "
+        show_message(nicetypes[type]  .. "轨："
             .. new_track_osc .. "/" .. #tracks_osc[type]
             .. " [".. (tracks_osc[type][new_track_osc].lang or "unknown") .."] "
             .. (tracks_osc[type][new_track_osc].title or ""))
@@ -1105,7 +1105,7 @@ function render_elements(master_ass)
             local possec = get_slider_value(se) * dur / 100 -- of mouse pos
             local ch = get_chapter(possec)
             if ch and ch.title and ch.title ~= "" then
-                state.forced_title = "Chapter: " .. ch.title
+                state.forced_title = "跳转章节：" .. ch.title
             end
         end
     end
@@ -1402,7 +1402,7 @@ function get_chapterlist()
         return 'No chapters.'
     end
 
-    local message = string.format('Chapters [%d/%d]:\n', pos, count)
+    local message = string.format('章节列表 [%d/%d]\n', pos, count)
     for i, v in ipairs(limlist) do
         local time = mp.format_time(v.time)
         local title = v.title
