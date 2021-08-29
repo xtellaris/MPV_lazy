@@ -3,7 +3,7 @@ SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.
 COMMIT_20210706_11c840d
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
 COMMIT_20210705_d2dd4ca
-缩略图引擎的OSC部分
+缩略图引擎的OSC部分，必须禁用mpv原始的内置OSC，并且不兼容其它OSC类脚本
 
 示例在 input.conf 中写入：
 SHIFT+DEL  script-binding Thumbnailer_OSC/visibility  # 切换 Thumbnailer_OSC的可见性
@@ -2594,9 +2594,9 @@ function osc_init()
         function () mp.commandv("cycle", "mute") end
 
     ne.eventresponder["wheel_up_press"] =
-        function () mp.commandv("osd-auto", "add", "volume", 5) end
+        function () mp.commandv("osd-auto", "add", "volume", 1) end
     ne.eventresponder["wheel_down_press"] =
-        function () mp.commandv("osd-auto", "add", "volume", -5) end
+        function () mp.commandv("osd-auto", "add", "volume", -1) end
 
 
     -- load layout
