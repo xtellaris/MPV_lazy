@@ -6,8 +6,9 @@
 | cycle_adevice.lua | 快捷键切换音频 |
 | ontop_playback.lua | 仅在播放时启用置顶 |
 | open_file.lua | 快捷键载入文件 |
+| osc_lazy.lua | 增强OSC界面 |
 | playlistmanager.lua | 高级播放列表 |
-| Thumbnailer*.lua (3) | 缩略图引擎 |
+| Thumbnailer*.lua (2) | 缩略图引擎 |
 
 所有脚本均无预绑定的静态键位，查看 [input.conf](../input.conf)  的"LUA脚本"部分示例参考  
 playlistmanager.lua存在动态绑定键位，查看对应配置文件 [playlistmanager.conf](../script-opts/playlistmanager.conf) 的相关部分

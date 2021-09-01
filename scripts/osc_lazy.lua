@@ -3,10 +3,10 @@ SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.
 COMMIT_20210706_11c840d
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
 COMMIT_20210705_d2dd4ca
-缩略图引擎的OSC部分，必须禁用mpv原始的内置OSC，并且不兼容其它OSC类脚本
+改进版本的OSC，需搭配额外两个缩略图引擎脚本（Thumbnailer）实现全部功能，必须禁用原始mpv的内置OSC，并且不兼容其它OSC类脚本
 
 示例在 input.conf 中写入：
-SHIFT+DEL  script-binding Thumbnailer_OSC/visibility  # 切换 Thumbnailer_OSC的可见性
+SHIFT+DEL  script-binding osc_lazy/visibility  # 切换osc_lazy的可见性
 --]]
 
 local orig_osc = mp.get_property('osc')
@@ -83,7 +83,7 @@ local user_opts = {
 }
 
 -- read options from config and command-line
-opt.read_options(user_opts, "Thumbnailer_OSC", function(list) update_options(list) end)
+opt.read_options(user_opts, "osc_lazy", function(list) update_options(list) end)
 
 
 
