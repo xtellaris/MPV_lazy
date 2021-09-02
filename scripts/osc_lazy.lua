@@ -14,7 +14,7 @@ if orig_osc == 'yes' then
     local err = "_____\n{\\1c&H0000FF&}注意：\n必须设置 {\\1c&H0000FF&}osc=no\n打开控制台查看更多信息"
     mp.set_osd_ass(1280, 720, err)
     mp.set_property('osc', 'no')
-    mp.msg.warn("脚本已自动执行 osc=no 以临时兼容缩略图脚本")
+    mp.msg.warn("脚本已自动执行 osc=no 以临时兼容")
     mp.msg.warn("正确编辑 mpv.conf 重启程序即可")
     mp.msg.warn("不要在运行中更改参数 --osc 的状态")
     mp.msg.warn("注意其它osc类脚本亦不应共存")
@@ -66,7 +66,7 @@ local user_opts = {
     title = "${media-title}",   -- string compatible with property-expansion
                                 -- to be shown as OSC title
     tooltipborder = 1,          -- border of tooltip in bottom/topbar
-    timetotal = false,          -- display total time instead of remaining time?
+    timetotal = true,           -- display total time instead of remaining time?
     timems = false,             -- display timecodes with milliseconds?
     visibility = "auto",        -- only used at init to set visibility_mode(...)
     boxmaxchars = 150,          -- title crop threshold for box layout
@@ -78,8 +78,8 @@ local user_opts = {
 
     wctitle = "${media-title}", -- 无边框的上方标题
     font = "sans",
-    font_mono = "monospace",
-    font_bold = 600,
+    font_mono = "sans",
+    font_bold = 500,
 }
 
 -- read options from config and command-line
@@ -575,9 +575,9 @@ local osc_styles = {
     wcBar = "{\\1c&H000000}",
     
     -- bottombox样式
-    bb_bigButton1 =  "{\\blur0\\bord0\\1c&HF2A823\\3c&HFFFFFF\\fs50\\fnmpv-osd-symbols}",
-    bb_bigButton2 =  "{\\blur0\\bord0\\1c&HFACE87\\3c&HFFFFFF\\fs26\\fnmpv-osd-symbols}",
-    bb_bigButton3 =  "{\\blur0\\bord0\\1c&H9A530E\\3c&HFFFFFF\\fs34\\fnmpv-osd-symbols}",
+    bb_bigButton1 =  "{\\blur0.25\\bord0\\1c&HF2A823\\3c&HFFFFFF\\fs50\\fnmpv-osd-symbols}",
+    bb_bigButton2 =  "{\\blur0.25\\bord0\\1c&HFACE87\\3c&HFFFFFF\\fs26\\fnmpv-osd-symbols}",
+    bb_bigButton3 =  "{\\blur0.25\\bord0\\1c&H9A530E\\3c&HFFFFFF\\fs34\\fnmpv-osd-symbols}",
     bb_backgroud  =  "{\\blur100\\bord180\\1c&H000000&\\3c&H000000&}",
     bb_Atracks    =  "{\\blur0\\bord0\\1c&H73CBEF\\3c&HFFFFFF\\fs24\\fnmpv-osd-symbols}",
     bb_Stracks    =  "{\\blur0\\bord0\\1c&H70DC57\\3c&HFFFFFF\\fs24\\fnmpv-osd-symbols}",
@@ -585,6 +585,7 @@ local osc_styles = {
     bb_fs         =  "{\\blur0\\bord0\\1c&HAC328E\\3c&HFFFFFF\\fs30\\fnmpv-osd-symbols}",
     bb_seekbar    = ("{\\blur0\\bord0\\1c&HFFFFFF\\3c&HFFFFFF\\fs14\\b%d\\q2\\fn%s}"):format(user_opts.font_bold, user_opts.font),
     bb_timecodes  = ("{\\blur0\\bord0\\1c&HDCDCDC\\3c&HFFFFFF\\fs20\\b%d\\fn%s}"):format(user_opts.font_bold, user_opts.font_mono),
+    bb_cachetime  = ("{\\blur0\\bord0\\1c&HDCDCDC\\3c&HFFFFFF\\fs14\\b%d\\fn%s}"):format(user_opts.font_bold, user_opts.font_mono),
     bb_downtitle  = ("{\\blur0\\bord0\\1c&HC0C0C0\\3c&HFFFFFF\\fs16\\b%d\\q2\\fn%s}"):format(user_opts.font_bold, user_opts.font),
 }
 
@@ -1982,7 +1983,7 @@ layouts["bottombox"] = function ()
 
     lo = add_layout("volume")
     lo.geometry =
-        {x = posX + pos_offsetX - (25 * 2) - osc_geo.p, y = bigbtnrowY, an = 5, w = 25, h = 25}
+        {x = posX + pos_offsetX - (30 * 2) - osc_geo.p, y = bigbtnrowY, an = 4, w = 25, h = 25}
     lo.style = osc_styles.bb_volume
 
     --
@@ -2015,8 +2016,8 @@ layouts["bottombox"] = function ()
 
     lo = add_layout("cache")
     lo.geometry =
-        {x = posX, y = bottomrowY, an = 5, w = 110, h = 18}
-    lo.style = osc_styles.bb_timecodes
+        {x = posX - pos_offsetX, y = bottomrowY - pos_offsetY + 18, an = 4, w = 110, h = 14}
+    lo.style = osc_styles.bb_cachetime
 
 end
 
@@ -2753,7 +2754,7 @@ function osc_init()
         end
         local min = math.floor(dmx_cache / 60)
         local sec = dmx_cache % 60
-        return "Cache: " .. (min > 0 and
+        return "缓冲" .. (min > 0 and
             string.format("%sm%02.0fs", min, sec) or
             string.format("%3.0fs", dmx_cache))
     end
