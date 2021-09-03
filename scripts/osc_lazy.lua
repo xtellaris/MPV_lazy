@@ -56,7 +56,7 @@ local user_opts = {
     iamaprogrammer = false,     -- use native mpv values and disable OSC
                                 -- internal track list management (and some
                                 -- functions that depend on it)
-    layout = "bottombar",
+    layout = "bottombar",       -- 原可选为 "bottombar" "topbar" "box" "slimbox" ；在osc_lazy中新增 "bottombox"
     seekbarstyle = "bar",       -- bar, diamond or knob
     seekbarhandlesize = 0.6,    -- size ratio of the diamond and knob handle
     seekrangestyle = "inverted",-- bar, line, slider, inverted or none
@@ -66,18 +66,22 @@ local user_opts = {
     title = "${media-title}",   -- string compatible with property-expansion
                                 -- to be shown as OSC title
     tooltipborder = 1,          -- border of tooltip in bottom/topbar
-    timetotal = true,           -- display total time instead of remaining time?
+    timetotal = true,           -- display total time instead of remaining time?   -- 原为false
     timems = false,             -- display timecodes with milliseconds?
     visibility = "auto",        -- only used at init to set visibility_mode(...)
-    boxmaxchars = 150,          -- title crop threshold for box layout
+    boxmaxchars = 150,          -- title crop threshold for box layout             -- 原为80
     boxvideo = false,           -- apply osc_param.video_margins to video
     windowcontrols = "auto",    -- whether to show window controls
     windowcontrols_alignment = "right", -- which side to show window controls on
     greenandgrumpy = false,     -- disable santa hat
     livemarkers = true,         -- update seekbar chapter markers on duration change
 
+    -- 以下为osc_lazy的独占选项
+
     wctitle = "${media-title}", -- 无边框的上方标题
-    font = "sans",
+    sub_title = " ",            -- bottombox布局的右侧子标题
+    sub_title2 = "对比[${contrast}]  亮度[${brightness}]  伽马[${gamma}]  饱和[${saturation}]  色相[${hue}]", -- bottombox布局的临时右侧子标题
+    font = "sans",              -- OSC的全局字体显示
     font_mono = "sans",
     font_bold = 500,
 }
@@ -272,7 +276,7 @@ local set_thumbnail_layout = {
 							set_mini_below() end,
 	box       = function()	set_thumbnail_above(15)
 							set_mini_above() end,
-	bottombox = function()	set_thumbnail_above(15)     -- 缩略图适配bottombox布局
+	bottombox = function()	set_thumbnail_above(14)      -- 缩略图适配bottombox布局
 							set_mini_above() end,
 	slimbox   = function()	set_thumbnail_above(12)
 							set_mini_above() end,
@@ -573,7 +577,7 @@ local osc_styles = {
     wcButtons = "{\\1c&HFFFFFF\\fs24\\fnmpv-osd-symbols}",
     wcTitle = "{\\1c&HFFFFFF\\fs24\\q2}",
     wcBar = "{\\1c&H000000}",
-    
+
     -- bottombox样式
     bb_bigButton1 =  "{\\blur0.25\\bord0\\1c&HF2A823\\3c&HFFFFFF\\fs50\\fnmpv-osd-symbols}",
     bb_bigButton2 =  "{\\blur0.25\\bord0\\1c&HFACE87\\3c&HFFFFFF\\fs26\\fnmpv-osd-symbols}",
@@ -583,10 +587,13 @@ local osc_styles = {
     bb_Stracks    =  "{\\blur0\\bord0\\1c&H70DC57\\3c&HFFFFFF\\fs24\\fnmpv-osd-symbols}",
     bb_volume     =  "{\\blur0\\bord0\\1c&H00F0FF\\3c&HFFFFFF\\fs30\\fnmpv-osd-symbols}",
     bb_fs         =  "{\\blur0\\bord0\\1c&HAC328E\\3c&HFFFFFF\\fs30\\fnmpv-osd-symbols}",
+    bb_lua_stats  =  "{\\blur0\\bord0\\1c&H9370DB\\3c&HFFFFFF\\fs30\\fr180\\fnmpv-osd-symbols}",
     bb_seekbar    = ("{\\blur0\\bord0\\1c&HFFFFFF\\3c&HFFFFFF\\fs14\\b%d\\q2\\fn%s}"):format(user_opts.font_bold, user_opts.font),
+    bb_seektime   = ("{\\blur0.54\\bord%s\\1c&HFFFFFF\\3c&H000000\\fs18\\b%d\\fn%s}"):format(user_opts.tooltipborder, user_opts.font_bold, user_opts.font_mono),
     bb_timecodes  = ("{\\blur0\\bord0\\1c&HDCDCDC\\3c&HFFFFFF\\fs20\\b%d\\fn%s}"):format(user_opts.font_bold, user_opts.font_mono),
     bb_cachetime  = ("{\\blur0\\bord0\\1c&HDCDCDC\\3c&HFFFFFF\\fs14\\b%d\\fn%s}"):format(user_opts.font_bold, user_opts.font_mono),
     bb_downtitle  = ("{\\blur0\\bord0\\1c&HC0C0C0\\3c&HFFFFFF\\fs16\\b%d\\q2\\fn%s}"):format(user_opts.font_bold, user_opts.font),
+    bb_sub_title  = ("{\\blur0\\bord0\\1c&HC0C0C0\\3c&HFFFFFF\\fs16\\b%d\\q2\\fn%s}"):format(user_opts.font_bold, user_opts.font),
 }
 
 -- internal states, do not touch
@@ -1121,9 +1128,17 @@ function render_elements(master_ass)
             local possec = get_slider_value(se) * dur / 100 -- of mouse pos
             local ch = get_chapter(possec)
             if ch and ch.title and ch.title ~= "" then
-                state.forced_title = "跳转章节：" .. ch.title
+                state.forced_title = "章节：" .. ch.title
             end
         end
+    end
+
+    -- bottombox右侧子标题的临时显示
+
+    state.forced_sub_title = nil
+    local se, ae = state.slider_element, elements[state.active_element]
+    if se and (ae == se or (not ae and mouse_hit(se))) then
+        state.forced_sub_title = mp.command_native({"expand-text", user_opts.sub_title2})
     end
 
     for n=1, #elements do
@@ -1922,6 +1937,13 @@ layouts["bottombox"] = function ()
     lo.style = osc_styles.bb_downtitle
     lo.button.maxchars = user_opts.boxmaxchars
 
+    -- 右侧子标题
+
+    lo = add_layout("sub_title")
+    lo.geometry = {x = posX + pos_offsetX, y = titlerowY - 55, an = 6, w = 0, h = 0}
+    lo.style = osc_styles.bb_sub_title
+    lo.button.maxchars = user_opts.boxmaxchars
+
     --
     -- 播放按钮
     --
@@ -1986,15 +2008,24 @@ layouts["bottombox"] = function ()
         {x = posX + pos_offsetX - (30 * 2) - osc_geo.p, y = bigbtnrowY, an = 4, w = 25, h = 25}
     lo.style = osc_styles.bb_volume
 
+    -- 联动内置的stats.lua
+
+    lo = add_layout("lua_stats")
+    lo.geometry =
+        {x = posX + pos_offsetX - (45 * 2) - osc_geo.p, y = bigbtnrowY + 2, an = 5, w = 25, h = 25}
+    lo.style = osc_styles.bb_lua_stats
+
     --
     -- 进度条
     --
 
     lo = add_layout("seekbar")
     lo.geometry =
-        {x = posX, y = posY+pos_offsetY-22, an = 2, w = pos_offsetX*2, h = 20}
-    lo.style = osc_styles.timecodes
-    lo.slider.tooltip_style = osc_styles.bb_seekbar
+        {x = posX, y = posY + pos_offsetY - 22, an = 2, w = pos_offsetX * 2, h = 20}
+    lo.style = osc_styles.bb_seekbar
+    lo.slider.gap = 2
+    lo.slider.tooltip_style = osc_styles.bb_seektime
+    lo.slider.tooltip_an = 5
     lo.slider.stype = user_opts["seekbarstyle"]
     lo.slider.rtype = user_opts["seekrangestyle"]
 
@@ -2464,6 +2495,17 @@ function osc_init()
     ne.eventresponder["mbtn_right_up"] =
         function () show_message(mp.get_property_osd("filename")) end
 
+    -- sub_title -- bottombox的右侧子标题
+    ne = new_element("sub_title", "button")
+
+    ne.content = function ()
+        local title = state.forced_sub_title or
+                      mp.command_native({"expand-text", user_opts.sub_title})
+        -- escape ASS, and strip newlines and trailing slashes
+        title = title:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{")
+        return not (title == "") and title or "mpv"
+    end
+
     -- playlist buttons
 
     -- prev
@@ -2569,7 +2611,7 @@ function osc_init()
     --
     update_tracklist()
 
-    --cy_audio
+    --cy_audio --全局音轨按钮增强
     ne = new_element("cy_audio", "button")
 
     ne.enabled = (#tracks_osc.audio > 0)
@@ -2588,7 +2630,12 @@ function osc_init()
     ne.eventresponder["shift+mbtn_left_down"] =
         function () show_message(get_tracklist("audio"), 2) end
 
-    --cy_sub
+    ne.eventresponder["wheel_up_press"] =
+        function () set_track("audio", -1) end
+    ne.eventresponder["wheel_down_press"] =
+        function () set_track("audio", 1) end
+
+    --cy_sub --全局字幕按钮增强
     ne = new_element("cy_sub", "button")
 
     ne.enabled = (#tracks_osc.sub > 0)
@@ -2606,6 +2653,11 @@ function osc_init()
         function () set_track("sub", -1) end
     ne.eventresponder["shift+mbtn_left_down"] =
         function () show_message(get_tracklist("sub"), 2) end
+
+    ne.eventresponder["wheel_up_press"] =
+        function () set_track("sub", -1) end
+    ne.eventresponder["wheel_down_press"] =
+        function () set_track("sub", 1) end
 
     --tog_fs
     ne = new_element("tog_fs", "button")
@@ -2781,6 +2833,19 @@ function osc_init()
     ne.eventresponder["wheel_down_press"] =
         function () mp.commandv("osd-auto", "add", "volume", -1) end
 
+    -- bottombox的统计信息按钮 联动内置的stats.lua
+    ne = new_element("lua_stats", "button")
+
+    ne.content = "\238\132\135"
+    ne.eventresponder["mbtn_left_up"] =
+        function () mp.commandv("script-binding", "stats/display-stats-toggle") end
+    ne.eventresponder["mbtn_right_up"] =
+        function () mp.commandv("script-binding", "stats/display-page-4") end
+
+    ne.eventresponder["wheel_up_press"] =
+        function () mp.commandv("script-binding", "stats/display-page-1") end
+    ne.eventresponder["wheel_down_press"] =
+        function () mp.commandv("script-binding", "stats/display-page-2") end
 
     -- load layout
     layouts[user_opts.layout]()
