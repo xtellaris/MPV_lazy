@@ -7,12 +7,33 @@ from vapoursynth import core
 clip = video_in
 w = video_in_dw
 h = video_in_dh
-freq = display_fps
 fps = container_fps or 23.976
-target_fps = 60
+freq = display_fps or 60
+
+vw, vh = 1920, 1080
+target_fps = max(60, fps * 2, freq / 2)
+
+sp = "{ gpu: 1 }",
+ap = """{
+    block: { w: 32, h: 16, overlap: 2 },
+    main: {
+        levels: 5,
+        search: {
+            type: 4, distance: -12,
+            coarse: { type: 4, distance: -1, trymany: true, bad: { range: 0 } }
+        },
+        penalty: { lambda: 3.3, plevel: 1.33, lsad: 3300, pzero: 110, pnbour: 66 }
+    },
+    refine: [{ thsad: 200, search: { type: 4, distance: -4 } }]
+}""",
+fp = """{
+    algo: 23, rate: { num: %d, den: %d, abs: true },
+    scene: { mode: 0, limits: { scene: 5200, zero: 100, blocks: 40 } },
+    mask: { cover: 100, area: 100, area_sharp: 0.75 }
+}""" % (round(target_fps) * 1000, 1001)
 
 
-def fit(clip, w, h, vw=1920, vh=1080, s=lambda x, b=4: round(x)//b*b):
+def fit(clip, w, h, vw, vh, s=lambda x, b=4: round(x)//b*b):
     if w > vw or h > vh:
         r = max(w/vw, h/vh)
         w, h = w/r, h/r
@@ -31,26 +52,7 @@ def toYUV420(clip):
     return clip, clip8
 
 
-def svpflow(clip, fps, target_fps):
-    sp = "{ gpu: 1 }",
-    ap = """{
-        block: { w: 32, h: 16, overlap: 2 },
-        main: {
-            levels: 5,
-            search: {
-                type: 4, distance: -8,
-                coarse: { type: 4, distance: -4, bad: { range: 0 } }
-            },
-            penalty: { lambda: 3.3, lsad: 3000, plevel: 1.25, pzero: 110, pnbour: 75 }
-        },
-        refine: [{ thsad: 200, search: { type: 4, distance: -2 } }]
-    }""",
-    fp = """{
-        gpuid: 0,
-        algo: 23, rate: { num: %d, den: %d, abs: true },
-        scene: { mode: 0, limits: { scene: 5200, zero: 100 } },
-        mask: { cover: 88, area: 100, area_sharp: 0.7 }
-    }""" % (round(target_fps) * 1000, 1001)
+def svpflow(clip, fps):
     clip, clip8 = toYUV420(clip)
     s = core.svp1.Super(clip8, sp)
     r = s["clip"], s["data"]
@@ -60,6 +62,6 @@ def svpflow(clip, fps, target_fps):
     return clip
 
 
-clip = fit(clip, w, h)
-clip = svpflow(clip, fps, target_fps)
+clip = fit(clip, w, h, vw, vh)
+clip = svpflow(clip, fps)
 clip.set_output()
