@@ -37,22 +37,22 @@ MPV播放器 https://github.com/mpv-player/mpv
 
     ...\mpv-lazy\portable_config\scripts\
                 autoload.lua
-                cycle-adevice.lua
-                ontop-playback.lua
-                open-file-dialog.lua
+                cycle_adevice.lua
+                ontop_playback.lua
+                open_file.lua
+                osc_lazy.lua
                 playlistmanager.lua
                 Thumbnailer.lua
-                Thumbnailer_OSC.lua
                 Thumbnailer_Worker.lua
 
     ...\mpv-lazy\portable_config\script-opts\
                 autoload.conf
                 console.conf
                 osc.conf
+                osc_lazy.conf
                 playlistmanager.conf
                 stats.conf
                 thumbnailer.conf
-                Thumbnailer_OSC.conf
                 ytdl_hook.conf
 
     ...\mpv-lazy\portable_config\shaders\
