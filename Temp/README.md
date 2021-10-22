@@ -60,3 +60,10 @@ sub-font-provider=fontconfig
 `vo_gpu` 使用 `vf=lut3d` 视频滤镜配合 `hwdec=no` 使用  
 `vo_placebo` 使用 `lut=<file>` 即可  
 点击预览 Fate-UBW24 [远坂凛](pg-rin.jpg) [阿尔托莉雅](pg-saber.jpg)
+
+## 沙雕着色器
+
+娱乐向。如何调用参考 input.conf 或 mpv.conf 的相关条目
+### 伪HDR
+[fake_hdr.glsl](fake_hdr.glsl) 是一个假装把sdr源映射到hdr的着色器，其实就是主要调节了伽马和饱和  
+用在个别场景会出现明显 [瑕疵](fh_bug.jpg) ，个别场景可能讨喜（反差更鲜明的色彩）
