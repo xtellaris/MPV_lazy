@@ -62,7 +62,7 @@ sub-font-provider=fontconfig
 
 在mpv测试粉嫩少女的3dlut调色预设 [pinkgirl.cube](pinkgirl.cube) ：  
 `vo_gpu` 使用 `vf=lut3d` 视频滤镜配合 `hwdec=no` 使用  
-`vo_placebo` 使用 `lut=<file>` 即可  
+`vo_gpu-next` 使用 `lut=<file>` 即可  
 点击预览 Fate-UBW24 [远坂凛](pg-rin.jpg) [阿尔托莉雅](pg-saber.jpg)
 
 ### vapoursynth —— NNEDI3CL
