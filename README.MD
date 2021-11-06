@@ -78,6 +78,13 @@ youtube-dl或YT-DLP和FFmpeg也被我顺手放一起
         youtube-dl.exe
         yt-dlp.exe
 ```
+安装注册的脚本文件置于 `mpv.exe` 的次级
+```
+    ...\mpv-lazy\installer\
+            mpv-icon.ico
+            mpv-install.bat
+            mpv-uninstall.bat
+```
 
 ## 懒人包
 
