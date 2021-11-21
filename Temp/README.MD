@@ -65,16 +65,35 @@ sub-font-provider=fontconfig
 `vo_gpu-next` 使用 `lut=<file>` 即可  
 点击预览 Fate-UBW24 [远坂凛](pg-rin.jpg) [阿尔托莉雅](pg-saber.jpg)
 
+### vapoursynth —— fmtconv
+
+插件仓库 [fmtconv](https://github.com/EleonoreMizo/fmtconv)  
+fmtconv是vs中高频使用的格式转换插件  
+例如原本使用核心滤镜转换源YUV420P10的位深为8 `clip=clip.resize.Point(format=vs.YUV420P8, dither_type="random")`  
+使用该插件则为 `clip=core.fmtc.bitdepth(clip=clip, bits=8)`
+
+### vapoursynth —— BM3D
+
+插件仓库 [BM3DCUDA](https://github.com/WolframRhodium/VapourSynth-BM3DCUDA)  
+BM3D位于最好的降噪算法梯队，算法复杂且高开销，此处采用了CUDA加速的另一版本  
+[bm3dcuda-full.vpy](bm3dcuda-full.vpy) （示例脚本中使用了 [fmtconv](#vapoursynth--fmtconv) 插件进行位深转换）
+
+### vapoursynth —— KNLMeansCL
+
+插件仓库 [KNLMeansCL](https://github.com/pinterf/KNLMeansCL)  
+NL-Means算法是保留边缘效果的非局部平均降噪，此版实现了OpenCL显卡加速  
+脚本示例 [knlmeanscl-test.vpy](knlmeanscl-test.vpy)
+
 ### vapoursynth —— NNEDI3CL
 
 插件仓库 [NNEDI3CL](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-NNEDI3CL)  
-NNEDI本身是用于去隔行的经典算法，同时却有良好的缩放表现  
-在mpv中使用此脚本（不启用去隔行）只进行强制2x缩放 [nnedi3cl-2x.vpy](nnedi3cl-2x.vpy)  
+NNEDI本身是用于去隔行的经典算法，同时却有良好的缩放表现，此版实现了OpenCL显卡加速  
+在mpv中使用此脚本 [nnedi3cl-2x.vpy](nnedi3cl-2x.vpy) 只进行强制2x缩放（不启用去隔行功能）  
 _此版本可能比近似参数的nnedi3着色器的效果更佳？_
 
 ## 沙雕着色器
 
-娱乐向。如何调用参考 input.conf 或 mpv.conf 的相关条目
+娱乐向。如何调用参考 [input.conf](../portable_config/input.conf) 或 [mpv.conf](../portable_config/mpv.conf) 的相关条目
 
 ### 伪HDR
 

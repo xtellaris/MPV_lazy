@@ -1,9 +1,9 @@
 
 import vapoursynth as vs
 core = vs.core
-clip = video_in
+input = video_in
 
-y,u,v = [core.std.ShufflePlanes(clip, i, vs.GRAY) for i in (0,1,2)]
+y,u,v = [core.std.ShufflePlanes(input, i, vs.GRAY) for i in (0,1,2)]
 
 y = core.nnedi3cl.NNEDI3CL(
                            y, field=0, dh=True, dw=True,
@@ -17,6 +17,6 @@ y = core.nnedi3cl.NNEDI3CL(
 # pscrn: 2 比 1 快但不支持浮点输入格式
 
 u,v = [core.resize.Spline36(i, i.width*2, i.height*2) for i in (u,v)]
-clip = core.std.ShufflePlanes([y,u,v], [0,0,0], vs.YUV)
+output = core.std.ShufflePlanes([y,u,v], [0,0,0], vs.YUV)
 
-clip.set_output()
+output.set_output()
