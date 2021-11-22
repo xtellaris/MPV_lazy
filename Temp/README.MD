@@ -1,41 +1,31 @@
+
 # 杂物
 
 ## CSCALE（色度升频）算法的对比
 
-一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有特殊的母源作为参考。
+一般视频看不出来？正常，首先人眼对亮度平面的敏感度远高于色度平面；其次，因为你没有特殊的母源作为参考。  
+[chroma-444.png](chroma-444.png) 当基准， [chroma-420.jpg](chroma-420.jpg) 是经过预处理的色度半采样成品，分别打开多个mpv空窗口，分别拖入进行对比。
 
-[**chroma-444.png**](chroma-444.png) 当基准， [**chroma-420.jpg**](chroma-420.jpg) 是经过预处理的色度半采样成品，分别打开多个mpv空窗口，分别拖入进行对比。
-
-在开始比较前，你可能需要做以下准备：  
-在 **mpv.conf** 中设置 防止1秒读图后自动关闭
-```
-image-display-duration=inf
-```
-在 **input.conf** 中添加以下这行代码，就可以在运行时使用快捷键快速切换色度升频的算法，即时观看差异。
-```
-Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicubic" "catmull_rom"
-```
+在开始比较前，需要做以下准备：  
+- 在 **mpv.conf** 中设置 `image-display-duration=inf` 防止1秒读图后自动关闭
+- 在 **input.conf** 中添加以下这行代码，就可以在运行时使用快捷键快速切换色度升频的算法，即时观看差异。  
+`Ctrl+c   cycle-values cscale "bilinear" "spline36" "sinc" "lanczos" "jinc" "bicubic" "catmull_rom"`  
 不嫌烦的话，也可以在运行时调出控制台console，输入例如 `set cscale ewa_lanczos` 的命令手动切换某个算法  
-（当然也别忘了和可能是目前最好的色度升频着色器 **KrigBilateral** 作对比）
+（当然也别忘了和可能是目前最好的色度升频着色器 [KrigBilateral](../portable_config/shaders/KrigBilateral.glsl) 作对比）
 
-我的简单测试 [**结果**](chroma-diff.png) —— 从左上到右下分别是：无损源 bilinear catmull_rom KrigBilateral
+我的简单测试结果 —— 从左上到右下分别是：无损源 bilinear catmull_rom KrigBilateral  
+在这个极端特例下KrigBilateral几乎完美的还原了损失的色彩，但在实际影片中除了nearest外几乎很难感知差异。  
+（所以在资源有限的情况下不要浪费性能在cscale上）  
+<img src="chroma-diff.png" width="700">
 
 ## FONTCONFIG
 
 https://mpv.io/manual/master/#options-sub-font-provider  
 fontconfig在win的表现比较糟糕不如原生的directwrite，上游打包者也去掉了它的相关文件，这里仅留作备份。
 
-如需使用，下载 [**fonts.conf**](fonts.conf) 放在设置目录下（ **mpv.conf** 所在位置）  
+如需使用，下载 [fonts.conf](fonts.conf) 放在设置目录下（ **mpv.conf** 所在位置）  
 编辑修改 `<dir>CUSTOMFONTDIR</dir>` 此处路径填写你的字体文件夹  
-并在 **mpv.conf** 使用以下参数
-```
-sub-font-provider=fontconfig
-```
-
-## 极简的设置参数
-
-参考 [mpv-lite.conf](mpv-lite.conf)  
-只保证使用mpv最基础的需求（这玩意真的有必要留着吗...)
+并在 **mpv.conf** 添加使用此参数 `sub-font-provider=fontconfig`
 
 ## 特殊模式
 
@@ -46,7 +36,7 @@ sub-font-provider=fontconfig
 [mpv-输入模式.bat](mpv-输入模式.bat)  
 
 打开bat查看每个模式的用途。  
-放置在mpv.com所在目录使用，或者修改bat适配相关文件的路径
+放置在 **mpv.com** 所在目录使用，或者修改bat适配相关文件的路径
 
 ## MAC上使用mpv
 
@@ -56,14 +46,15 @@ sub-font-provider=fontconfig
 
 ## 滤镜测试
 
-暂不考虑正式使用。如何调用参考 input.conf 或 mpv.conf 的相关条目
+暂不考虑正式使用。如何调用参考 [input.conf](../portable_config/input.conf) 或 [mpv.conf](../portable_config/mpv.conf) 的相关条目
 
 ### lavfi —— lut3d
 
 在mpv测试粉嫩少女的3dlut调色预设 [pinkgirl.cube](pinkgirl.cube) ：  
 `vo_gpu` 使用 `vf=lut3d` 视频滤镜配合 `hwdec=no` 使用  
 `vo_gpu-next` 使用 `lut=<file>` 即可  
-点击预览 Fate-UBW24 [远坂凛](pg-rin.jpg) [阿尔托莉雅](pg-saber.jpg)
+效果预览 ——  
+<img src="pg-rin.jpg" width="450"> <img src="pg-saber.jpg" width="450">
 
 ### vapoursynth —— fmtconv
 
@@ -98,4 +89,5 @@ _此版本可能比近似参数的nnedi3着色器的效果更佳？_
 ### 伪HDR
 
 [fake_hdr.glsl](fake_hdr.glsl) 是一个假装把sdr源映射到hdr的着色器，其实就是主要调节了伽马和饱和  
-用在个别场景会出现明显 [瑕疵](fh_bug.jpg) ，个别场景可能讨喜（反差更鲜明的色彩）
+用在个别场景会出现明显瑕疵，个别场景可能讨喜（反差更鲜明的色彩）  
+<img src="fh_bug.jpg" width="450">
