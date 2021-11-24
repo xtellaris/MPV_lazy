@@ -1,4 +1,9 @@
--- deus0ww - 2021-10-15
+--[[
+SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer.lua
+COMMIT_ 20211005_62fa158
+
+搭配osc_lazy的缩略图脚本(1)/(2)
+]]--
 
 local ipairs,loadfile,pairs,pcall,tonumber,tostring = ipairs,loadfile,pairs,pcall,tonumber,tostring
 local debug,io,math,os,string,table,utf8 = debug,io,math,os,string,table,utf8
@@ -226,7 +231,11 @@ local user_opts = {
 	use_ffmpeg            = false,              -- Use FFMPEG when appropriate. FFMPEG must be in PATH or in the MPV directory
 	prefer_ffmpeg         = false,              -- Use FFMPEG when available
 	ffmpeg_threads        = 8,                  -- Limit FFMPEG/MPV LAVC threads per worker. Also limits filter and output threads for FFMPEG.
-	ffmpeg_scaler         = 'bicubic',          -- Applies to both MPV and FFMPEG. See: https://ffmpeg.org/ffmpeg-scaler.html
+	ffmpeg_scaler         = 'bilinear',         -- ffmpeg软件缩放算法 https://ffmpeg.org/ffmpeg-scaler.html
+	mpv_scaler            = 'bilinear',         -- mpv软件缩放算法
+	mpv_hwdec             = 'no',               -- mpv硬解码
+	ffmpeg_hwaccel        = 'none',             -- ffmpeg硬解码
+	ffmpeg_hwaccel_device = '0',                -- ffmpeg硬解码设备
 }
 
 local thumbnails, thumbnails_new,thumbnails_new_count
@@ -258,13 +267,17 @@ end
 
 local function worker_set_options()
 	return {
-		encoder        = (not state.is_remote and user_opts.use_ffmpeg and exec_exist('ffmpeg', user_opts.exec_path)) and 'ffmpeg' or 'mpv',
-		exec_path     = user_opts.exec_path,
-		worker_timeout = state.worker_timeout,
-		accurate_seek  = user_opts.accurate_seek,
-		use_ffmpeg     = user_opts.use_ffmpeg,
-		ffmpeg_threads = user_opts.ffmpeg_threads,
-		ffmpeg_scaler  = user_opts.ffmpeg_scaler,
+		encoder               = (not state.is_remote and user_opts.use_ffmpeg and exec_exist('ffmpeg', user_opts.exec_path)) and 'ffmpeg' or 'mpv',
+		exec_path             = user_opts.exec_path,
+		worker_timeout        = state.worker_timeout,
+		accurate_seek         = user_opts.accurate_seek,
+		use_ffmpeg            = user_opts.use_ffmpeg,
+		ffmpeg_threads        = user_opts.ffmpeg_threads,
+		ffmpeg_scaler         = user_opts.ffmpeg_scaler,
+		mpv_scaler            = user_opts.mpv_scaler,
+		mpv_hwdec             = user_opts.mpv_hwdec,
+		ffmpeg_hwaccel        = user_opts.ffmpeg_hwaccel,
+		ffmpeg_hwaccel_device = user_opts.ffmpeg_hwaccel_device,
 	}
 end
 
