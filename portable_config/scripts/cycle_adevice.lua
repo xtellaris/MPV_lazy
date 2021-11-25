@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://gist.github.com/bitingsock/ad58ee5da560ecb922fa4a867ac0ecfd
-COMMIT_20200802
+COMMIT_ 20200802
 
 此脚本优于在 input.conf 中使用 cycle-values audio-device 参数的方案
 自定义快捷键 快速切换音频输出设备

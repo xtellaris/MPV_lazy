@@ -1,8 +1,8 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_20211004_ca6108b
+COMMIT_ 20211004_ca6108b
 SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
-COMMIT_20211004_19a8c13
+COMMIT_ 20211004_19a8c13
 
 改进版本的OSC，须禁用原始mpv的内置OSC，且不兼容其它OSC类脚本，实现全部功能需搭配额外两个缩略图引擎脚本（Thumbnailer）。
 示例在 input.conf 中写入：

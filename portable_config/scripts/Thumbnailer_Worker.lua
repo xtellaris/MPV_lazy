@@ -1,6 +1,7 @@
 --[[
 SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_Worker.lua
 COMMIT_ 20210716_91ae987
+
 搭配osc_lazy的缩略图脚本(2)/(2)
 ]]--
 
