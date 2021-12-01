@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ 20211125 b8926dd
+COMMIT_ 20211127 448fe02
 SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_OSC.lua
 COMMIT_ 20211004 b448073
 
@@ -2823,10 +2823,10 @@ function osc_init()
             dmx_cache = state.dmx_cache
         end
         local min = math.floor(dmx_cache / 60)
-        local sec = dmx_cache % 60
+        local sec = math.floor(dmx_cache % 60) -- don't round e.g. 59.9 to 60
         return "缓冲" .. (min > 0 and
             string.format("%sm%02.0fs", min, sec) or
-            string.format("%3.0fs", dmx_cache))
+            string.format("%3.0fs", sec))
     end
 
     -- volume
