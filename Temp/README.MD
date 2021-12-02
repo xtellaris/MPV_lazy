@@ -82,6 +82,12 @@ NNEDI本身是用于去隔行的经典算法，同时却有良好的缩放表现
 在mpv中使用此脚本 [nnedi3cl-2x.vpy](nnedi3cl-2x.vpy) 只进行强制2x缩放（不启用去隔行功能）  
 _此版本可能比近似参数的nnedi3着色器的效果更佳？_
 
+### vapoursynth —— RIFE ncnn Vulkan
+
+插件仓库 [RIFE ncnn Vulkan](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-RIFE-ncnn-Vulkan)  
+RIFE是一种AI运动补偿算法，目前尚无用于实时播放级别的模型  
+示例脚本仅供娱乐 [rife-test.vpy](rife-test.vpy)
+
 ## 沙雕着色器
 
 娱乐向。如何调用参考 [input.conf](../portable_config/input.conf) 或 [mpv.conf](../portable_config/mpv.conf) 的相关条目
