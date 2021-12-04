@@ -10,10 +10,10 @@ h = video_in_dh
 fps = container_fps or 23.976
 freq = display_fps or 60
 
-vw, vh = 1920, 1080
 target_fps = max(60, fps * 2, freq / 2)
+vw, vh = 1920, 1080
 
-sp = "{ gpu: 1 }",
+sp = "{ gpu: 1 }"
 ap = """{
     block: { w: 32, h: 16, overlap: 2 },
     main: {
@@ -22,22 +22,22 @@ ap = """{
             type: 4, distance: -12,
             coarse: { type: 4, distance: -1, trymany: true, bad: { range: 0 } }
         },
-        penalty: { lambda: 3.3, plevel: 1.33, lsad: 3300, pzero: 110, pnbour: 66 }
+        penalty: { lambda: 3.33, plevel: 1.33, lsad: 3300, pzero: 110, pnbour: 50 }
     },
-    refine: [{ thsad: 200, search: { type: 4, distance: -4 } }]
-}""",
+    refine: [{ thsad: 250 }, { thsad: 200, search: { type: 4, distance: -4 } }]
+}"""
 fp = """{
     algo: 23, rate: { num: %d, den: %d, abs: true },
-    scene: { mode: 0, limits: { scene: 5200, zero: 100, blocks: 40 } },
-    mask: { cover: 100, area: 100, area_sharp: 0.75 }
+    scene: { mode: 0, limits: { scene: 6000, zero: 100, blocks: 40 } },
+    mask: { cover: 80, area: 30, area_sharp: 0.75 }
 }""" % (round(target_fps) * 1000, 1001)
 
 
-def fit(clip, w, h, vw, vh, s=lambda x, b=4: round(x)//b*b):
-    if w > vw or h > vh:
-        r = max(w/vw, h/vh)
-        w, h = w/r, h/r
-        clip = clip.resize.Spline36(width=s(w), height=s(h))
+def fit(clip, w, h, vw, vh):
+    r = max(w/vw, h/vh)
+    if r > 1:
+        def f(x): return round(x/r/4)*4
+        clip = clip.resize.Spline36(width=f(w), height=f(h))
     return clip
 
 
@@ -52,7 +52,7 @@ def toYUV420(clip):
     return clip, clip8
 
 
-def svpflow(clip, fps):
+def svpflow(clip, fps, sp, ap, fp):
     clip, clip8 = toYUV420(clip)
     s = core.svp1.Super(clip8, sp)
     r = s["clip"], s["data"]
@@ -63,5 +63,5 @@ def svpflow(clip, fps):
 
 
 clip = fit(clip, w, h, vw, vh)
-clip = svpflow(clip, fps)
+clip = svpflow(clip, fps, sp, ap, fp)
 clip.set_output()
