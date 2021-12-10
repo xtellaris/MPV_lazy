@@ -1,7 +1,7 @@
 记录 Intel MBP 16' 2020 折腾 iina、svp、mpv 相关
 
 >最终放弃了这套链路转向了 vlc 和 movist pro  
-至今mpv系在mac系统上只能使用 `vo=opengl`  
+至今mpv系在mac系统上只能使用 `gpu-api=opengl`  
 多种其他因素下造成了渲染效率低下+电量杀手
 
 # mpv for MAC
