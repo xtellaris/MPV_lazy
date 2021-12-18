@@ -5,7 +5,7 @@
 | autoload.lua | 自动加载同级目录的文件 | _脚本内及设置文件_ |
 | cycle_adevice.lua | 快捷键切换音频 | _脚本内及设置文件_ |
 | ontop_playback.lua | 仅在播放时启用置顶 | _脚本内及设置文件_ |
-| open_dialog.lua | 快捷键载入文件 | _脚本内及设置文件_ |
+| open_dialog.lua | 快捷键载入文件/网址/高级次字幕 | https://github.com/hooke007/MPV_lazy/discussions/61 |
 | osc_lazy.lua | 增强OSC界面 | https://github.com/hooke007/MPV_lazy/discussions/18 |
 | playlistmanager.lua | 高级播放列表 | _脚本内及设置文件_ |
 | thumbnailer*.lua (2) | 缩略图引擎 | _脚本内及设置文件_ |
