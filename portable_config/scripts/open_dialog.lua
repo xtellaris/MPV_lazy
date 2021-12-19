@@ -12,6 +12,8 @@ Public Domain Dedication, which applies to this software.
 示例：在 input.conf 中另起写入下列内容
 w        script-binding    open_dialog/import_files   # 打开文件
 W        script-binding    open_dialog/import_url     # 载入网址
+ALT+e    script-binding    open_dialog/sub_add        # 加载其他字幕（切换）
+ALT+E    script-binding    open_dialog/audio_add      # 加载其他音轨（不切换）
 e        script-binding    open_dialog/append_vfSub   # 装载次字幕（滤镜型）
 E        script-binding    open_dialog/toggle_vfSub   # 隐藏/显示 当前的次字幕
 CTRL+e   script-binding    open_dialog/remove_vfSub   # 移除次字幕
@@ -75,6 +77,65 @@ function import_url()
 	mp.commandv('loadfile', res.stdout)
 end
 
+function sub_add()
+	local was_ontop = mp.get_property_native("ontop")
+	if was_ontop then mp.set_property_native("ontop", false) end
+	local res = utils.subprocess({
+		args = {'powershell', '-NoProfile', '-Command', [[& {
+			Trap {
+				Write-Error -ErrorRecord $_
+				Exit 1
+			}
+			Add-Type -AssemblyName PresentationFramework
+			$u8 = [System.Text.Encoding]::UTF8
+			$out = [Console]::OpenStandardOutput()
+			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
+			$ofd.Multiselect = $false
+			If ($ofd.ShowDialog() -eq $true) {
+				ForEach ($filename in $ofd.FileNames) {
+					$u8filename = $u8.GetBytes("$filename")
+					$out.Write($u8filename, 0, $u8filename.Length)
+				}
+			}
+		}]]},
+		cancellable = false,
+	})
+	if was_ontop then mp.set_property_native("ontop", true) end
+	if (res.status ~= 0) then return end
+	for filename in string.gmatch(res.stdout, '[^\n]+') do
+		mp.commandv('sub-add', filename, 'cached')
+	end
+end
+
+function audio_add()
+	local was_ontop = mp.get_property_native("ontop")
+	if was_ontop then mp.set_property_native("ontop", false) end
+	local res = utils.subprocess({
+		args = {'powershell', '-NoProfile', '-Command', [[& {
+			Trap {
+				Write-Error -ErrorRecord $_
+				Exit 1
+			}
+			Add-Type -AssemblyName PresentationFramework
+			$u8 = [System.Text.Encoding]::UTF8
+			$out = [Console]::OpenStandardOutput()
+			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
+			$ofd.Multiselect = $false
+			If ($ofd.ShowDialog() -eq $true) {
+				ForEach ($filename in $ofd.FileNames) {
+					$u8filename = $u8.GetBytes("$filename")
+					$out.Write($u8filename, 0, $u8filename.Length)
+				}
+			}
+		}]]},
+		cancellable = false,
+	})
+	if was_ontop then mp.set_property_native("ontop", true) end
+	if (res.status ~= 0) then return end
+	for filename in string.gmatch(res.stdout, '[^\n]+') do
+		mp.commandv('audio-add', filename, 'auto')
+	end
+end
 
 function append_vfSub()
 	local was_ontop = mp.get_property_native("ontop")
@@ -115,9 +176,10 @@ function remove_vfSub()
 	mp.command(vfSub)
 end
 
-
 mp.add_key_binding(nil, 'import_files', import_files)
 mp.add_key_binding(nil, 'import_url', import_url)
+mp.add_key_binding(nil, 'sub_add', sub_add)
+mp.add_key_binding(nil, 'audio_add', audio_add)
 mp.add_key_binding(nil, 'append_vfSub', append_vfSub)
 mp.add_key_binding(nil, 'toggle_vfSub', toggle_vfSub)
 mp.add_key_binding(nil, 'remove_vfSub', remove_vfSub)
