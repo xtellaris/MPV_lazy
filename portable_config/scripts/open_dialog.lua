@@ -12,8 +12,8 @@ Public Domain Dedication, which applies to this software.
 示例：在 input.conf 中另起写入下列内容
 w        script-binding    open_dialog/import_files   # 打开文件
 W        script-binding    open_dialog/import_url     # 载入网址
-CTRL+w   script-binding    open_dialog/sub_add        # 加载其他字幕（切换）
-ALT+w    script-binding    open_dialog/audio_add      # 加载其他音轨（不切换）
+CTRL+w   script-binding    open_dialog/append_aid     # 加载其它音轨（不切换）
+ALT+w    script-binding    open_dialog/append_sid     # 加载其它字幕（切换）
 e        script-binding    open_dialog/append_vfSub   # 装载次字幕（滤镜型）
 E        script-binding    open_dialog/toggle_vfSub   # 隐藏/显示 当前的次字幕
 CTRL+e   script-binding    open_dialog/remove_vfSub   # 移除次字幕
