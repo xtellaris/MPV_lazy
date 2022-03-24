@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer_Worker.lua
-COMMIT_ 20210716 91ae987
+COMMIT_ 20220324 49352b0
 
 搭配osc_lazy的缩略图脚本(2)/(2)
 ]]--
@@ -175,7 +175,7 @@ end
 ------------
 -- Worker --
 ------------
-mp.command_native({'script-message', message.worker.registration, format_json({name = script_name, script_path = debug.getinfo(1).source})})
+mp.command_native({'script-message', message.worker.registration, format_json({name = script_name, script_path = debug.getinfo(1).source:gsub('^@', '')})})
 
 local function stop_file_exist()
 	local file = io.open(join_paths(state.cache_dir, 'stop'), 'r')
