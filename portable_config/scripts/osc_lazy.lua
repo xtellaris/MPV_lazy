@@ -85,6 +85,9 @@ local user_opts = {
     sub_title = " ",                    -- bottombox布局的右侧子标题
     sub_title2 = "对比[${contrast}]  明度[${brightness}]  伽马[${gamma}]  饱和[${saturation}]  色相[${hue}]",
                                         -- bottombox布局的临时右侧子标题
+    showonpause = false,                -- 在暂停时显示 OSC
+    showonstart = false,                -- 在播放开始或当播放下一个文件时显示 OSC
+    showonseek = false,                 -- 在跳转时显示 OSC
     font = "sans",                      -- OSC的全局字体显示
     font_mono = "sans",
     font_bold = 500,
@@ -634,6 +637,7 @@ local state = {
     maximized = false,
     osd = mp.create_osd_overlay("ass-events"),
     chapter_list = {},                      -- sorted by time
+    lastvisibility = user_opts.visibility,  -- save last visibility on pause if showonpause
 }
 
 local window_control_box_width = 80
@@ -1103,6 +1107,11 @@ function prepare_elements()
         if not (element.enabled) then
             element.layout.alpha[1] = 136
             element.eventresponder = nil
+        end
+
+        -- gray out the element if it is toggled off
+        if (element.off) then
+            element.layout.alpha[1] = 136
         end
     end
 end
@@ -1989,10 +1998,14 @@ layouts["bottombox"] = function ()
         {x = posX - (bigbtndist * 3), y = bigbtnrowY, an = 5, w = 25, h = 25}
     lo.style = osc_styles.bb_bigButton3
 
+    if (osc_param.display_aspect < 1) then lo.geometry.x = 150 end
+
     lo = add_layout("pl_next")
     lo.geometry =
         {x = posX + (bigbtndist * 3), y = bigbtnrowY, an = 5, w = 25, h = 25}
     lo.style = osc_styles.bb_bigButton3
+
+    if (osc_param.display_aspect < 1) then lo.geometry.x = osc_geo.w - 150 end
 
     -- 快捷按钮
 
@@ -2000,6 +2013,8 @@ layouts["bottombox"] = function ()
     lo.geometry =
         {x = posX - pos_offsetX + 40, y = bigbtnrowY, an = 5, w = 70, h = 25}
     lo.style = osc_styles.bb_Atracks
+
+    if (osc_param.display_aspect < 1) then lo.geometry.x = 40 end
 
     lo = add_layout("cy_sub")
     lo.geometry =
@@ -2016,12 +2031,16 @@ layouts["bottombox"] = function ()
         {x = posX + pos_offsetX - (30 * 2) - osc_geo.p, y = bigbtnrowY, an = 4, w = 25, h = 25}
     lo.style = osc_styles.bb_volume
 
+    if (osc_param.display_aspect < 1) then lo.geometry.x = osc_geo.w - 40 end
+
     -- 联动内置的stats.lua
 
     lo = add_layout("lua_stats")
     lo.geometry =
         {x = posX + pos_offsetX - (45 * 2) - osc_geo.p, y = bigbtnrowY + 2, an = 5, w = 25, h = 25}
     lo.style = osc_styles.bb_lua_stats
+
+    if (osc_param.display_aspect < 1) then lo.geometry.x = osc_geo.w - 60 end
 
     --
     -- 进度条
@@ -2505,6 +2524,7 @@ function osc_init()
 
     -- sub_title -- bottombox的右侧子标题
     ne = new_element("sub_title", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.content = function ()
         local title = state.forced_sub_title or
@@ -2568,6 +2588,7 @@ function osc_init()
 
     --skipback
     ne = new_element("skipback", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.softrepeat = true
     ne.content = "\238\128\132"
@@ -2580,6 +2601,7 @@ function osc_init()
 
     --skipfrwd
     ne = new_element("skipfrwd", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.softrepeat = true
     ne.content = "\238\128\133"
@@ -2592,6 +2614,7 @@ function osc_init()
 
     --ch_prev
     ne = new_element("ch_prev", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.enabled = have_ch
     ne.content = "\238\132\132"
@@ -2609,6 +2632,7 @@ function osc_init()
 
     --ch_next
     ne = new_element("ch_next", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.enabled = have_ch
     ne.content = "\238\132\133"
@@ -2631,6 +2655,7 @@ function osc_init()
     ne = new_element("cy_audio", "button")
 
     ne.enabled = (#tracks_osc.audio > 0)
+    ne.off = (get_track('audio') == 0)
     ne.content = function ()
         local aid = "–"
         if not (get_track("audio") == 0) then
@@ -2653,8 +2678,10 @@ function osc_init()
 
     --cy_sub --全局字幕按钮增强
     ne = new_element("cy_sub", "button")
+    ne.visible = (osc_param.display_aspect > 1)
 
     ne.enabled = (#tracks_osc.sub > 0)
+    ne.off = (get_track('sub') == 0)
     ne.content = function ()
         local sid = "–"
         if not (get_track("sub") == 0) then
@@ -2677,6 +2704,8 @@ function osc_init()
 
     --tog_fs
     ne = new_element("tog_fs", "button")
+    ne.visible = (osc_param.display_aspect > 1)
+
     ne.content = function ()
         if (state.fullscreen) then
             return ("\238\132\137")
@@ -2977,6 +3006,16 @@ function osc_visible(visible)
 end
 
 function pause_state(name, enabled)
+    mp.add_timeout(0.1, function() state.osd:update() end)
+    if user_opts.showonpause then
+        if enabled then
+            state.lastvisibility = user_opts.visibility
+            visibility_mode("always", true)
+            show_osc()
+        else
+            visibility_mode(state.lastvisibility, true)
+        end
+    end
     state.paused = enabled
     request_tick()
 end
@@ -3426,6 +3465,8 @@ update_duration_watch()
 
 mp.register_event("shutdown", shutdown)
 mp.register_event("start-file", request_init)
+if user_opts.showonstart then mp.register_event("file-loaded", show_osc) end
+if user_opts.showonseek then mp.register_event("seek", show_osc) end
 mp.observe_property("track-list", nil, request_init)
 mp.observe_property("playlist", nil, request_init)
 mp.observe_property("chapter-list", "native", function(_, list)
