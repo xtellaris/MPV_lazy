@@ -85,7 +85,7 @@ local user_opts = {
     sub_title = " ",                    -- bottombox布局的右侧子标题
     sub_title2 = "对比[${contrast}]  明度[${brightness}]  伽马[${gamma}]  饱和[${saturation}]  色相[${hue}]",
                                         -- bottombox布局的临时右侧子标题
-    showonpause = false,                -- 在暂停时显示 OSC
+    showonpause = false,                -- 在暂停时常驻 OSC
     showonstart = false,                -- 在播放开始或当播放下一个文件时显示 OSC
     showonseek = false,                 -- 在跳转时显示 OSC
     font = "sans",                      -- OSC的全局字体显示
@@ -637,7 +637,7 @@ local state = {
     maximized = false,
     osd = mp.create_osd_overlay("ass-events"),
     chapter_list = {},                      -- sorted by time
-    lastvisibility = user_opts.visibility,  -- save last visibility on pause if showonpause
+    lastvisibility = user_opts.visibility,  -- 如果showonpause，则在暂停时保存最后一次的可见性
 }
 
 local window_control_box_width = 80
@@ -1109,7 +1109,7 @@ function prepare_elements()
             element.eventresponder = nil
         end
 
-        -- gray out the element if it is toggled off
+        -- 禁用时灰化相关元素
         if (element.off) then
             element.layout.alpha[1] = 136
         end
@@ -1954,6 +1954,12 @@ layouts["bottombox"] = function ()
     lo.style = osc_styles.bb_downtitle
     lo.button.maxchars = user_opts.boxmaxchars
 
+    if (user_opts.layout == "bottombox") then
+        if (osc_param.display_aspect < 1) then
+            lo.button.maxchars = 50
+        end
+    end
+
     -- 右侧子标题
 
     lo = add_layout("sub_title")
@@ -2586,9 +2592,12 @@ function osc_init()
     ne.eventresponder["mbtn_left_up"] =
         function () mp.commandv("cycle", "pause") end
 
-    --skipback
+    --skipback -- 进度（前滚）
     ne = new_element("skipback", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.softrepeat = true
     ne.content = "\238\128\132"
@@ -2599,9 +2608,12 @@ function osc_init()
     ne.eventresponder["mbtn_right_down"] =
         function () mp.commandv("seek", -30, "relative", "keyframes") end
 
-    --skipfrwd
+    --skipfrwd -- 进度（后滚）
     ne = new_element("skipfrwd", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.softrepeat = true
     ne.content = "\238\128\133"
@@ -2612,9 +2624,12 @@ function osc_init()
     ne.eventresponder["mbtn_right_down"] =
         function () mp.commandv("seek", 60, "relative", "keyframes") end
 
-    --ch_prev
+    --ch_prev --章节（上一个）
     ne = new_element("ch_prev", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.enabled = have_ch
     ne.content = "\238\132\132"
@@ -2630,9 +2645,12 @@ function osc_init()
     ne.eventresponder["mbtn_right_up"] =
         function () show_message(get_chapterlist(), 3) end
 
-    --ch_next
+    --ch_next --章节（下一个）
     ne = new_element("ch_next", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.enabled = have_ch
     ne.content = "\238\132\133"
@@ -2678,7 +2696,10 @@ function osc_init()
 
     --cy_sub --全局字幕按钮增强
     ne = new_element("cy_sub", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.enabled = (#tracks_osc.sub > 0)
     ne.off = (get_track('sub') == 0)
@@ -2702,9 +2723,12 @@ function osc_init()
     ne.eventresponder["wheel_down_press"] =
         function () set_track("sub", 1) end
 
-    --tog_fs
+    --tog_fs --切换全屏/窗口化
     ne = new_element("tog_fs", "button")
-    ne.visible = (osc_param.display_aspect > 1)
+
+    if (user_opts.layout == "bottombox") then
+        ne.visible = (osc_param.display_aspect > 1)
+    end
 
     ne.content = function ()
         if (state.fullscreen) then
@@ -3006,6 +3030,8 @@ function osc_visible(visible)
 end
 
 function pause_state(name, enabled)
+    -- 暂停状态检查
+    state.paused = enabled
     mp.add_timeout(0.1, function() state.osd:update() end)
     if user_opts.showonpause then
         if enabled then
@@ -3016,7 +3042,6 @@ function pause_state(name, enabled)
             visibility_mode(state.lastvisibility, true)
         end
     end
-    state.paused = enabled
     request_tick()
 end
 
@@ -3465,8 +3490,8 @@ update_duration_watch()
 
 mp.register_event("shutdown", shutdown)
 mp.register_event("start-file", request_init)
-if user_opts.showonstart then mp.register_event("file-loaded", show_osc) end
-if user_opts.showonseek then mp.register_event("seek", show_osc) end
+if user_opts.showonstart then mp.register_event("file-loaded", show_osc) end -- 暂停相关
+if user_opts.showonseek then mp.register_event("seek", show_osc) end         -- 暂停相关
 mp.observe_property("track-list", nil, request_init)
 mp.observe_property("playlist", nil, request_init)
 mp.observe_property("chapter-list", "native", function(_, list)
