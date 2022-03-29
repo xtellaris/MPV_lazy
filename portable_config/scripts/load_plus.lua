@@ -397,18 +397,18 @@ function append_vfSub()
 	if was_ontop then mp.set_property_native("ontop", true) end
 	if (res.status ~= 0) then return end
 	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		local vfSub = "vf append ``@LUA-open_dialog:subtitles=filename=\"" .. res.stdout .. "\"``"
+		local vfSub = "vf append ``@LUA-load_plus:subtitles=filename=\"" .. res.stdout .. "\"``"
 		mp.command(vfSub)
 	end
 end
 
 function toggle_vfSub()
-	local vfSub = "vf toggle @LUA-open_dialog"
+	local vfSub = "vf toggle @LUA-load_plus"
 	mp.command(vfSub)
 end
 
 function remove_vfSub()
-	local vfSub = "vf remove @LUA-open_dialog"
+	local vfSub = "vf remove @LUA-load_plus"
 	mp.command(vfSub)
 end
 
