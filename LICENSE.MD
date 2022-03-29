@@ -2152,7 +2152,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 ## .../mpv-lazy/portable_config/scripts
 
-### autoload.lua & ontop_playback.lua
+### load_plus.lua & ontop_playback.lua
 
 ```
 GNU GENERAL PUBLIC LICENSE
