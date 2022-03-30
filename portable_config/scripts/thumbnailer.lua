@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/deus0ww/mpv-conf/blob/master/scripts/Thumbnailer.lua
-COMMIT_ 20220327 cc10823
+COMMIT_ 20220402 bcab91a
 
 搭配osc_lazy的缩略图脚本(1)/(2)
 ]]--
@@ -652,7 +652,6 @@ local function is_thumbnailable()
 		if key == 'worker_timeout' and value then goto continue end
 		if is_empty(value) then
 			msg.warn('Stopping - State Incomplete:', key, value)
-			osc_update(nil, osc_set_options(false), nil)
 			return false
 		end
 		::continue::
@@ -660,11 +659,9 @@ local function is_thumbnailable()
 	for condition, value in pairs(stop_conditions) do		
 		if not value then 
 			msg.warn('Stopping:', condition, value)
-			osc_update(nil, osc_set_options(false), nil)
 			return false 
 		end
 	end
-	osc_update(nil, osc_set_options(true), nil)
 	return true
 end
 
@@ -813,8 +810,8 @@ end)
 ------------
 -- On Video Params Change
 mp.observe_property('video-params', 'native', function(_, video_params)
-	if video_params and is_empty(video_params.dw, video_params.dh) then return end
-	if not video_params or not saved_state or (saved_state.input_fullpath ~= mp.get_property_native('path', '')) then
+	if not video_params or is_empty(video_params.dw, video_params.dh) then return end
+	if not saved_state or (saved_state.input_fullpath ~= mp.get_property_native('path', '')) then
 		delete_cache_subdir()
 		reset_all()
 		saved_state.video_params = video_params
