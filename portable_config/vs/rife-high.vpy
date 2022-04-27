@@ -23,11 +23,15 @@ else :
 
 if (container_fps < 32) :
 	cut0 = input.misc.SCDetect()
+
 	if short_edge > max_Leng :
 		cut1 = cut0.resize.Bicubic(width=w_ds, height=h_ds, format=vs.RGBS, matrix_in_s="709")
 	else :
-		cut1 = cut0.resize.Point(format=vs.RGBS, matrix_in_s="709")
+		cut1 = cut0.resize.Bilinear(format=vs.RGBS, matrix_in_s="709")
 	cut2 = core.rife.RIFE(clip=cut1, model=9, multiplier=2, gpu_id=GPU, gpu_thread=GPU_t, tta=False, uhd=False, sc=True)
-	output = cut2.resize.Point(format=vs.YUV444P16, matrix_s="709")
+
+	output = cut2.resize.Bilinear(format=vs.YUV444P16, matrix_s="709")
+	if input.get_frame(0).props._ColorRange == 0 :
+		output = output.resize.Bilinear(range=1)
 
 output.set_output()
