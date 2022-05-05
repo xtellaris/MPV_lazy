@@ -18,7 +18,6 @@ GPU = -1
 # 神经元数量 0=16 // 1=32 // 2=64 // 3=128 // 4=256
 # 使用OpenCL加速的设备（仅支持nnedi3cl）
 
-
 ## port rpow2 from https://gist.github.com/YamashitaRen/020c497524e794779d9c
 
 def nnedi3_rpow2(clip, rfactor, correct_shift="zimg", nsize=0, nns=3, qual=None, etype=None, pscrn=None, opt=None, int16_prescreener=None, int16_predictor=None, exp=None) :
