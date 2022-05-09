@@ -14,6 +14,9 @@ GPU_t = 2
 # 指定加速的显卡
 # 显卡使用的线程
 
+if input.width > 2560 and input.height > 2560 :
+	raise Warning("源分辨率超过限制的范围，已临时禁用该脚本。")
+
 cut1 = input.resize.Bilinear(format=vs.RGBS, matrix_in_s="709")
 cut2 = core.w2xncnnvk.Waifu2x(clip=cut1, noise=denoise_lv, scale=2, model=scale_model, gpu_id=GPU, gpu_thread=GPU_t)
 output = cut2.resize.Bilinear(format=vs.YUV444P16, matrix_s="709")

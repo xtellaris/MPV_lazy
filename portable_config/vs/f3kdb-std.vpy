@@ -31,7 +31,7 @@ if plug == "zimg" :
 	cut1 = input.resize.Bilinear(format=vs.YUV444P16)
 if plug == "fmtc" :
 	cut1 = core.fmtc.bitdepth(clip=input, bits=16)
-if plug == None :
+if plug is None :
 	cut1 = input
 
 output = core.neo_f3kdb.Deband(clip=cut1, range=dectect_br, y=bandY_rth, cb=bandC_rth, cr=bandC_rth, grainy=grainY, grainc=grainC, sample_mode=spl_mode, dynamic_grain=grain_dy, mt=channel_par, keep_tv_range=True if color_lv==1 else False, output_depth=depth_fin)

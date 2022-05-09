@@ -18,6 +18,9 @@ GPU = -1
 # 神经元数量 0=16 // 1=32 // 2=64 // 3=128 // 4=256
 # 使用OpenCL加速的设备（仅支持nnedi3cl）
 
+if input.width > 2560 and input.height > 2560 :
+	raise Warning("源分辨率超过限制的范围，已临时禁用该脚本。")
+
 ## port rpow2 from https://gist.github.com/YamashitaRen/020c497524e794779d9c
 
 def nnedi3_rpow2(clip, rfactor, correct_shift="zimg", nsize=0, nns=3, qual=None, etype=None, pscrn=None, opt=None, int16_prescreener=None, int16_predictor=None, exp=None) :
@@ -98,12 +101,11 @@ def correct_edi_shift(clip, rfactor, plugin) :
 
 	return clip
 
-if input.width <= 2560 and input.height <= 2560 :
-	if edi_core == 1 :
-		output = nnedi3_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2)
-	if edi_core == 2 :
-		output = znedi3_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2)
-	if edi_core == 3 :
-		output = nnedi3cl_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2, device=GPU)
+if edi_core == 1 :
+	output = nnedi3_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2)
+if edi_core == 2 :
+	output = znedi3_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2)
+if edi_core == 3 :
+	output = nnedi3cl_rpow2(clip=input, rfactor=2, correct_shift=plug, nsize=pixel_size, nns=neuron_num, qual=1, etype=0, pscrn=2, device=GPU)
 
 output.set_output()
