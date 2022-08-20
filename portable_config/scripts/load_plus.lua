@@ -22,10 +22,10 @@ e        script-binding    load_plus/append_vfSub   # 装载次字幕（滤镜�
 E        script-binding    load_plus/toggle_vfSub   # 隐藏/显示 当前的次字幕（滤镜型）
 CTRL+e   script-binding    load_plus/remove_vfSub   # 移除次字幕（滤镜型）
 
-F1       script-binding    load_plus/mark_aidA       # 标记当前音轨为A
-F2       script-binding    load_plus/mark_aidB       # 标记当前音轨为B
-F3       script-binding    load_plus/merge_aids      # 合并AB音频轨
-F4       script-binding    load_plus/reset_lavcomp   # 重置lavfi-complex（取消并轨）
+F1       script-binding    load_plus/mark_aidA      # 标记当前音轨为A
+F2       script-binding    load_plus/mark_aidB      # 标记当前音轨为B
+F3       script-binding    load_plus/merge2aids     # 合并AB音频轨
+F4       script-binding    load_plus/reset2aids     # 取消并轨和标记
 ]]--
 
 local msg = require 'mp.msg'
@@ -434,11 +434,14 @@ end
 -- 双音轨同步播放
 --
 
+local marked_A = nil
+local marked_B = nil
 function mark_aidA()
 	marked_A = mp.get_property("aid")
 	if marked_A == "auto" or marked_A == "no"
 	then
 		mp.osd_message("当前音轨无效", 1)
+		marked_A = nil
 	else
 		mp.osd_message("预标记当前音轨序列 " .. marked_A .. " 为并行轨A", 1)
 	end
@@ -448,11 +451,12 @@ function mark_aidB()
 	if marked_B == "auto" or marked_B == "no"
 	then
 		mp.osd_message("当前音轨无效", 1)
+		marked_B = nil
 	else
 		mp.osd_message("预标记当前音轨序列 " .. marked_B .. " 为并行轨B", 1)
 	end
 end
-function merge_aids()
+function merge2aids()
 	if marked_A == marked_B or marked_A == nil or marked_B == nil
 	then
 		mp.osd_message("无效的AB轨", 1)
@@ -462,9 +466,10 @@ function merge_aids()
 		mp.osd_message("已合并AB轨", 1)
 	end
 end
-function reset_lavcomp()
+function reset2aids()
 	mp.command("set lavfi-complex \"\"")
-	mp.osd_message("已重置 lavfi-complex 滤镜", 1)
+	marked_A, marked_B = nil
+	mp.osd_message("已取消并轨和标记", 1)
 end
 
 
@@ -472,6 +477,8 @@ end
 mp.register_event("file-loaded", remove_vfSub)
 
 mp.register_event("start-file", find_and_add_entries)
+
+mp.register_event("end-file", function() if marked_A ~= nil or marked_B ~= nil then reset2aids() end end)
 
 mp.add_key_binding(nil, 'import_files', import_files)
 mp.add_key_binding(nil, 'import_url', import_url)
@@ -483,5 +490,5 @@ mp.add_key_binding(nil, 'remove_vfSub', remove_vfSub)
 
 mp.add_key_binding(nil, 'mark_aidA', mark_aidA)
 mp.add_key_binding(nil, 'mark_aidB', mark_aidB)
-mp.add_key_binding(nil, 'merge_aids', merge_aids)
-mp.add_key_binding(nil, 'reset_lavcomp', reset_lavcomp)
+mp.add_key_binding(nil, 'merge2aids', merge2aids)
+mp.add_key_binding(nil, 'reset2aids', reset2aids)
