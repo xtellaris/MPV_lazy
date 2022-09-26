@@ -1,15 +1,10 @@
 --[[
-SOURCE_ https://github.com/tomasklaen/uosc/commit/80598f1ec87aa678411ba034b00db303a5aefdb1
+SOURCE_ https://github.com/tomasklaen/uosc/commit/f084a3ac4bdb69b6edf8128a24d50f4ff7cab8fc
 
 极简主义设计驱动的多功能界面脚本，兼容 thumbfast 新缩略图引擎
-
-要最简最快的完成部署工作，只需要在 input.conf 中写入：
-
-MBTN_RIGHT   script-binding uosc/menu   # 鼠标右键唤起上下文菜单
-
 ]]--
 
-local uosc_version = '4.0.1'
+local uosc_version = '4.1.0'
 
 local assdraw = require('mp.assdraw')
 local opt = require('mp.options')
@@ -169,14 +164,14 @@ local defaults = {
 	timeline_border = 1,
 	timeline_step = 5,
 	timeline_chapters_opacity = 0.8,
-	timeline_persistency = 'audio',
+	timeline_persistency = 'idle,audio',
 
-	controls = 'menu,gap,subtitles,audio,<stream>stream-quality,gap,space,speed,space,shuffle,loop-playlist,loop-file,gap,prev,items,next,gap,fullscreen',
+	controls = 'menu,gap,play_pause,gap,subtitles,audio,<has_many_video>video,<has_chapter>chapters,<stream>stream-quality,gap,space,speed,space,shuffle,loop-playlist,loop-file,gap,prev,items,next,gap,fullscreen',
 	controls_size = 32,
 	controls_size_fullscreen = 40,
 	controls_margin = 8,
 	controls_spacing = 2,
-	controls_persistency = 'audio',
+	controls_persistency = 'idle,audio',
 
 	volume = 'right',
 	volume_size = 40,
@@ -184,12 +179,12 @@ local defaults = {
 	volume_opacity = 0.9,
 	volume_border = 1,
 	volume_step = 1,
-	volume_persistency = 'audio',
+	volume_persistency = 'idle,audio',
 
 	speed_opacity = 0.6,
 	speed_step = 0.1,
 	speed_step_is_factor = false,
-	speed_persistency = 'audio',
+	speed_persistency = 'idle,audio',
 
 	menu_item_height = 36,
 	menu_item_height_fullscreen = 50,
@@ -204,7 +199,7 @@ local defaults = {
 	top_bar_controls = true,
 	top_bar_title = true,
 	top_bar_title_opacity = 0.8,
-	top_bar_persistency = 'audio',
+	top_bar_persistency = 'idle,audio',
 
 	window_border_size = 1,
 	window_border_opacity = 0.8,
@@ -255,6 +250,44 @@ if options.autoload then mp.commandv('set', 'keep-open-pause', 'no') end
 
 --[[ CONFIG ]]
 
+-- 上下文菜单的默认内容
+local function create_default_menu()
+	return {
+		{title = '加载', items = {
+			{title = '※ 文件浏览器', value = 'script-binding uosc/open-file'},
+			{title = '※ 导入 字幕轨', value = 'script-binding uosc/load-subtitles'},
+		},},
+		{title = '导航', items = {
+			{title = '※ 播放列表', value = 'script-binding uosc/playlist'},
+			{title = '※ 章节列表', value = 'script-binding uosc/chapters'},
+			{title = '※ 视频轨列表', value = 'script-binding uosc/video'},
+			{title = '※ 音频轨列表', value = 'script-binding uosc/audio'},
+			{title = '※ 字幕轨列表', value = 'script-binding uosc/subtitles'},
+			{title = '播放列表乱序重排', value = 'playlist-shuffle'},
+		},},
+		{title = '截屏 当前画面', value = 'screenshot window'},
+		{title = '视频', items = {
+			{title = '切换 解码模式', value = 'cycle-values hwdec no auto auto-copy'},
+			{title = '切换 去色带状态', value = 'cycle deband'},
+			{title = '切换 去隔行状态', value = 'cycle deinterlace'},
+			{title = '切换 自动校色', value = 'cycle icc-profile-auto'},
+			{title = '切换 时间码解析模式', value = 'cycle correct-pts'},
+		},},
+		{title = '工具', items = {
+			{title = '开关 常驻统计信息', value = 'script-binding stats/display-stats-toggle'},
+			{title = '显示控制台', value = 'script-binding console/enable'},
+			{title = '切换 窗口边框', value = 'cycle border'},
+			{title = '切换 窗口置顶', value = 'cycle ontop'},
+			{title = '※ 音频输出设备列表', value = 'script-binding uosc/audio-device'},
+			{title = '※ 流式传输品质', value = 'script-binding uosc/stream-quality'},
+			{title = '※ 打开 当前文件所在路径', value = 'script-binding uosc/show-in-directory'},
+			{title = '※ 打开 设置目录', value = 'script-binding uosc/open-config-directory'},
+		},},
+		{title = '停止', value = 'stop'},
+		{title = '退出mpv', value = 'quit'},
+	}
+end
+
 local config = {
 	version = uosc_version,
 	-- sets max rendering frequency in case the
@@ -272,7 +305,7 @@ local config = {
 		local input_conf_meta, meta_error = utils.file_info(input_conf_path)
 
 		-- File doesn't exist
-		if not input_conf_meta or not input_conf_meta.is_file then return end
+		if not input_conf_meta or not input_conf_meta.is_file then return create_default_menu() end
 
 		local main_menu = {items = {}, items_by_command = {}}
 		local by_id = {}
@@ -322,29 +355,7 @@ local config = {
 		if #main_menu.items > 0 then
 			return main_menu.items
 		else
-			-- Default context menu -- 上下文菜单的默认内容
-			return {
-				{title = '加载/导入', items = {
-					{title = '※ 加载 文件', value = 'script-binding uosc/open-file'},
-					{title = '※ 导入 字幕轨', value = 'script-binding uosc/load-subtitles'},
-				},},
-				{title = '导航', items = {
-					{title = '※ 播放列表', value = 'script-binding uosc/playlist'},
-					{title = '※ 章节列表', value = 'script-binding uosc/chapters'},
-					{title = '※ 视频轨列表', value = 'script-binding uosc/video'},
-					{title = '※ 音频轨列表', value = 'script-binding uosc/audio'},
-					{title = '※ 字幕轨列表', value = 'script-binding uosc/subtitles'},
-				},},
-				{title = '截屏 实际画面', value = 'screenshot window'},
-				{title = '工具', items = {
-					{title = '※ 音频输出设备列表', value = 'script-binding uosc/audio-device'},
-					{title = '※ 流式传输品质', value = 'script-binding uosc/stream-quality'},
-					{title = '打开 当前文件所在路径', value = 'script-binding uosc/show-in-directory'},
-					{title = '打开 设置目录', value = 'script-binding uosc/open-config-directory'},
-				},},
-				{title = '停止', value = 'stop'},
-				{title = '退出mpv', value = 'quit'},
-			}
+			return create_default_menu()
 		end
 	end)(),
 	chapter_ranges = (function()
@@ -418,6 +429,7 @@ local state = {
 	volume = nil,
 	volume_max = nil,
 	mute = nil,
+	is_idle = false,
 	is_video = false,
 	is_audio = false, -- true if file is audio only (mp3, etc)
 	is_image = false,
@@ -1007,7 +1019,7 @@ end
 function ass_mt:txt(x, y, align, value, opts)
 	local border_size = opts.border or 0
 	local shadow_size = opts.shadow or 0
-	local tags = '\\pos(' .. x .. ',' .. y .. ')\\an' .. align .. '\\blur0'
+	local tags = '\\pos(' .. x .. ',' .. y .. ')\\rDefault\\an' .. align .. '\\blur0'
 	-- font
 	tags = tags .. '\\fn' .. (opts.font or config.font)
 	-- font size
@@ -1064,7 +1076,7 @@ end
 function ass_mt:rect(ax, ay, bx, by, opts)
 	opts = opts or {}
 	local border_size = opts.border or 0
-	local tags = '\\pos(0,0)\\blur0'
+	local tags = '\\pos(0,0)\\rDefault\\blur0'
 	-- border
 	tags = tags .. '\\bord' .. border_size
 	-- colors
@@ -1467,6 +1479,7 @@ function Element:get_visibility()
 			or (persist.paused and state.pause)
 			or (persist.video and state.is_video)
 			or (persist.image and state.is_image)
+			or (persist.idle and state.is_idle)
 		) then return 1 end
 
 	-- Forced visibility
@@ -2271,7 +2284,7 @@ function Speed:get_visibility()
 	-- We force inherit, because I want to see speed value when peeking timeline
 	local this_visibility = Element.get_visibility(self)
 	return Elements.timeline.proximity_raw ~= 0
-		and math.max(Elements.timeline.proximity, this_visibility) or this_visibility
+		and math.max(Elements.timeline:get_visibility(), this_visibility) or this_visibility
 end
 
 function Speed:on_coordinates()
@@ -2416,7 +2429,7 @@ function Speed:render()
 
 	-- Center guide
 	ass:new_event()
-	ass:append('{\\blur0\\bord1\\shad0\\1c&H' .. options.foreground .. '\\3c&H' .. options.background .. '}')
+	ass:append('{\\rDefault\\blur0\\bord1\\shad0\\1c&H' .. options.foreground .. '\\3c&H' .. options.background .. '}')
 	ass:opacity(opacity)
 	ass:pos(0, 0)
 	ass:draw_start()
@@ -2747,11 +2760,15 @@ function Timeline:update_dimensions()
 end
 
 function Timeline:get_time_at_x(x)
-	-- line width 1 for timeline_style=bar so mouse input can go all the way from 0 to 1 progress
-	local line_width = (options.timeline_style == 'line' and self:get_effective_line_width() or 1)
-	local time_width = self.width - line_width
-	local progress_x = x - self.ax - line_width / 2
-	local progress = clamp(0, progress_x / time_width, 1)
+	local line_width = (options.timeline_style == 'line' and self:get_effective_line_width() - 1 or 0)
+	local time_width = self.width - line_width - 1
+	local fax = (time_width) * state.time / state.duration
+	local fbx = fax + line_width
+	-- time starts 0.5 pixels in
+	x = x - self.ax - 0.5
+	if x > fbx then x = x - line_width
+	elseif x > fax then x = fax end
+	local progress = clamp(0, x / time_width, 1)
 	return state.duration * progress
 end
 
@@ -2803,21 +2820,18 @@ function Timeline:render()
 	local fax, fay, fbx, fby = 0, bay + self.top_border, 0, bby
 	local fcy = fay + (size / 2)
 
-	local time_x = bax + self.width * progress
-	local line_width, line_width_max, past_x_adjustment, future_x_adjustment = 0, 0, 1, 1
+	local line_width = 0
 
 	if is_line then
 		local minimized_fraction = 1 - math.min((size - size_min) / ((self.size_max - size_min) / 8), 1)
-		line_width_max = self:get_effective_line_width()
+		local line_width_max = self:get_effective_line_width()
 		local max_min_width_delta = size_min > 0
 			and line_width_max - line_width_max * options.timeline_line_width_minimized_scale
 			or 0
 		line_width = line_width_max - (max_min_width_delta * minimized_fraction)
 		fax = bax + (self.width - line_width) * progress
 		fbx = fax + line_width
-		local past_time_width, future_time_width = time_x - bax, bbx - time_x
-		past_x_adjustment = (past_time_width - (time_x - fax)) / past_time_width
-		future_x_adjustment = (future_time_width - (fbx - time_x)) / future_time_width
+		line_width = line_width - 1
 	else
 		fax, fbx = bax, bax + self.width * progress
 	end
@@ -2825,16 +2839,20 @@ function Timeline:render()
 	local foreground_size = fby - fay
 	local foreground_coordinates = round(fax) .. ',' .. fay .. ',' .. round(fbx) .. ',' .. fby -- for clipping
 
-	-- line_x_adjustment: adjusts x coordinate so that it never lies inside of the line
-	-- it's as if line cuts the timeline and squeezes itself into the cut
-	local lxa = line_width == line_width_max and function(x) return x end or function(x)
-		return x < time_x and bax + (x - bax) * past_x_adjustment or bbx - (bbx - x) * future_x_adjustment
+	-- time starts 0.5 pixels in
+	local time_ax = bax + 0.5
+	local time_width = self.width - line_width - 1
+
+	-- time to x: calculates x coordinate so that it never lies inside of the line
+	local function t2x(time)
+		local x = time_ax + time_width * time / state.duration
+		return time <= state.time and x or x + line_width
 	end
 
 	-- Background
 	ass:new_event()
 	ass:pos(0, 0)
-	ass:append('{\\blur0\\bord0\\1c&H' .. options.background .. '}')
+	ass:append('{\\rDefault\\blur0\\bord0\\1c&H' .. options.background .. '}')
 	ass:opacity(math.max(options.timeline_opacity - 0.1, 0))
 	ass:draw_start()
 	ass:rect_cw(bax, bay, fax, bby) --left of progress
@@ -2855,9 +2873,8 @@ function Timeline:render()
 			if not buffered_time and (range[1] > state.time or range[2] > state.time) then
 				buffered_time = range[1] - state.time
 			end
-			local ax = range[1] < 0.5 and bax or math.floor(lxa(bax + self.width * (range[1] / state.duration)))
-			local bx = range[2] > state.duration - 0.5 and bbx or
-				math.ceil(lxa(bax + self.width * (range[2] / state.duration)))
+			local ax = range[1] < 0.5 and bax or math.floor(t2x(range[1]))
+			local bx = range[2] > state.duration - 0.5 and bbx or math.ceil(t2x(range[2]))
 			opts.color, opts.opacity, opts.anchor_x = 'ffffff', 0.4 - (0.2 * visibility), bax
 			ass:texture(ax, fay, bx, fby, texture_char, opts)
 			opts.color, opts.opacity, opts.anchor_x = '000000', 0.6 - (0.2 * visibility), bax + offset
@@ -2867,9 +2884,9 @@ function Timeline:render()
 
 	-- Custom ranges
 	for _, chapter_range in ipairs(state.chapter_ranges) do
-		local rax = chapter_range.start < 0.1 and 0 or lxa(bax + self.width * (chapter_range.start / state.duration))
+		local rax = chapter_range.start < 0.1 and bax or t2x(chapter_range.start)
 		local rbx = chapter_range['end'] > state.duration - 0.1 and bbx
-			or lxa(bax + self.width * math.min(chapter_range['end'] / state.duration, 1))
+			or t2x(math.min(chapter_range['end'], state.duration))
 		ass:rect(rax, fay, rbx, fby, {color = chapter_range.color, opacity = chapter_range.opacity})
 	end
 
@@ -2882,11 +2899,11 @@ function Timeline:render()
 
 		if diamond_radius > 0 then
 			local function draw_chapter(time)
-				local chapter_x = bax + line_width / 2 + (self.width - line_width) * (time / state.duration)
+				local chapter_x = t2x(time)
 				local chapter_y = fay - 1
 				ass:new_event()
 				ass:append(string.format(
-					'{\\pos(0,0)\\blur0\\yshad0.01\\bord%f\\1c&H%s\\3c&H%s\\4c&H%s\\1a&H%X&\\3a&H00&\\4a&H00&}',
+					'{\\pos(0,0)\\rDefault\\blur0\\yshad0.01\\bord%f\\1c&H%s\\3c&H%s\\4c&H%s\\1a&H%X&\\3a&H00&\\4a&H00&}',
 					diamond_border, options.foreground, options.background, options.background,
 					opacity_to_alpha(options.timeline_opacity * options.timeline_chapters_opacity)
 				))
@@ -3199,6 +3216,7 @@ function Controls:init()
 	-- Serialize control elements
 	local shorthands = {
 		menu = 'command:menu:script-binding uosc/menu-blurred?菜单',
+		['play_pause'] = 'cycle:not_started:pause:no=play_circle/yes=pause_circle?播放/暂停',
 		subtitles = 'command:subtitles:script-binding uosc/subtitles#sub>0?字幕轨',
 		audio = 'command:graphic_eq:script-binding uosc/audio#audio>1?音频轨',
 		['audio-device'] = 'command:speaker:script-binding uosc/audio-device?音频设备',
@@ -3638,7 +3656,7 @@ function VolumeSlider:render()
 
 	-- Background
 	ass:new_event()
-	ass:append('{\\blur0\\bord0\\1c&H' .. options.background ..
+	ass:append('{\\rDefault\\blur0\\bord0\\1c&H' .. options.background ..
 		'\\iclip(' .. fg_path.scale .. ', ' .. fg_path.text .. ')}')
 	ass:opacity(math.max(options.volume_opacity - 0.1, 0), visibility)
 	ass:pos(0, 0)
@@ -3648,7 +3666,7 @@ function VolumeSlider:render()
 
 	-- Foreground
 	ass:new_event()
-	ass:append('{\\blur0\\bord0\\1c&H' .. options.foreground .. '}')
+	ass:append('{\\rDefault\\blur0\\bord0\\1c&H' .. options.foreground .. '}')
 	ass:opacity(options.volume_opacity, visibility)
 	ass:pos(0, 0)
 	ass:draw_start()
@@ -4220,7 +4238,7 @@ end)
 mp.observe_property('playback-time', 'number', create_state_setter('time', function()
 	-- Create a file-end event that triggers right before file ends
 	file_end_timer:kill()
-	if state.duration and state.time then
+	if state.duration and state.time and not state.pause then
 		local remaining = (state.duration - state.time) / state.speed
 		if remaining < 5 then
 			local timeout = remaining - 0.02
@@ -4282,7 +4300,10 @@ mp.observe_property('playlist-count', 'number', function(_, value)
 end)
 mp.observe_property('fullscreen', 'bool', create_state_setter('fullscreen', update_fullormaxed))
 mp.observe_property('window-maximized', 'bool', create_state_setter('maximized', update_fullormaxed))
-mp.observe_property('idle-active', 'bool', create_state_setter('idle'))
+mp.observe_property('idle-active', 'bool', function(_, idle)
+	set_state('is_idle', idle)
+	Elements:trigger('dispositions')
+end)
 mp.observe_property('pause', 'bool', create_state_setter('pause', function() file_end_timer:kill() end))
 mp.observe_property('volume', 'number', create_state_setter('volume'))
 mp.observe_property('volume-max', 'number', create_state_setter('volume_max'))
@@ -4724,5 +4745,6 @@ mp.register_script_message('thumbfast-info', function(json)
 		msg.error('thumbfast-info: received json didn\'t produce a table with thumbnail information')
 	else
 		thumbnail = data
+		request_render()
 	end
 end)
