@@ -67,9 +67,7 @@ local settings = {
   --json array of filetypes to search from directory
   loadfiles_filetypes = [[
     [
-      "jpg", "jpeg", "png", "tif", "tiff", "gif", "webp", "svg", "bmp",
-      "mp3", "wav", "ogm", "flac", "m4a", "wma", "ogg", "opus",
-      "mkv", "avi", "mp4", "ogv", "webm", "rmvb", "flv", "wmv", "mpeg", "mpg", "m4v", "3gp"
+      "mkv", "avi", "mp4", "webm", "rmvb", "flv", "wmv", "mpeg",
     ]
   ]],
 
@@ -117,7 +115,7 @@ local settings = {
   loop_cursor = true,
 
   --youtube-dl executable for title resolving if enabled, probably "youtube-dl" or "yt-dlp", can be absolute path
-  youtube_dl_executable = "youtube-dl",
+  youtube_dl_executable = "yt-dlp",
 
 
   --####  VISUAL SETTINGS
@@ -132,10 +130,10 @@ local settings = {
   resolve_title_timeout = 15,
 
   --osd timeout on inactivity, with high value on this open_toggles is good to be true
-  playlist_display_timeout = 5,
+  playlist_display_timeout = 4,
 
   --amount of entries to show before slicing. Optimal value depends on font/video size etc.
-  showamount = 16,
+  showamount = 15,
 
   --font size scales by window, if false requires larger font and padding sizes
   scale_playlist_by_window=true,
@@ -147,7 +145,7 @@ local settings = {
   style_ass_tags = "{}",
   --paddings from top left corner
   text_padding_x = 10,
-  text_padding_y = 30,
+  text_padding_y = 10,
 
   --set title of window with stripped name
   set_title_stripped = false,
@@ -155,7 +153,7 @@ local settings = {
   title_suffix = " - mpv",
 
   --slice long filenames, and how many chars to show
-  slice_longfilenames = false,
+  slice_longfilenames = true,
   slice_longfilenames_amount = 70,
 
   --Playlist header template
@@ -164,7 +162,7 @@ local settings = {
   --%cursor = position of navigation
   --%plen = playlist length
   --%N = newline
-  playlist_header = "[%cursor/%plen]",
+  playlist_header = "播放列表 [%cursor/%plen]",
 
   --Playlist file templates
   --%pos = position of file with leading zeros
@@ -173,17 +171,17 @@ local settings = {
   --you can also use the ass tags mentioned above. For example:
   --  selected_file="{\\c&HFF00FF&}➔ %name"   | to add a color for selected file. However, if you
   --  use ass tags you need to reset them for every line (see https://github.com/jonniek/mpv-playlistmanager/issues/20)
-  normal_file = "○ %name",
-  hovered_file = "● %name",
-  selected_file = "➔ %name",
-  playing_file = "▷ %name",
-  playing_hovered_file = "▶ %name",
-  playing_selected_file = "➤ %name",
+  normal_file = "{\c&HFFFFFF&}□ %name",
+  hovered_file = "{\c&H33FFFF&}■ %name",
+  selected_file = "{\c&C1C1FF&}☑ %name",
+  playing_file = "{\c&HAAAAAA&}▷ %name",
+  playing_hovered_file = "{\c&H00FF00&}▶ %name",
+  playing_selected_file = "{\c&C1C1FF&}☑ %name",
 
 
   -- what to show when playlist is truncated
-  playlist_sliced_prefix = "...",
-  playlist_sliced_suffix = "...",
+  playlist_sliced_prefix = "▲",
+  playlist_sliced_suffix = "▼",
 
   --output visual feedback to OSD for tasks
   display_osd_feedback = true,
