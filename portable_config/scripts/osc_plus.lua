@@ -1,8 +1,7 @@
 --[[
-SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ 20220719 ad5a1ac
+SOURCE_ https://github.com/mpv-player/mpv/commit/cc65b3892d89ae35d31067fba285ab20716a1aee
 
-改进版本的OSC，须禁用原始mpv的内置OSC，且不兼容其它OSC类脚本（实现全部功能需搭 新缩略图引擎 thumbfast ）
+改进版本的OSC，须禁用原始mpv的内置OSC，且不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
 
 示例在 input.conf 中写入：
 SHIFT+DEL   script-binding osc_plus/visibility   # 切换 osc_plus 的可见性
@@ -2978,7 +2977,11 @@ function tick()
 
         -- render idle message
         msg.trace("idle message")
-        local icon_x, icon_y = 320 - 26, 140
+        local _, _, display_aspect = mp.get_osd_size()
+        local display_h = 360
+        local display_w = display_h * display_aspect
+        -- logo is rendered at 2^(6-1) = 32 times resolution with size 1800x1800
+        local icon_x, icon_y = (display_w - 1800 / 32) / 2, 140
         local line_prefix = ("{\\rDefault\\an7\\1a&H00&\\bord0\\shad0\\pos(%f,%f)}"):format(icon_x, icon_y)
 
         local ass = assdraw.ass_new()
@@ -3000,11 +3003,11 @@ function tick()
 
         if user_opts.idlescreen then
             ass:new_event()
-            ass:pos(320, icon_y+100)
+            ass:pos(display_w / 2, icon_y + 100)
             ass:an(8)
             ass:append("拖入文件或地址进行播放")
         end
-        set_osd(640, 360, ass.text)
+        set_osd(display_w, display_h, ass.text)
 
         if state.showhide_enabled then
             mp.disable_key_bindings("showhide")
