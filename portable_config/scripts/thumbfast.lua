@@ -355,7 +355,7 @@ local function thumb(time, r_x, r_y, script)
     end
 
     local seek_flag = "absolute"
-    if not options.precise then seek_flag = seek_flag.."-percent" end
+    if options.precise then seek_flag = seek_flag.."+exact" else seek_flag = seek_flag.."+keyframes" end
     run("async seek "..seek_time.." "..seek_flag, function() if can_generate then display_img(effective_w, effective_h, time, cur_request_time, script) end end)
 end
 
