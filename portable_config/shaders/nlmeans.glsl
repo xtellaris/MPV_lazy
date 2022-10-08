@@ -93,8 +93,13 @@ vec4 hook()
  * 	- Film (especially black and white):
  * 		- Disable chroma by removing the HOOK CHROMA lines above
  * 	- HQ (slow):
- * 		- LUMA=S=3:PS=3:WD=2:WDT=1
- * 		- CHROMA=PS=3:RI=2
+ * 		- LUMA=S=3:PS=3:WD=2:RI=1
+ * 		- CHROMA=PS=3
+ * 	- LQ (fast):
+ * 		- LUMA=P=1
+ * 		- CHROMA=P=1
+ * 	- Sharp:
+ * 		- LUMA=S=4:AS=1:PS=3:EP=0
  *
  * It is recommended to make multiple copies of this shader with settings 
  * tweaked for different types of content, and then dispatch the appropriate 
@@ -120,6 +125,28 @@ vec4 hook()
 #define P 3
 #define R 5
 #define SS 0.25
+#endif
+
+/* Adaptive sharpening
+ *
+ * Uses the blur incurred by denoising plus the weight map to perform an 
+ * unsharp mask that gets applied most strongly to edges.
+ *
+ * Increasing sharpness will increase noise, so S should usually be increased 
+ * to compensate.
+ *
+ * AS: 2 for sharpening, 1 for sharpening+denoising, 0 to disable
+ * ASF: Sharpening factor, higher numbers make a sharper underlying image
+ * ASP (1>=ASP>=0): Weight power, lower numbers use more of the sharp image
+ */
+#ifdef LUMA_raw
+#define AS 0
+#define ASF 1.0
+#define ASP 0.5
+#else
+#define AS 0
+#define ASF 0.0
+#define ASP 0.0
 #endif
 
 /* Weight discard
@@ -171,17 +198,11 @@ vec4 hook()
 
 /* Rotational invariance
  *
- * Number of rotations to try for each patch comparison. Slow, but may improve 
- * feature preservation.
+ * Number of rotations to try for each patch comparison. Slow, but improves 
+ * feature preservation, although greater rotations give diminishing returns.
  *
- * Each additional rotation provides greatly diminishing returns.
- *
- * 0: 0
- * 1: 0, 90
- * 2: 0, 90, 180
- * 3: 0, 90, 180, 270
- * 4: 0, 90, 180, 270, hflip
- * 5: 0, 90, 180, 270, hflip, vflip
+ * The angle in degrees of each rotation is 360/(RI+1), so RI=1 will do a 
+ * single 180 degree rotation, RI=3 will do three 90 degree rotations, etc.
  */
 #ifdef LUMA_raw
 #define RI 0
@@ -304,7 +325,11 @@ vec4 hook()
 
 const int hp = P/2;
 const int hr = R/2;
-const float range = 255.0;
+
+// rotation
+#define ROTX(p) (cos(radians(ri)) * p.x - sin(radians(ri)) * p.y)
+#define ROTY(p) (sin(radians(ri)) * p.y + cos(radians(ri)) * p.x)
+#define ROT(p) vec3(ROTX(p), ROTY(p), p.z)
 
 // search shapes and their corresponding areas
 #define S_1X1(z,hz) for (z = vec3(0); z.x <= 0; z.x++)
@@ -325,51 +350,53 @@ const float range = 255.0;
 #define S_SQUARE_A(hz,Z) (Z*Z)
 
 // research shapes
+#define T1 (T+1)
 #if R == 0 || R == 1
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_1X1(r,hr)
-const int r_area = S_1X1_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_1X1(r,hr)
+const int r_area = S_1X1_A(hr,R)*T1;
 #elif RS == 5
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_TRUNC_TRIANGLE(r,hr)
-const int r_area = S_TRIANGLE_A(hr,hr)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_TRUNC_TRIANGLE(r,hr)
+const int r_area = S_TRIANGLE_A(hr,hr)*T1;
 #elif RS == 4
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_TRIANGLE(r,hr)
-const int r_area = S_TRIANGLE_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_TRIANGLE(r,hr)
+const int r_area = S_TRIANGLE_A(hr,R)*T1;
 #elif RS == 3
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_DIAMOND(r,hr)
-const int r_area = S_DIAMOND_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_DIAMOND(r,hr)
+const int r_area = S_DIAMOND_A(hr,R)*T1;
 #elif RS == 2
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_VERTICAL(r,hr)
-const int r_area = S_LINE_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_VERTICAL(r,hr)
+const int r_area = S_LINE_A(hr,R)*T1;
 #elif RS == 1
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_HORIZONTAL(r,hr)
-const int r_area = S_LINE_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_HORIZONTAL(r,hr)
+const int r_area = S_LINE_A(hr,R)*T1;
 #else
-#define FOR_RESEARCH(r) for (r.z = 0; r.z <= T; r.z++) S_SQUARE(r,hr)
-const int r_area = S_SQUARE_A(hr,R)*(T+1);
+#define FOR_RESEARCH(r) for (r.z = 0; r.z < T1; r.z++) S_SQUARE(r,hr)
+const int r_area = S_SQUARE_A(hr,R)*T1;
 #endif
 
 // patch shapes
+#define RI1 (RI+1)
 #if P == 0 || P == 1
-#define FOR_PATCH(p) S_1X1(p,hp) for (int ri = 0; ri <= 0; ri++)
-const int p_area = S_1X1_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_1X1(p,hp) for (float ri = 0; ri <= 0; ri++)
+const int p_area = S_1X1_A(hp,P)*RI1;
 #elif PS == 5
-#define FOR_PATCH(p) S_TRUNC_TRIANGLE(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_TRIANGLE_A(hp,hp)*(RI+1);
+#define FOR_PATCH(p) S_TRUNC_TRIANGLE(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_TRIANGLE_A(hp,hp)*RI1;
 #elif PS == 4
-#define FOR_PATCH(p) S_TRIANGLE(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_TRIANGLE_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_TRIANGLE(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_TRIANGLE_A(hp,P)*RI1;
 #elif PS == 3
-#define FOR_PATCH(p) S_DIAMOND(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_DIAMOND_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_DIAMOND(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_DIAMOND_A(hp,P)*RI1;
 #elif PS == 2
-#define FOR_PATCH(p) S_VERTICAL(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_LINE_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_VERTICAL(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_LINE_A(hp,P)*RI1;
 #elif PS == 1
-#define FOR_PATCH(p) S_HORIZONTAL(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_LINE_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_HORIZONTAL(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_LINE_A(hp,P)*RI1;
 #else
-#define FOR_PATCH(p) S_SQUARE(p,hp) for (int ri = 0; ri <= RI; ri++)
-const int p_area = S_SQUARE_A(hp,P)*(RI+1);
+#define FOR_PATCH(p) S_SQUARE(p,hp) for (float ri = 0; ri < 360; ri+=360/RI1)
+const int p_area = S_SQUARE_A(hp,P)*RI1;
 #endif
 
 const float r_scale = 1.0/r_area;
@@ -379,80 +406,31 @@ const float p_scale = 1.0/p_area;
 vec4 load(vec3 off)
 {
 	switch (int(off.z)) {
-	case 0:
-		return TEX(HOOKED_pos + HOOKED_pt * vec2(off));
-#ifdef PREV1
-	case 1:
-		return imageLoad(PREV1, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV2
-	case 2:
-		return imageLoad(PREV2, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV3
-	case 3:
-		return imageLoad(PREV3, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV4
-	case 4:
-		return imageLoad(PREV4, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV5
-	case 5:
-		return imageLoad(PREV5, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV6
-	case 6:
-		return imageLoad(PREV6, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV7
-	case 7:
-		return imageLoad(PREV7, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV8
-	case 8:
-		return imageLoad(PREV8, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV9
-	case 9:
-		return imageLoad(PREV9, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
-#ifdef PREV10
-	case 10:
-		return imageLoad(PREV10, ivec2(HOOKED_pos * target_size + HOOKED_pt * vec2(off)));
-#endif
+	case 0:  return TEX(HOOKED_pos + HOOKED_pt * vec2(off));
+	case 1:  return imageLoad(PREV1,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV1))));
+	case 2:  return imageLoad(PREV2,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV2))));
+	case 3:  return imageLoad(PREV3,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV3))));
+	case 4:  return imageLoad(PREV4,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV4))));
+	case 5:  return imageLoad(PREV5,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV5))));
+	case 6:  return imageLoad(PREV6,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV6))));
+	case 7:  return imageLoad(PREV7,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV7))));
+	case 8:  return imageLoad(PREV8,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV8))));
+	case 9:  return imageLoad(PREV9,  ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV9))));
+	case 10: return imageLoad(PREV10, ivec2(round((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV10))));
 	}
 }
 #else
 #define load(off) TEX(HOOKED_pos + HOOKED_pt * vec2(off))
 #endif
 
-vec3 rotate(vec3 coords, int degree)
-{
-	switch (degree) {
-	case 0: // 0 degrees
-		return coords;
-	case 1: // 90 degrees clockwise
-		return coords.yxz * vec3(1,-1,1);
-	case 2: // 180 degrees clockwise
-		return coords * vec3(-1,-1,1);
-	case 3: // 270 degrees clockwise
-		return coords.yxz * vec3(-1,1,1);
-	case 4: // flip horizontally
-		return coords * vec3(-1,1,1);
-	case 5: // flip vertically
-		return coords * vec3(1,-1,1);
-	}
-}
-
 vec4 hook()
 {
-	vec3 lower, upper;
 	vec3 r = vec3(0);
 	vec3 p = vec3(0);
 	int r_index = 0;
 	vec4 total_weight = vec4(1);
 	vec4 sum = HOOKED_texOff(0);
+	vec4 result = vec4(0);
 
 #if WD == 2 || M == 3
 	vec4 all_weights[r_area];
@@ -463,7 +441,6 @@ vec4 hook()
 
 #if M == 1
 	vec4 minsum = vec4(0);
-	vec4 minpx = vec4(0);
 #endif
 
 #if EP
@@ -473,12 +450,12 @@ vec4 hook()
 
 	FOR_RESEARCH(r) {
 		// low pdiff -> high weight, high weight -> more blur
-		const float h = S*3.33;
+		const float h = S*0.013;
 		const float pdiff_scale = 1.0/(h*h);
 
 		vec4 pdiff_sq = vec4(0);
 		FOR_PATCH(p)
-			pdiff_sq += pow((HOOKED_texOff(p) - load(rotate(p,ri)+r)) * range, vec4(2));
+			pdiff_sq += pow(HOOKED_texOff(p) - load(ROT(p)+r), vec4(2));
 		vec4 weight = exp(-pdiff_sq * p_scale * pdiff_scale);
 
 		weight *= exp(-pow(length(r*SD) * SS, 2));
@@ -492,8 +469,7 @@ vec4 hook()
 		all_pixels[r_index] = load(r);
 		r_index++;
 #elif WD == 1 // cumulative moving average
-		/* XXX maybe early values can be kept in a small buffer for later 
-		 * evaluation instead of automatically accepting them */
+		// XXX maybe keep early samples in a small buffer?
 		vec4 wd_scale = 1.0/no_weights;
 		vec4 keeps = step(total_weight*wd_scale*WDT*exp(-wd_scale*WDP), weight);
 		weight *= keeps;
@@ -505,25 +481,18 @@ vec4 hook()
 
 #if M == 1 // Euclidean median
 		// Based on: https://arxiv.org/abs/1207.3056
-		// XXX currently this doesn't work with WD=2
-		// XXX this doesn't seem to work with RI either
-		// XXX probably doesn't work with T
 		vec3 r2;
 		vec4 wpdist_sum = vec4(0);
-		for (r.z = 0; r.z <= T; r.z++)
-		for (r2.x = -lower.x; r2.x <= upper.x; r2.x++)
-		for (r2.y = -lower.y; r2.y <= upper.y; r2.y++) {
-				vec4 pdist = vec4(0);
-				FOR_PATCH(p)
-					pdist += pow((load(p+r) - load(rotate(p,ri)+r2)) * 255, vec4(2));
-
-				// opposite weight; regular weight doesn't seem to make sense here
-				wpdist_sum += sqrt(pdist) * (1-weight);
+		FOR_RESEARCH(r2) {
+			vec4 pdist = vec4(0);
+			FOR_PATCH(p)
+				pdist += pow(load(p+r) - load(ROT(p)+r2), vec4(2));
+			wpdist_sum += sqrt(pdist) * (1-weight);
 		}
 
-		// initialize minsum and minpx
+		// initialize minsum and result
 		minsum += step(minsum, vec4(0)) * wpdist_sum;
-		minpx  += step(minpx, vec4(0))  * load(r);
+		result += step(result, vec4(0)) * load(r);
 
 		// find new minimums, exclude zeros
 		vec4 newmin = step(wpdist_sum, minsum) - step(wpdist_sum, vec4(0));
@@ -531,43 +500,26 @@ vec4 hook()
 
 		// update minimums
 		minsum = (newmin * wpdist_sum) + (notmin * minsum);
-		minpx  = (newmin * load(r))    + (notmin * minpx);
+		result = (newmin * load(r))    + (notmin * result);
 #endif
 	}
 
-#ifdef PREV10
-	imageStore(PREV10, ivec2(HOOKED_pos*target_size), load(vec3(0,0,9)));
-#endif
-#ifdef PREV9
-	imageStore(PREV9, ivec2(HOOKED_pos*target_size), load(vec3(0,0,8)));
-#endif
-#ifdef PREV8
-	imageStore(PREV8, ivec2(HOOKED_pos*target_size), load(vec3(0,0,7)));
-#endif
-#ifdef PREV7
-	imageStore(PREV7, ivec2(HOOKED_pos*target_size), load(vec3(0,0,6)));
-#endif
-#ifdef PREV6
-	imageStore(PREV6, ivec2(HOOKED_pos*target_size), load(vec3(0,0,5)));
-#endif
-#ifdef PREV5
-	imageStore(PREV5, ivec2(HOOKED_pos*target_size), load(vec3(0,0,4)));
-#endif
-#ifdef PREV4
-	imageStore(PREV4, ivec2(HOOKED_pos*target_size), load(vec3(0,0,3)));
-#endif
-#ifdef PREV3
-	imageStore(PREV3, ivec2(HOOKED_pos*target_size), load(vec3(0,0,2)));
-#endif
-#ifdef PREV2
-	imageStore(PREV2, ivec2(HOOKED_pos*target_size), load(vec3(0,0,1)));
-#endif
-#ifdef PREV1
-	imageStore(PREV1, ivec2(HOOKED_pos*target_size), load(vec3(0)));
+	vec4 avg_weight = total_weight * r_scale;
+
+#if T
+	imageStore(PREV10, ivec2(round(HOOKED_pos*imageSize(PREV10))), load(vec3(0,0,9)));
+	imageStore(PREV9,  ivec2(round(HOOKED_pos*imageSize(PREV9))),  load(vec3(0,0,8)));
+	imageStore(PREV8,  ivec2(round(HOOKED_pos*imageSize(PREV8))),  load(vec3(0,0,7)));
+	imageStore(PREV7,  ivec2(round(HOOKED_pos*imageSize(PREV7))),  load(vec3(0,0,6)));
+	imageStore(PREV6,  ivec2(round(HOOKED_pos*imageSize(PREV6))),  load(vec3(0,0,5)));
+	imageStore(PREV5,  ivec2(round(HOOKED_pos*imageSize(PREV5))),  load(vec3(0,0,4)));
+	imageStore(PREV4,  ivec2(round(HOOKED_pos*imageSize(PREV4))),  load(vec3(0,0,3)));
+	imageStore(PREV3,  ivec2(round(HOOKED_pos*imageSize(PREV3))),  load(vec3(0,0,2)));
+	imageStore(PREV2,  ivec2(round(HOOKED_pos*imageSize(PREV2))),  load(vec3(0,0,1)));
+	imageStore(PREV1,  ivec2(round(HOOKED_pos*imageSize(PREV1))),  load(vec3(0)));
 #endif
 
 #if WD == 2 // true average
-	vec4 avg_weight = total_weight * r_scale;
 	total_weight = vec4(1);
 	sum = HOOKED_texOff(0);
 
@@ -581,9 +533,8 @@ vec4 hook()
 
 #if M == 3 // weighted median intensity
 	const float hr_area = r_area/2;
-	vec4 result, resultw, is_median, gt, lt, gte, lte, neq;
+	vec4 is_median, gt, lt, gte, lte, neq;
 
-	result = vec4(0);
 	for (int i = 0; i < r_area; i++) {
 		gt = lt = vec4(0);
 		for (int j = 0; j < r_area; j++) {
@@ -597,11 +548,19 @@ vec4 hook()
 		result += step(result, vec4(0)) * is_median * all_pixels[i];
 	}
 #elif M == 2 // weight map
-	vec4 result = total_weight * r_scale;
-#elif M == 1 // Euclidean median
-	vec4 result = minpx;
-#else // mean
-	vec4 result = sum / total_weight;
+	result = avg_weight;
+#elif M == 0 // mean
+	result = sum / total_weight;
+#endif
+
+#if AS // adaptive sharpening
+	vec4 sharpened = HOOKED_texOff(0) + (HOOKED_texOff(0) - result) * ASF;
+	vec4 sharpening_power = pow(avg_weight, vec4(1.0/(ASF*ASP)));
+#endif
+#if AS == 1 // denoised
+	result = mix(sharpened, result, sharpening_power);
+#elif AS == 2 // noisy
+	result = mix(sharpened, HOOKED_texOff(0), sharpening_power);
 #endif
 
 	return mix(HOOKED_texOff(0), result, BF);
