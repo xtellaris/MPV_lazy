@@ -19,8 +19,10 @@ local options = {
     network = false,       -- Enable on network playback
     audio = false,         -- Enable on audio playback
 
+    min_duration = 0,      -- 对短视频关闭预览（秒）
     precise = true,        -- 启用高精度的预览
     hwdec = true,          -- 启用硬解加速
+    frequency = 0.2,       -- 解码频率（秒）
 
 }
 
@@ -296,7 +298,7 @@ local function seek()
     end
 end
 
-local seek_period = 0.2
+local seek_period = options.frequency
 local seek_timer = mp.add_timeout(seek_period, seek)
 seek_timer:kill()
 local function request_seek()
@@ -417,10 +419,11 @@ local function file_load()
     last_seek_time = nil
 
     network = mp.get_property_bool("demuxer-via-network", false)
-    local image = mp.get_property_native('current-tracks/video/image', true)
+    local image = mp.get_property_native("current-tracks/video/image", true)
     local albumart = image and mp.get_property_native("current-tracks/video/albumart", false)
+    local short_video = mp.get_property_native("duration", 0) <= options.min_duration
 
-    disabled = (network and not options.network) or (albumart and not options.audio) or (image and not albumart)
+    disabled = (network and not options.network) or (albumart and not options.audio) or (image and not albumart) or (short_video and options.min_duration > 0)
     calc_dimensions()
     info(effective_w, effective_h)
     if disabled then return end
