@@ -142,7 +142,7 @@ local settings = {
   --read http://docs.aegisub.org/3.2/ASS_Tags/ for reference of tags
   --undeclared tags will use default osd settings
   --these styles will be used for the whole playlist
-  style_ass_tags = "{}",
+  style_ass_tags = "{\\fs10}",
   --paddings from top left corner
   text_padding_x = 10,
   text_padding_y = 10,
@@ -171,12 +171,12 @@ local settings = {
   --you can also use the ass tags mentioned above. For example:
   --  selected_file="{\\c&HFF00FF&}➔ %name"   | to add a color for selected file. However, if you
   --  use ass tags you need to reset them for every line (see https://github.com/jonniek/mpv-playlistmanager/issues/20)
-  normal_file = "{\c&HFFFFFF&}□ %name",
-  hovered_file = "{\c&H33FFFF&}■ %name",
-  selected_file = "{\c&C1C1FF&}☑ %name",
-  playing_file = "{\c&HAAAAAA&}▷ %name",
-  playing_hovered_file = "{\c&H00FF00&}▶ %name",
-  playing_selected_file = "{\c&C1C1FF&}☑ %name",
+  normal_file = "{\\c&HFFFFFF&}□ %name",
+  hovered_file = "{\\c&H33FFFF&}■ %name",
+  selected_file = "{\\c&C1C1FF&}☑ %name",
+  playing_file = "{\\c&HAAAAAA&}▷ %name",
+  playing_hovered_file = "{\\c&H00FF00&}▶ %name",
+  playing_selected_file = "{\\c&C1C1FF&}☑ %name",
 
 
   -- what to show when playlist is truncated

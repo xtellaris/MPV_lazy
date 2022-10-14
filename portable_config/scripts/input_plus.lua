@@ -8,19 +8,26 @@ Alt+p              script-binding input_plus/playlist_shuffle   # 播放列表�
 CLOSE_WIN          script-binding input_plus/quit_real          # 对执行退出命令前的确认（防止误触）
 q                  script-binding input_plus/quit_wait          # 延后退出命令的执行（执行前再次触发可取消）
 Alt+LEFT           script-binding input_plus/seek_auto_back     # 后退至上句字幕的时间点或上一关键帧
-Alt+RIGHT          script-binding input_plus/seek_auto_next     # 前进至下句字幕的时间点或下一关键帧
+Alt+RIGHT          script-binding input_plus/seek_auto_next     # 前进至下...
 Shift+Ctrl+LEFT    script-binding input_plus/seek_skip_back     # 向后大跳（精确帧）
-Shift+Ctrl+RIGHT   script-binding input_plus/seek_skip_next     # 向前大跳（精确帧）
+Shift+Ctrl+RIGHT   script-binding input_plus/seek_skip_next     # 向前...
 SPACE              script-binding input_plus/speed_auto         # 按下两倍速，松开一倍速
 BS                 script-binding input_plus/speed_recover      # 仿Pot的速度重置与恢复
+1                  script-binding input_plus/trackA_back        # 上一个音频轨道（自动跳过无轨道）
+2                  script-binding input_plus/trackA_next        # 下...
+3                  script-binding input_plus/trackS_back        # 上一个字幕轨道...
+4                  script-binding input_plus/trackS_next        # 下...
+5                  script-binding input_plus/trackV_back        # 上一个视频轨道...
+6                  script-binding input_plus/trackV_next        # 下...
 
 --]]
 
 
 local shuffled = false
 function playlist_shuffle()
-	if mp.get_property_number("playlist-count") <= 1 then
-		return mp.osd_message("播放列表的条目数量不足", 1)
+	if mp.get_property_number("playlist-count") <= 2 then
+		mp.osd_message("播放列表中的条目数量不足", 1)
+		return
 	end
 	if not shuffled then
 		mp.command("playlist-shuffle")
@@ -64,9 +71,8 @@ function quit_wait()
 	end
 end
 
-local current_sid = nil
 function seek_auto_back()
-	current_sid = mp.get_property_number("sid") or 0
+	local current_sid = mp.get_property_number("sid") or 0
 	if current_sid == 0 then
 		mp.command("seek " .. -0.1 .. " keyframes")
 	else
@@ -74,7 +80,7 @@ function seek_auto_back()
 	end
 end
 function seek_auto_next()
-	current_sid = mp.get_property_number("sid") or 0
+	local current_sid = mp.get_property_number("sid") or 0
 	if current_sid == 0 then
 		mp.command("seek " .. 0.1 .. " keyframes")
 	else
@@ -119,8 +125,65 @@ function speed_recover()
 		bak_speed = mp.get_property_number("speed")
 		mp.command("set speed 1")
 	else
-		if bak_speed == nil then bak_speed = 1 end
+		if bak_speed == nil then
+			bak_speed = 1
+		end
 		mp.command("set speed " .. bak_speed)
+	end
+end
+
+function trackA_back()
+	mp.command("add aid -1")
+	if mp.get_property_number("aid", 0) == 0 then
+		mp.command("add aid -1")
+		if mp.get_property_number("aid", 0) == 0 then
+			mp.osd_message("无音频轨", 1)
+		end
+	end
+end
+function trackA_next()
+	mp.command("add aid 1")
+	if mp.get_property_number("aid", 0) == 0 then
+		mp.command("add aid 1")
+		if mp.get_property_number("aid", 0) == 0 then
+			mp.osd_message("无音频轨", 1)
+		end
+	end
+end
+function trackS_back()
+	mp.command("add sid -1")
+	if mp.get_property_number("sid", 0) == 0 then
+		mp.command("add sid -1")
+		if mp.get_property_number("sid", 0) == 0 then
+			mp.osd_message("无字幕轨", 1)
+		end
+	end
+end
+function trackS_next()
+	mp.command("add sid 1")
+	if mp.get_property_number("sid", 0) == 0 then
+		mp.command("add sid 1")
+		if mp.get_property_number("sid", 0) == 0 then
+			mp.osd_message("无字幕轨", 1)
+		end
+	end
+end
+function trackV_back()
+	mp.command("add vid -1")
+	if mp.get_property_number("vid", 0) == 0 then
+		mp.command("add vid -1")
+		if mp.get_property_number("vid", 0) == 0 then
+			mp.osd_message("无视频轨", 1)
+		end
+	end
+end
+function trackV_next()
+	mp.command("add vid 1")
+	if mp.get_property_number("vid", 0) == 0 then
+		mp.command("add vid 1")
+		if mp.get_property_number("vid", 0) == 0 then
+			mp.osd_message("无视频轨", 1)
+		end
 	end
 end
 
@@ -139,3 +202,10 @@ mp.add_key_binding(nil, "seek_skip_next", seek_skip_next)
 
 mp.add_key_binding(nil, "speed_auto", speed_auto, {complex = true})
 mp.add_key_binding(nil, "speed_recover", speed_recover)
+
+mp.add_key_binding(nil, "trackA_back", trackA_back)
+mp.add_key_binding(nil, "trackA_next", trackA_next)
+mp.add_key_binding(nil, "trackS_back", trackS_back)
+mp.add_key_binding(nil, "trackS_next", trackS_next)
+mp.add_key_binding(nil, "trackV_back", trackV_back)
+mp.add_key_binding(nil, "trackV_next", trackV_next)
