@@ -5,23 +5,14 @@ _未列出的文件，以最新文件内容为准，否则默认视作_ **UNLICE
 
 ## .../mpv-lazy/
 
-### ffmpeg
-https://git.ffmpeg.org/gitweb/ffmpeg.git/blob/HEAD:/LICENSE.md
-
 ### mpv
 https://github.com/mpv-player/mpv/blob/master/Copyright
 
 ### python
 https://docs.python.org/3/license.html
 
-### tclsh
-https://www.tcl.tk/software/tcltk/license.html
-
 ### VapourSynth
 https://github.com/vapoursynth/vapoursynth/blob/master/COPYING.LESSER
-
-### youtube-dl
-https://github.com/ytdl-org/youtube-dl/blob/master/LICENSE
 
 ### yt-dlp
 https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE
