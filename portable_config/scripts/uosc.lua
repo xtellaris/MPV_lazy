@@ -267,7 +267,7 @@ local function create_default_menu()
 			{title = '※ 字幕轨列表', value = 'script-binding uosc/subtitles'},
 			{title = '播放列表乱序重排', value = 'playlist-shuffle'},
 		},},
-		{title = '截屏 当前画面', value = 'screenshot window'},
+		{title = '※ 截屏', value = 'script-binding uosc/shot'},
 		{title = '视频', items = {
 			{title = '切换 解码模式', value = 'cycle-values hwdec no auto auto-copy'},
 			{title = '切换 去色带状态', value = 'cycle deband'},
@@ -4771,6 +4771,32 @@ mp.add_key_binding(nil, 'open-config-directory', function()
 		utils.subprocess_detached({args = args, cancellable = false})
 	else
 		msg.error('Couldn\'t serialize config path "' .. config_path .. '".')
+	end
+end)
+-- 菜单专用截屏
+mp.add_key_binding(nil, 'shot', function()
+	if Menu:is_open() then
+		local bak_opt1, bak_opt2, bak_opt3, bak_opt4 = options.curtain_opacity, options.menu_opacity, options.menu_parent_opacity, options.pause_indicator
+		options.curtain_opacity, options.menu_opacity, options.menu_parent_opacity = 0, 0, 0
+		-- 并非所有元素支持透明
+		local paused = mp.get_property_bool('pause')
+		if paused then
+			mp.add_timeout(200 / 1000, function() -- 延迟过低可能产生闪烁
+				mp.command('screenshot window')
+				options.curtain_opacity, options.menu_opacity, options.menu_parent_opacity = bak_opt1, bak_opt2, bak_opt3
+			end)
+		else
+			options.pause_indicator = 'manual'
+			mp.set_property_bool('pause', true)
+			mp.add_timeout(200 / 1000, function()
+				mp.command('screenshot window')
+				mp.set_property_bool('pause', false)
+				options.pause_indicator = bak_opt4
+				options.curtain_opacity, options.menu_opacity, options.menu_parent_opacity = bak_opt1, bak_opt2, bak_opt3
+			end)
+		end
+	else
+		mp.command('screenshot window')
 	end
 end)
 
