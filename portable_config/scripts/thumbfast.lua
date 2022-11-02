@@ -299,7 +299,6 @@ local function spawn(time)
         "--load-auto-profiles=no", "--load-osd-console=no", "--load-stats-overlay=no", "--osc=no",
         "--vd-lavc-skiploopfilter=all", "--vd-lavc-skipidct=all", "--vd-lavc-software-fallback=1", "--vd-lavc-fast", "--vd-lavc-threads=2", "--hwdec="..(options.hwdec and "auto" or "no"),
         "--edition="..(mp.get_property_number("edition") or "auto"), "--vid="..(vid or "auto"), "--sub=no", "--audio=no", "--sub-auto=no", "--audio-file-auto=no",
-        "--input-ipc-server="..options.socket,
         "--start="..time,
         "--ytdl-format=worst", "--demuxer-readahead-secs=0", "--demuxer-max-bytes=128KiB",
         "--gpu-dumb-mode=yes", "--tone-mapping=clip", "--hdr-compute-peak=no",
