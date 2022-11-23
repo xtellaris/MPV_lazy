@@ -1230,11 +1230,12 @@ function window_controls(topbar)
     end
     ne.eventresponder["mbtn_left_up"] =
         function ()
-            if state.fullscreen then
+            -- 屏蔽窗口最大化处理 https://github.com/mpv-player/mpv/issues/7887
+            --if state.fullscreen then
                 mp.commandv("cycle", "fullscreen")
-            else
-                mp.commandv("cycle", "window-maximized")
-            end
+            --else
+                --mp.commandv("cycle", "window-maximized")
+            --end
         end
     lo = add_layout("maximize")
     lo.geometry = alignment == "left" and third_geo or second_geo
@@ -3291,7 +3292,7 @@ function idlescreen_visibility(mode, no_osd)
     utils.shared_script_property_set("osc-idlescreen", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
-        mp.osd_message("OSC logo visibility: " .. tostring(mode))
+        mp.osd_message("OSC logo的可见性：" .. tostring(mode))
     end
 
     request_tick()
