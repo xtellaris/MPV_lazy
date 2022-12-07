@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Sharpen without denoising.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -126,7 +126,7 @@ vec4 hook()
 //!BIND HOOKED
 //!BIND RF
 //!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!DESC Non-local means (nlmeans_sharpen_only.glsl)
 
 /* User variables
  *
@@ -152,11 +152,11 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 2.25
+#define S 9
 #define P 3
 #define R 5
 #else
-#define S 1.50
+#define S 9
 #define P 3
 #define R 5
 #endif
@@ -174,11 +174,11 @@ vec4 hook()
  * ASP: Weight power, higher numbers use more of the sharp image
  */
 #ifdef LUMA_raw
-#define AS 0
+#define AS 2
 #define ASF 1.0
 #define ASP 2.0
 #else
-#define AS 0
+#define AS 2
 #define ASF 1.0
 #define ASP 2.0
 #endif

@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Tuned for medium noise.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -110,23 +110,8 @@ vec4 hook()
 //!HOOK CHROMA
 //!HOOK RGB
 //!BIND HOOKED
-//!DESC Non-local means (downscale)
-//!SAVE EP_LUMA
-//!WIDTH HOOKED.w 3 /
-//!HEIGHT HOOKED.h 3 /
-
-vec4 hook()
-{
-	return HOOKED_texOff(0);
-}
-
-//!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
-//!BIND HOOKED
 //!BIND RF
-//!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!DESC Non-local means (nlmeans_medium.glsl)
 
 /* User variables
  *
@@ -193,9 +178,9 @@ vec4 hook()
  * e.g., SW=max(avg_weight, EPSILON)
  */
 #ifdef LUMA_raw
-#define SW 1.0
+#define SW 0.5
 #else
-#define SW 1.0
+#define SW 0.5
 #endif
 
 /* Weight discard
@@ -335,7 +320,7 @@ vec4 hook()
  * BP: EP strength on bright patches, 0 to fully denoise
  */
 #ifdef LUMA_raw
-#define EP 1
+#define EP 0
 #define BP 0.75
 #define DP 0.25
 #else

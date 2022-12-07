@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Faster, but lower quality.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -126,7 +126,7 @@ vec4 hook()
 //!BIND HOOKED
 //!BIND RF
 //!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!DESC Non-local means (nlmeans_lq.glsl)
 
 /* User variables
  *
@@ -152,9 +152,9 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 2.25
+#define S 1.25
 #define P 3
-#define R 5
+#define R 3
 #else
 #define S 1.50
 #define P 3
@@ -213,11 +213,11 @@ vec4 hook()
  * WDP (WD=1): Higher numbers reduce the threshold more for small sample sizes
  */
 #ifdef LUMA_raw
-#define WD 2
+#define WD 1
 #define WDT 1.0
 #define WDP 6.0
 #else
-#define WD 2
+#define WD 1
 #define WDT 1.0
 #define WDP 6.0
 #endif
@@ -260,8 +260,8 @@ vec4 hook()
  * RFI (0 to 2): Reflectional invariance
  */
 #ifdef LUMA_raw
-#define RI 3
-#define RFI 2
+#define RI 0
+#define RFI 0
 #else
 #define RI 0
 #define RFI 0

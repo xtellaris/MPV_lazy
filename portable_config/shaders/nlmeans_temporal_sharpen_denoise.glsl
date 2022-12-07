@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Very experimental and buggy, limited to vo=gpu-next. Sharpen and denoise.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -126,7 +126,10 @@ vec4 hook()
 //!BIND HOOKED
 //!BIND RF
 //!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!BIND PREV1
+//!BIND PREV2
+//!BIND PREV3
+//!DESC Non-local means (nlmeans_temporal_sharpen_denoise.glsl)
 
 /* User variables
  *
@@ -152,7 +155,7 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 2.25
+#define S 9
 #define P 3
 #define R 5
 #else
@@ -174,7 +177,7 @@ vec4 hook()
  * ASP: Weight power, higher numbers use more of the sharp image
  */
 #ifdef LUMA_raw
-#define AS 0
+#define AS 1
 #define ASF 1.0
 #define ASP 2.0
 #else
@@ -260,8 +263,8 @@ vec4 hook()
  * RFI (0 to 2): Reflectional invariance
  */
 #ifdef LUMA_raw
-#define RI 3
-#define RFI 2
+#define RI 0
+#define RFI 0
 #else
 #define RI 0
 #define RFI 0
@@ -285,7 +288,7 @@ vec4 hook()
  * ME: motion estimation, 0 for none, 1 for max weight, 2 for weighted avg
  */
 #ifdef LUMA_raw
-#define T 0
+#define T 2
 #define ME 1
 #else
 #define T 0
@@ -558,12 +561,18 @@ vec4 load(vec3 off)
 {
 	switch (int(off.z)) {
 	case 0: return load_(off);
+	case 1: return imageLoad(PREV1, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV1)));
+	case 2: return imageLoad(PREV2, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV2)));
+	case 3: return imageLoad(PREV3, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV3)));
 	}
 }
 vec4 load2(vec3 off)
 {
 	switch (int(off.z)) {
 	case 0: return load2_(off);
+	case 1: return imageLoad(PREV1, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV1)));
+	case 2: return imageLoad(PREV2, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV2)));
+	case 3: return imageLoad(PREV3, ivec2((HOOKED_pos + HOOKED_pt * vec2(off)) * imageSize(PREV3)));
 	}
 }
 #else
@@ -808,6 +817,9 @@ vec4 hook()
 	} // FOR_FRAME
 
 #if T // temporal
+	imageStore(PREV3, ivec2(HOOKED_pos*imageSize(PREV3)), load2(vec3(0,0,2)));
+	imageStore(PREV2, ivec2(HOOKED_pos*imageSize(PREV2)), load2(vec3(0,0,1)));
+	imageStore(PREV1, ivec2(HOOKED_pos*imageSize(PREV1)), load2(vec3(0,0,0)));
 #endif
 
 	vec4 avg_weight = total_weight * r_scale;
@@ -878,4 +890,19 @@ vec4 hook()
 
 	return mix(poi, result, BF);
 }
+
+//!TEXTURE PREV1
+//!SIZE 1920 1080
+//!FORMAT r32f
+//!STORAGE
+
+//!TEXTURE PREV2
+//!SIZE 1920 1080
+//!FORMAT r32f
+//!STORAGE
+
+//!TEXTURE PREV3
+//!SIZE 1920 1080
+//!FORMAT r32f
+//!STORAGE
 

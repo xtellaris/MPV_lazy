@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Slow, tuned for anime/cartoons with ringing and/or medium noise, may be useful for other content. Slow, but higher quality.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -111,9 +111,9 @@ vec4 hook()
 //!HOOK RGB
 //!BIND HOOKED
 //!DESC Non-local means (downscale)
-//!SAVE EP_LUMA
-//!WIDTH HOOKED.w 3 /
-//!HEIGHT HOOKED.h 3 /
+//!SAVE RF_LUMA
+//!WIDTH HOOKED.w 2.0 /
+//!HEIGHT HOOKED.h 2.0 /
 
 vec4 hook()
 {
@@ -125,8 +125,8 @@ vec4 hook()
 //!HOOK RGB
 //!BIND HOOKED
 //!BIND RF
-//!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!BIND RF_LUMA
+//!DESC Non-local means (nlmeans_anime_hq_medium.glsl)
 
 /* User variables
  *
@@ -152,11 +152,11 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 2.25
-#define P 3
+#define S 3
+#define P 4
 #define R 5
 #else
-#define S 1.50
+#define S 3
 #define P 3
 #define R 5
 #endif
@@ -193,9 +193,9 @@ vec4 hook()
  * e.g., SW=max(avg_weight, EPSILON)
  */
 #ifdef LUMA_raw
-#define SW 1.0
+#define SW 0.5
 #else
-#define SW 1.0
+#define SW 0.5
 #endif
 
 /* Weight discard
@@ -241,7 +241,7 @@ vec4 hook()
  */
 #ifdef LUMA_raw
 #define RS 3
-#define PS 3
+#define PS 6
 #else
 #define RS 3
 #define PS 3
@@ -260,8 +260,8 @@ vec4 hook()
  * RFI (0 to 2): Reflectional invariance
  */
 #ifdef LUMA_raw
-#define RI 3
-#define RFI 2
+#define RI 0
+#define RFI 0
 #else
 #define RI 0
 #define RFI 0
@@ -311,13 +311,13 @@ vec4 hook()
  * PSD: intra-patch spatial distortion (X, Y)
  */
 #ifdef LUMA_raw
-#define SS 0.25
+#define SS 0.0
 #define SD vec3(1,1,1)
 #define PST 0
 #define PSS 0.0
 #define PSD vec2(1,1)
 #else
-#define SS 0.25
+#define SS 0.0
 #define SD vec3(1,1,1)
 #define PST 0
 #define PSS 0.0
@@ -335,7 +335,7 @@ vec4 hook()
  * BP: EP strength on bright patches, 0 to fully denoise
  */
 #ifdef LUMA_raw
-#define EP 1
+#define EP 0
 #define BP 0.75
 #define DP 0.25
 #else
@@ -363,7 +363,7 @@ vec4 hook()
  * factor is set to 3.
  */
 #ifdef LUMA_raw
-#define RF 0
+#define RF 1
 #else
 #define RF 1
 #endif

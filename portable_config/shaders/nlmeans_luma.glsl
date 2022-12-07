@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Luma only, saves some time by not processing the chroma plane.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -93,8 +93,6 @@
  */
 
 //!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
 //!BIND HOOKED
 //!DESC Non-local means (downscale)
 //!SAVE RF
@@ -107,8 +105,6 @@ vec4 hook()
 }
 
 //!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
 //!BIND HOOKED
 //!DESC Non-local means (downscale)
 //!SAVE EP_LUMA
@@ -121,12 +117,10 @@ vec4 hook()
 }
 
 //!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
 //!BIND HOOKED
 //!BIND RF
 //!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!DESC Non-local means (nlmeans_luma.glsl)
 
 /* User variables
  *

@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Default profile, general purpose, tuned for low noise
+// Profile description: Very slow, should offer the best quality.
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -111,9 +111,9 @@ vec4 hook()
 //!HOOK RGB
 //!BIND HOOKED
 //!DESC Non-local means (downscale)
-//!SAVE EP_LUMA
-//!WIDTH HOOKED.w 3 /
-//!HEIGHT HOOKED.h 3 /
+//!SAVE RF_LUMA
+//!WIDTH HOOKED.w 1.25 /
+//!HEIGHT HOOKED.h 1.25 /
 
 vec4 hook()
 {
@@ -125,8 +125,8 @@ vec4 hook()
 //!HOOK RGB
 //!BIND HOOKED
 //!BIND RF
-//!BIND EP_LUMA
-//!DESC Non-local means (nlmeans.glsl)
+//!BIND RF_LUMA
+//!DESC Non-local means (nlmeans_hqx.glsl)
 
 /* User variables
  *
@@ -152,13 +152,13 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 2.25
-#define P 3
-#define R 5
+#define S 3
+#define P 5
+#define R 19
 #else
-#define S 1.50
-#define P 3
-#define R 5
+#define S 3
+#define P 5
+#define R 19
 #endif
 
 /* Adaptive sharpening
@@ -261,9 +261,9 @@ vec4 hook()
  */
 #ifdef LUMA_raw
 #define RI 3
-#define RFI 2
+#define RFI 0
 #else
-#define RI 0
+#define RI 3
 #define RFI 0
 #endif
 
@@ -335,7 +335,7 @@ vec4 hook()
  * BP: EP strength on bright patches, 0 to fully denoise
  */
 #ifdef LUMA_raw
-#define EP 1
+#define EP 0
 #define BP 0.75
 #define DP 0.25
 #else
@@ -363,7 +363,7 @@ vec4 hook()
  * factor is set to 3.
  */
 #ifdef LUMA_raw
-#define RF 0
+#define RF 1
 #else
 #define RF 1
 #endif
