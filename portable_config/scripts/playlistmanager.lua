@@ -1,6 +1,8 @@
 --[[
 SOURCE_ https://github.com/jonniek/mpv-playlistmanager/blob/master/playlistmanager.lua
-COMMIT_ e649bff96dd663ee0dadb53b5e2e2c5fd531494b
+COMMIT_ 828a157e2ebdc8bc23d51a06736be168d595c1b5
+
+[ARCHIVE]
 
 高级播放列表，用于替换内置的过于简洁的列表
 自定义快捷键方案示例，在 input.conf 中另起一行：
