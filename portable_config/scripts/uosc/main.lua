@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/tomasklaen/uosc/tree/main/scripts
-COMMIT_ ea371b5740bd5768e9f4ee0c254c0ae718c61372
+COMMIT_ e66c8fbf88ec788512b4c2adbef72560fb911dfd
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
 ]]--
@@ -90,7 +90,7 @@ defaults = {
 	foreground_text = '000000',
 	background = '000000',
 	background_text = 'ffffff',
-	total_time = true,
+	destination_time = 'playtime-remaining',
 	time_precision = 0,
 	autohide = false,
 	buffered_time_threshold = 60,
@@ -292,7 +292,7 @@ state = {
 	speed = 1,
 	duration = nil, -- current media duration
 	time_human = nil, -- current playback time in human format
-	duration_or_remaining_time_human = nil, -- depends on options.total_time
+	destination_time_human = nil, -- depends on options.destination_time
 	pause = mp.get_property_native('pause'),
 	chapters = {},
 	current_chapter = nil,
@@ -376,11 +376,15 @@ function update_human_times()
 		state.time_human = format_time(state.time)
 		if state.duration then
 			local speed = state.speed or 1
-			state.duration_or_remaining_time_human = format_time(
-				options.total_time and state.duration or ((state.time - state.duration) / speed)
-			)
+			if options.destination_time == 'playtime-remaining' then
+				state.destination_time_human = format_time((state.time - state.duration) / speed)
+			elseif options.destination_time == 'total' then
+				state.destination_time_human = format_time(state.duration)
+			else
+				state.destination_time_human = format_time(state.time - state.duration)
+			end
 		else
-			state.duration_or_remaining_time_human = nil
+			state.destination_time_human = nil
 		end
 	else
 		state.time_human = nil
