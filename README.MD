@@ -26,11 +26,6 @@ _从萌新到大白，<s>用前嫌麻烦</s> 用后真香_
 下载见 [**🏷Releases 发布版块🏷**](../../releases)  
 反馈前往 [**💬Discussions 讨论版块🗨️**](../../discussions)
 
-## 简易包 mpv.net_CM
-
-简易包是基于mpv.net（一个基于libmpv的前端程序）的中文修改版，更加易于上手。除开涵盖了懒人包的部分选项外，还补充了一些额外的实用功能与基本的图形交互，更接近普通用户的使用方式。  
-[**🚪传送门🚪**](https://github.com/hooke007/mpv.net_CM)
-
 ## 预览
 
 ![](https://github.com/hooke007/MPV_lazy/blob/lite/Temp/mpv-lazy-lite.png)  
