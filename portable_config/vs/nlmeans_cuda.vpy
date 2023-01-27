@@ -15,7 +15,7 @@ Blur_mode = 2
 Frame_num = 1
 Radius_sw = 2
 Radius_snw = 2
-Strength = 3
+Strength = 3.0
 GPU = 0
 GPU_t = 2
 ## <0|1|2> 分离模式。0为不使用
@@ -42,11 +42,11 @@ elif Blur_mode == 2 :
 if Blur_mode :
 	diff = core.std.MakeDiff(clipa=cut0, clipb=blur)
 	cut1 = core.nlm_cuda.NLMeans(clip=diff, d=Frame_num, a=Radius_sw, s=Radius_snw, h=Strength,
-		channels="AUTO", wmode=2, wref=1, rclip=None, device_id=GPU, num_streams=GPU_t)
+		channels="AUTO", wmode=2, wref=1.0, rclip=None, device_id=GPU, num_streams=GPU_t)
 	merge = core.std.MergeDiff(clipa=blur, clipb=cut1)
 else :
 	cut1 = core.nlm_cuda.NLMeans(clip=blur, d=Frame_num, a=Radius_sw, s=Radius_snw, h=Strength,
-		channels="AUTO", wmode=2, wref=1, rclip=None, device_id=GPU, num_streams=GPU_t)
+		channels="AUTO", wmode=2, wref=1.0, rclip=None, device_id=GPU, num_streams=GPU_t)
 
 output = core.resize.Bilinear(clip=merge if Blur_mode else cut1, format=fmt_in)
 
