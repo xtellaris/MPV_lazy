@@ -157,17 +157,17 @@ function info_get()
 	local osd_dims = mp.get_property_native("osd-dimensions")
 	local w_s, h_s = osd_dims["w"] - osd_dims["ml"] - osd_dims["mr"], osd_dims["h"] - osd_dims["mt"] - osd_dims["mb"]
 	local cur_name = mp.get_property_osd("media-title") or mp.get_property_osd("filename")
-	local vid_params = mp.get_property_native("video-dec-params") or "..."
+	local vid_params = mp.get_property_native("video-params") or "..."
 	local w_raw, h_raw, pix_fmt, color_lv = vid_params["w"] or 0, vid_params["h"] or 0, vid_params["hw-pixelformat"] or vid_params["pixelformat"] or "...", vid_params["colorlevels"] or "..."
 	local fps_o, fps_t = string.format("%0.3f", mp.get_property_number("container-fps", 0)), string.format("%0.3f", mp.get_property_number("estimated-vf-fps", 0))
 	local bitrateV, bitrateA = mp.get_property_number("video-bitrate", 0) / 1000, mp.get_property_number("audio-bitrate", 0) / 1000
 	local txt = (
-	style_generic.."设置目录： ".."{\\1c&H0099FF}"..conf_dir:gsub("\\", "/").."\n"..
+	style_generic.."设置目录： ".."{\\fs18\\1c&H0099FF}"..conf_dir:gsub("\\", "/").."\n"..
 	style_generic.."输出尺寸： ".."{\\1c&H0099FF}".."["..w_s.."] x ["..h_s.."]".."\n"..
 	style_generic.."解码模式： ".."{\\1c&H0099FF}"..mp.get_property_native("hwdec-current", "...").."\n"..
 	style_generic.."显示同步： ".."{\\1c&H0099FF}"..mp.get_property_native("video-sync", "...").."\n"..
 	style_generic.."丢帧暂计： ".."{\\1c&H0099FF}"..mp.get_property_number("frame-drop-count", 0).."\n"..
-	style_generic.."当前文件： ".."{\\1c&H0099FF}"..cur_name:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{").."\n"..
+	style_generic.."当前文件： ".."{\\fs18\\1c&H0099FF}"..cur_name:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{").."\n"..
 	style_generic.."视频 ┓".."\n"..
 	style_generic.."-   输出： ".."{\\1c&H03A89E}"..mp.get_property_native("current-vo", "...").."\n"..
 	style_generic.."-   编码： ".."{\\1c&H03A89E}"..mp.get_property_native("video-codec", "...").."\n"..
@@ -181,7 +181,8 @@ function info_get()
 	style_generic.."-   设备： ".."{\\1c&H9EA803}"..mp.get_property_native("audio-device", "...").."\n"..
 	style_generic.."-   编码： ".."{\\1c&H9EA803}"..mp.get_property_native("audio-codec", "...").."\n"..
 	style_generic.."-   码率： ".."{\\1c&H9EA803}"..bitrateA.." kbps（当前）".."\n"..
-	style_generic.."着色器列： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("glsl-shaders"):gsub(":\\", "/"):gsub(":/", "/"):gsub("\\", "/"):gsub(";", " "):gsub(",", " "):gsub(":", " ")
+	style_generic.."着色器列： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("glsl-shaders"):gsub(":\\", "/"):gsub(":/", "/"):gsub("\\", "/"):gsub(";", " "):gsub(",", " "):gsub(":", " ").."\n"..
+	style_generic.."视频滤镜： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("vf"):gsub("%(empty%)", ""):gsub(" %[", "%["):gsub("%]\n", "%] "):gsub(" %(disabled%)", "（禁用）")
 	)
 	return tostring(txt)
 end
