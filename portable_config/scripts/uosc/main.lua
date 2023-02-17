@@ -76,6 +76,7 @@ defaults = {
 	window_border_opacity = 0.8,
 
 	autoload = false,
+	autoload_types = 'video',
 	shuffle = false,
 
 	ui_scale = 1,
