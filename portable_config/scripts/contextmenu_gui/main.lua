@@ -7,8 +7,8 @@
 mpv的tcl图形菜单的核心脚本
 
 建议在 input.conf 中绑定右键以支持唤起菜单
-MOUSE_BTN2   script-message-to contextmenu_gui contextmenu_tk
---]]
+ MOUSE_BTN2   script-message-to contextmenu_gui contextmenu_tk
+]]--
 
 local langcodes = require "contextmenu_gui_lang"
 local function mpdebug(x) mp.msg.info(x) end
@@ -709,7 +709,7 @@ local function playmenuList()
 
 -- 二级菜单 —— 导航
         navi_menu = {
-            {COMMAND, "【外置脚本】OSD高级播放列表", "", "script-binding playlistmanager/showplaylist", "", false},
+            {COMMAND, "【外置脚本】OSD高级播放列表", "", "script-binding playlist_osd/display", "", false},
             {COMMAND, "OSD轨道信息", "", "show-text ${track-list} 5000", "", false},
             {COMMAND, "重播", "", "seek 0 absolute", "", false},
             {COMMAND, "上一帧", "", "frame-back-step", "", false, true},
