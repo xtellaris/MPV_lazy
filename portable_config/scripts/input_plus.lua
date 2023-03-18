@@ -24,6 +24,9 @@ input.conf 示例：
 #                     script-binding input_plus/mark_aid_reset      # 取消AB并轨和标记
  m                    script-binding input_plus/mark_aid_fin        # （单键实现上述四项命令）
 
+#                     script-binding input_plus/ostime_display      # 临时显示系统时间
+#                     script-binding input_plus/ostime_toggle       # 启用/禁用显示系统时间
+
  Alt+p                script-binding input_plus/playlist_order_0    # 播放列表的洗牌与撤销
 #                     script-binding input_plus/playlist_order_0r   # ...（重定向至首个文件）
 #                     script-binding input_plus/playlist_order_1    # 播放列表连续洗牌（可用上两项命令恢复）
@@ -34,14 +37,10 @@ input.conf 示例：
  CLOSE_WIN            script-binding input_plus/quit_real           # 对执行退出命令前的确认（防止误触）
 #                     script-binding input_plus/quit_wait           # 延后退出命令的执行（执行前再次触发可取消）
 
-#                     script-binding input_plus/seek_auto_back      # [可持续触发] 后退至上句字幕的时间点或上一关键帧
-#                     script-binding input_plus/seek_auto_next      # [可持续触发] 前进至下...
-#                     script-binding input_plus/seek_skip_back      # 向后大跳（精确帧）
-#                     script-binding input_plus/seek_skip_next      # 向前...
-
  b                    script-binding input_plus/speed_auto          # [按住/松开] 两倍速/一倍速
 #                     script-binding input_plus/speed_auto_bullet   # [按住/松开] 子弹时间/一倍速
 #                     script-binding input_plus/speed_recover       # 仿Pot的速度重置与恢复
+#                     script-binding input_plus/speed_sync_toggle   # 启用/禁用自适应速度偏移（补偿显示刷新率）
 
 #                     script-binding input_plus/stats_1_2           # 单键浏览统计数据第1至2页
 #                     script-binding input_plus/stats_0_4           # 单键浏览统计数据第0至4页
@@ -57,7 +56,10 @@ input.conf 示例：
 #                     script-binding input_plus/trackS_refresh      # ...（字幕）
 #                     script-binding input_plus/trackV_refresh      # ...（视频）
 
---]]
+
+#                     script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循环触发命令
+
+]]
 
 
 local utils = require("mp.utils")
@@ -75,10 +77,10 @@ end
 local plat = check_plat()
 
 
+
 --
 -- 函数设定
 --
-
 
 local adevicelist = {}
 local target_ao = nil
@@ -124,6 +126,7 @@ function adevicelist_fin(start, fin, step, dynamic)
 	adevicelist_pass(start, fin, step)
 end
 
+
 local chap_skip = false
 local chap_keywords = { 
 	"OP$", "opening$", "オープニング$",
@@ -148,6 +151,16 @@ function chapter_change(_, value)
 		end
 	end
 end
+
+
+local cmds_sqnum = {}
+local function cycle_cmds(...)
+	local cmds_list = {...}
+	local cur_cmd = table.concat(cmds_list, "|")
+	cmds_sqnum[cur_cmd] = (cmds_sqnum[cur_cmd] or 0) % #cmds_list + 1
+	mp.command(cmds_list[cmds_sqnum[cur_cmd]])
+end
+
 
 local osm = mp.create_osd_overlay("ass-events")
 local osm_showing = false
@@ -206,6 +219,7 @@ function info_toggle()
 	end)
 end
 
+
 function copy_clipboard(clip)
 	if plat == "windows" then
 		local res = utils.subprocess({
@@ -261,6 +275,7 @@ function load_clipboard(action, clip)
 	mp.commandv("loadfile", text, action)
 	text_pasted = text
 end
+
 
 local marked_aid_A = nil
 local marked_aid_B = nil
@@ -318,6 +333,32 @@ function mark_aid_fin()
 	end
 	mark_aid_merge()
 end
+
+
+local ostime_showing = false
+local ostime_style = "{\\rDefault\\fnmpv-osd-symbols\\fs55\\an9\\b1\\1c&H01DBF1\\3c&H000000}"
+function draw_ostime()
+	local ostime = os.date("*t")
+	local ostime_msg = mp.create_osd_overlay("ass-events")
+	ostime_msg.data = ostime_style .. "\238\128\134 " .. string.format("%02d:%02d:%02d", ostime.hour, ostime.min, ostime.sec)
+	ostime_msg:update()
+	mp.add_timeout(1, function() ostime_msg:remove() end)
+end
+function ostime_toggle()
+	if ostime_showing then
+		ostime_timer:kill()
+		ostime_showing = false
+	else
+		ostime_timer = mp.add_periodic_timer(1, draw_ostime)
+		ostime_showing = true
+	end
+end
+function ostime_display()
+	draw_ostime()
+	mp.add_timeout(1, draw_ostime)
+	mp.add_timeout(2, draw_ostime)
+end
+
 
 local shuffled = false
 local shuffling = false
@@ -401,6 +442,7 @@ function playlist_tmp_load()
 	end
 end
 
+
 local pre_quit = false
 function quit_real()
 	if pre_quit then
@@ -432,27 +474,12 @@ function quit_wait()
 	end
 end
 
-function seek_auto(num)
-	local current_sid = mp.get_property_number("sid", 0)
-	if current_sid == 0 then
-		mp.command("seek " .. 0.1 * num .. " keyframes")
-	else
-		mp.command("sub-seek " .. num .. " primary")
-	end
-end
-function seek_skip(num)
-	local duration_div_chapters = mp.get_property_number("duration", 1) / mp.get_property_number("chapter-list/count", 1)
-	if duration_div_chapters >= 240 then
-		mp.command("seek " .. 10 * num .. " relative-percent+exact")
-	elseif duration_div_chapters == 1 then
-		mp.command("seek " .. 60 * num .. " exact")
-	else
-		mp.commandv("add", "chapter", num)
-		mp.command("show-progress")
-	end
-end
 
 local bak_speed = nil
+local spd_adapt = false
+local spd_iters_max = 10
+local spd_delta_max = 0.5
+local spd_delta_min = 0.0005
 function speed_auto(tab)
 	if tab.event == "down" then
 		mp.set_property_number("speed", 2)
@@ -482,6 +509,53 @@ function speed_recover()
 		mp.command("set speed " .. bak_speed)
 	end
 end
+function speed_scale(rat, fact)
+	local spd_scale, spd_delta = nil, nil
+	for _, i in ipairs({fact, fact-1, fact+1}) do
+		spd_scale = rat * i / math.floor(i * rat + 0.5)
+		spd_delta = math.abs(spd_scale - 1)
+		if spd_delta < spd_delta_min then
+			mp.msg.info("speed_sync_toggle 目标速度为1")
+			return 1
+		elseif spd_delta <= spd_delta_max then
+			mp.msg.info("speed_sync_toggle 目标速度为" .. spd_scale)
+			return spd_scale
+		end
+	end
+end
+function speed_adaptive()
+	local fps_raw = mp.get_property_number("container-fps", 0)
+	local fps_vf = mp.get_property_number("estimated-vf-fps", 0)
+	local fps_dp = mp.get_property_number("display-fps", 0)
+	local spd_cur = mp.get_property_number("speed", 1)
+	if (fps_raw == 0 or fps_dp == 0 or fps_raw > 32 or math.abs(fps_vf - fps_raw) > 0.5) then
+		mp.msg.warn("speed_sync_toggle 存在例外的FPS情况")
+		return
+	end
+	for i = 1, spd_iters_max do
+		local spd_target = speed_scale(fps_dp / fps_raw, i)
+		if spd_target then
+			if math.abs(spd_target - spd_cur) < 0.0001 then
+				break
+			else
+				mp.set_property("speed", spd_target)
+				mp.msg.info("speed_sync_toggle 设定当前速度为" .. spd_target)
+				break
+			end
+		end
+	end
+end
+function speed_sync_toggle()
+	spd_adapt = not spd_adapt
+	if spd_adapt then
+		mp.osd_message("已启用速度自适应", 1)
+		speed_adaptive()
+	else
+		mp.osd_message("已禁用速度自适应", 1)
+		return
+	end
+end
+
 
 local show_page = 0
 function stats_cycle(num_init, num_end)
@@ -495,6 +569,7 @@ function stats_cycle(num_init, num_end)
 	mp.command("script-binding stats/display-page-" .. show_page)
 end
 
+
 function track_seek(id, num)
 	mp.command("add " .. id .. " " .. num)
 	if mp.get_property_number(id, 0) == 0 then
@@ -504,6 +579,7 @@ function track_seek(id, num)
 		end
 	end
 end
+
 
 function track_refresh(id)
 	local current_id = mp.get_property_number(id, 0)
@@ -516,21 +592,23 @@ function track_refresh(id)
 end
 
 
+
 --
 -- 其它处理
 --
-
 
 mp.register_event("file-loaded", function() if chap_skip then mp.msg.info("chap_skip_toggle 当前文件正在使用") end end)
 mp.observe_property("chapter-metadata/TITLE", "string", chapter_change)
 
 mp.register_event("end-file", function() if marked_aid_A ~= nil or marked_aid_B ~= nil then mark_aid_reset() end end)
 
+mp.register_event("playback-restart", function() if spd_adapt then speed_adaptive() end end)
+
+
 
 --
 -- 键位绑定
 --
-
 
 mp.add_key_binding(nil, "adevice_back", function() adevicelist = mp.get_property_native("audio-device-list") adevicelist_fin(#adevicelist, 1, -1) end)
 mp.add_key_binding(nil, "adevice_next", function() adevicelist = mp.get_property_native("audio-device-list") adevicelist_fin(1, #adevicelist, 1) end)
@@ -552,6 +630,9 @@ mp.add_key_binding(nil, "mark_aid_merge", mark_aid_merge)
 mp.add_key_binding(nil, "mark_aid_reset", function() mark_aid_reset() mp.osd_message("已取消并轨和标记", 1) end)
 mp.add_key_binding(nil, "mark_aid_fin", mark_aid_fin)
 
+mp.add_key_binding(nil, "ostime_display", ostime_display)
+mp.add_key_binding(nil, "ostime_toggle", ostime_toggle)
+
 mp.add_key_binding(nil, "playlist_order_0", function() playlist_order(0) end)
 mp.add_key_binding(nil, "playlist_order_0r", function() playlist_order(0, true) end)
 mp.add_key_binding(nil, "playlist_order_1", function() playlist_order(1) end)
@@ -562,14 +643,10 @@ mp.add_key_binding(nil, "playlist_tmp_load", playlist_tmp_load)
 mp.add_key_binding(nil, "quit_real", quit_real)
 mp.add_key_binding(nil, "quit_wait", quit_wait)
 
-mp.add_key_binding(nil, "seek_auto_back", function() seek_auto(-1) end, {repeatable = true})
-mp.add_key_binding(nil, "seek_auto_next", function() seek_auto(1) end, {repeatable = true})
-mp.add_key_binding(nil, "seek_skip_back", function() seek_skip(-1) end)
-mp.add_key_binding(nil, "seek_skip_next", function() seek_skip(1) end)
-
 mp.add_key_binding(nil, "speed_auto", speed_auto, {complex = true})
 mp.add_key_binding(nil, "speed_auto_bullet", speed_auto_bullet, {complex = true})
 mp.add_key_binding(nil, "speed_recover", speed_recover)
+mp.add_key_binding(nil, "speed_sync_toggle", speed_sync_toggle)
 
 mp.add_key_binding(nil, "stats_1_2", function() stats_cycle(1, 2) end)
 mp.add_key_binding(nil, "stats_0_4", function() stats_cycle(0, 4) end)
@@ -584,3 +661,5 @@ mp.add_key_binding(nil, "trackV_next", function() track_seek("vid", 1) end)
 mp.add_key_binding(nil, "trackA_refresh", function() track_refresh("aid") end)
 mp.add_key_binding(nil, "trackS_refresh", function() track_refresh("sid") end)
 mp.add_key_binding(nil, "trackV_refresh", function() track_refresh("vid") end)
+
+mp.register_script_message("cycle-cmds", cycle_cmds)

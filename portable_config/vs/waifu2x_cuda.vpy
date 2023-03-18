@@ -46,7 +46,7 @@ cut2 = Waifu2x(clip=cut1, noise=Noise, scale=Scale, model=Waifu2xModel.upconv_7_
 	num_streams=GPU_t, force_fp16=True, output_format=1,
 	workspace=None if WS_size < 128 else (WS_size if St_eng else WS_size * 2), use_cuda_graph=True,
 	static_shape=St_eng, min_shapes=[0, 0] if St_eng else [64, 64],
-	opt_shapes=None if St_eng else ([1280, 720] if Lt_HD else [1920, 1080]), max_shapes=None if St_eng else ([1280, 720] if Lt_HD else [2048, 1080]),
+	opt_shapes=None if St_eng else ([1920, 1080] if Lt_HD else [1280, 720]), max_shapes=None if St_eng else ([2048, 1080] if Lt_HD else [1280, 720]),
 	use_cublas=False, use_cudnn=False, device_id=GPU))
 output = core.resize.Bilinear(clip=cut2, format=vs.YUV420P8 if Lk_fmt else fmt_out, matrix_s="709", range=1 if colorlv==0 else None)
 

@@ -16,6 +16,7 @@ fmt_in = input.format.id
 ############
 
 Lt_D2K = False
+Sc_mode = 1
 FPS_num = 2
 GPU = 0
 GPU_t = 2
@@ -23,6 +24,7 @@ St_eng = False
 WS_size = 0
 Lk_fmt = False
 ## 是否对超过DCI2K分辨率的源进行补帧
+## <0|1|2> 场景切换检测的模式，0为禁用
 ## 补帧倍率（整数）
 ## 使用的显卡序号，0为排序一号
 ## 使用的显卡线程数
@@ -49,7 +51,14 @@ tile_size = 32 / scale_model
 w_tmp = math.ceil(w_in / tile_size) * tile_size - w_in
 h_tmp = math.ceil(h_in / tile_size) * tile_size - h_in
 
-cut0 = core.misc.SCDetect(clip=input, threshold=0.15)
+if Sc_mode == 0 :
+	cut0 = input
+elif Sc_mode == 1 :
+	cut0 = core.misc.SCDetect(clip=input, threshold=0.15)
+elif Sc_mode == 2 :
+	sup = core.mv.Super(clip=input, pel=1)
+	vec = core.mv.Analyse(super=sup, isb=True)
+	cut0 = core.mv.SCDetection(clip=input, vectors=vec, thscd1=240, thscd2=130)
 
 cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
 cut2 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)

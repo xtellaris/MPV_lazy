@@ -19,7 +19,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Profile description: Slow, tuned for anime/cartoons with ringing and/or medium noise, may be useful for other content.
+// Profile description: Experimental luma-guided chroma denoising, kinda similar to KrigBilateral
 
 /* The recommended usage of this shader and its variant profiles is to add them 
  * to input.conf and then dispatch the appropriate shader via a keybind during 
@@ -86,71 +86,35 @@
  * 	- PD
  */
 
-//!HOOK LUMA
 //!HOOK CHROMA
-//!HOOK RGB
-//!BIND HOOKED
 //!DESC Non-local means (downscale)
-//!SAVE PRERF
-//!WIDTH HOOKED.w 2 /
-//!HEIGHT HOOKED.h 2 /
+//!WIDTH LUMA.w 3 /
+//!HEIGHT LUMA.h 3 /
+//!BIND LUMA
+//!SAVE EP
 
 vec4 hook()
 {
-	return HOOKED_texOff(0);
+	return LUMA_texOff(0);
 }
 
-//!HOOK LUMA
 //!HOOK CHROMA
-//!HOOK RGB
-//!BIND HOOKED
-//!DESC Non-local means (undownscale)
-//!BIND PRERF
+//!DESC Non-local means (share)
+//!BIND LUMA
 //!SAVE RF
-//!WIDTH HOOKED.w
-//!HEIGHT HOOKED.h
 
 vec4 hook()
 {
-	return PRERF_texOff(0);
+	return LUMA_texOff(0);
 }
 
-//!HOOK LUMA
 //!HOOK CHROMA
-//!HOOK RGB
 //!BIND HOOKED
-//!DESC Non-local means (downscale)
-//!SAVE PRERF_LUMA
-//!WIDTH HOOKED.w 2.0 /
-//!HEIGHT HOOKED.h 2.0 /
-
-vec4 hook()
-{
-	return HOOKED_texOff(0);
-}
-
-//!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
-//!BIND HOOKED
-//!DESC Non-local means (undownscale)
-//!BIND PRERF_LUMA
-//!SAVE RF_LUMA
-//!WIDTH HOOKED.w
-//!HEIGHT HOOKED.h
-
-vec4 hook()
-{
-	return PRERF_LUMA_texOff(0);
-}
-
-//!HOOK LUMA
-//!HOOK CHROMA
-//!HOOK RGB
-//!BIND HOOKED
+//!BIND EP
 //!BIND RF
-//!BIND RF_LUMA
-//!DESC Non-local means (nlmeans_anime_medium.glsl)
+//!DESC Non-local means (nlmeans_lgc.glsl)
+//!WIDTH LUMA.w
+//!HEIGHT LUMA.h
 
 /* User variables
  *
@@ -176,13 +140,13 @@ vec4 hook()
  * patch/research sizes.
  */
 #ifdef LUMA_raw
-#define S 3
+#define S 2.25
 #define P 3
 #define R 5
 #else
-#define S 3
+#define S 0.125
 #define P 3
-#define R 5
+#define R 3
 #endif
 
 /* Adaptive sharpening
@@ -217,9 +181,9 @@ vec4 hook()
  * e.g., SW=max(avg_weight, EPSILON)
  */
 #ifdef LUMA_raw
-#define SW 0.5
+#define SW 1.0
 #else
-#define SW 0.5
+#define SW 1.0
 #endif
 
 /* Weight discard
@@ -241,7 +205,7 @@ vec4 hook()
 #define WDT 1.0
 #define WDP 6.0
 #else
-#define WD 2
+#define WD 1
 #define WDT 1.0
 #define WDP 6.0
 #endif
@@ -284,11 +248,11 @@ vec4 hook()
  * RFI (0 to 2): Reflectional invariance
  */
 #ifdef LUMA_raw
-#define RI 0
-#define RFI 0
+#define RI 3
+#define RFI 2
 #else
-#define RI 0
-#define RFI 0
+#define RI 3
+#define RFI 2
 #endif
 
 /* Temporal denoising
@@ -335,13 +299,13 @@ vec4 hook()
  * PSD: intra-patch spatial distortion (X, Y)
  */
 #ifdef LUMA_raw
-#define SS 0.0
+#define SS 0.25
 #define SD vec3(1,1,1)
 #define PST 0
 #define PSS 0.0
 #define PSD vec2(1,1)
 #else
-#define SS 0.0
+#define SS 0.25
 #define SD vec3(1,1,1)
 #define PST 0
 #define PSS 0.0
@@ -359,7 +323,7 @@ vec4 hook()
  * BP: EP strength on bright patches, 0 to fully denoise
  */
 #ifdef LUMA_raw
-#define EP 0
+#define EP 1
 #define BP 0.75
 #define DP 0.25
 #else
@@ -387,14 +351,36 @@ vec4 hook()
  * factor is set to 3.
  */
 #ifdef LUMA_raw
-#define RF 1
+#define RF 0
 #else
 #define RF 1
 #endif
 
-/* Estimator
+/* Blur factor
  *
- * Don't change this setting.
+ * 0 to 1, only useful for alternative estimators. You're probably looking for 
+ * "S" (denoising factor), go back to the top of the shader!
+ */
+#ifdef LUMA_raw
+#define BF 1.0
+#else
+#define BF 1.0
+#endif
+
+/* ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS */
+/* ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS */
+/* ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS */
+/* ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS */
+/* ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS * ADVANCED OPTIONS */
+
+// Scaling factor (should match WIDTH/HEIGHT)
+#ifdef LUMA_raw
+#define SF 1
+#else
+#define SF 1
+#endif
+
+/* Estimator
  *
  * 0: means
  * 1: Euclidean medians (extremely slow, may be good for heavy noise)
@@ -407,27 +393,18 @@ vec4 hook()
 #define M 0
 #endif
 
-/* Patch donut
- *
- * If enabled, ignores center pixel of patch comparisons.
- *
- * Not sure if this is any use? May be removed at any time.
- */
+// Patch donut (probably useless)
 #ifdef LUMA_raw
 #define PD 0
 #else
 #define PD 0
 #endif
 
-/* Blur factor
- *
- * 0 to 1, only useful for alternative estimators. You're probably looking for 
- * "S" (denoising factor), go back to the top of the shader!
- */
+// Duplicate 1st weight
 #ifdef LUMA_raw
-#define BF 1.0
+#define D1W 0
 #else
-#define BF 1.0
+#define D1W 1
 #endif
 
 /* Shader code */
@@ -571,13 +548,17 @@ const float p_scale = 1.0/p_area;
 
 #if RF && defined(LUMA_raw)
 #define load2_(off) RF_LUMA_tex(RF_LUMA_pos + RF_LUMA_pt * vec2(off))
-#define gather_offs(off) (RF_LUMA_mul * vec4(textureGatherOffsets(RF_LUMA_raw, RF_LUMA_pos + vec2(off) * RF_LUMA_pt, offsets)))
-#define gather(off) RF_LUMA_gather(RF_LUMA_pos + (off)*RF_LUMA_pt, 0)
+#define gather_offs(off, off_arr) (RF_LUMA_mul * vec4(textureGatherOffsets(RF_LUMA_raw, RF_LUMA_pos + vec2(off) * RF_LUMA_pt, off_arr)))
+#define gather(off) RF_LUMA_gather(RF_LUMA_pos + (off) * RF_LUMA_pt, 0)
+#elif RF && D1W
+#define load2_(off) RF_tex(RF_pos + RF_pt * vec2(off))
+#define gather_offs(off, off_arr) (RF_mul * vec4(textureGatherOffsets(RF_raw, RF_pos + vec2(off) * RF_pt, off_arr)))
+#define gather(off) RF_gather(RF_pos + (off) * RF_pt, 0)
 #elif RF
 #define load2_(off) RF_tex(RF_pos + RF_pt * vec2(off))
 #else
 #define load2_(off) HOOKED_tex(HOOKED_pos + HOOKED_pt * vec2(off))
-#define gather_offs(off) (HOOKED_mul * vec4(textureGatherOffsets(HOOKED_raw, HOOKED_pos + vec2(off) * HOOKED_pt, offsets)))
+#define gather_offs(off, off_arr) (HOOKED_mul * vec4(textureGatherOffsets(HOOKED_raw, HOOKED_pos + vec2(off) * HOOKED_pt, off_arr)))
 #define gather(off) HOOKED_gather(HOOKED_pos + (off)*HOOKED_pt, 0)
 #endif
 
@@ -600,6 +581,7 @@ vec4 load2(vec3 off)
 #endif
 
 vec4 poi = load(vec3(0)); // pixel-of-interest
+vec4 poi2 = load2(vec3(0)); // guide pixel-of-interest
 
 #if RI // rotation
 vec2 rot(vec2 p, float d)
@@ -635,7 +617,7 @@ vec4 patch_comparison(vec3 r, vec3 r2)
 		vec4 pdiff_sq = vec4(0);
 		FOR_PATCH(p) {
 			vec3 transformed_p = vec3(ref(rot(p.xy, ri), rfi), p.z);
-			vec4 diff_sq = pow(load(p + r2) - load2(transformed_p + r), vec4(2));
+			vec4 diff_sq = pow(load2(p + r2) - load2((transformed_p + r) * SF), vec4(2));
 #if PST && P >= PST
 			float pdist = exp(-pow(length(p.xy*PSD)*PSS, 2));
 			diff_sq = pow(max(diff_sq, EPSILON), vec4(pdist));
@@ -651,14 +633,15 @@ vec4 patch_comparison(vec3 r, vec3 r2)
 #define NO_GATHER (PD == 0) // never textureGather if any of these conditions are false
 #define REGULAR_ROTATIONS (RI == 0 || RI == 1 || RI == 3)
 
-#if defined(LUMA_gather) && ((PS == 3 || PS == 7) && P == 3) && PST == 0 && M != 1 && REGULAR_ROTATIONS && NO_GATHER
+#if (defined(LUMA_gather) || D1W) && ((PS == 3 || PS == 7) && P == 3) && PST == 0 && M != 1 && REGULAR_ROTATIONS && NO_GATHER
 // 3x3 diamond/plus patch_comparison_gather
 const ivec2 offsets[4] = { ivec2(0,-1), ivec2(-1,0), ivec2(0,1), ivec2(1,0) };
-vec4 poi_patch = gather_offs(0);
+const ivec2 offsets_sf[4] = { ivec2(0,-1) * SF, ivec2(-1,0) * SF, ivec2(0,1) * SF, ivec2(1,0) * SF };
+vec4 poi_patch = gather_offs(0, offsets);
 vec4 patch_comparison_gather(vec3 r, vec3 r2)
 {
 	float min_rot = p_area - 1;
-	vec4 transformer = gather_offs(r);
+	vec4 transformer = gather_offs(r, offsets_sf);
 	FOR_ROTATION {
 		FOR_REFLECTION {
 			float diff_sq = dot(pow(poi_patch - transformer, vec4(2)), vec4(1));
@@ -677,9 +660,9 @@ vec4 patch_comparison_gather(vec3 r, vec3 r2)
 		transformer = transformer.zwxy;
 #endif
 	}
-	return vec4(min_rot + pow(poi.x - load2(r).x, 2), 0, 0, 0) * p_scale;
+	return vec4(min_rot + pow(poi2.x - load2(r).x, 2), 0, 0, 0) * p_scale;
 }
-#elif defined(LUMA_gather) && PS == 6 && REGULAR_ROTATIONS && NO_GATHER
+#elif (defined(LUMA_gather) || D1W) && PS == 6 && REGULAR_ROTATIONS && NO_GATHER
 // tiled even square patch_comparison_gather
 vec4 patch_comparison_gather(vec3 r, vec3 r2)
 {
@@ -789,6 +772,10 @@ vec4 hook()
 		me_weight += weight.x;
 #endif
 
+#if D1W
+		weight = vec4(weight.x);
+#endif
+
 		weight *= exp(-pow(length(r*SD)*SS, 2)); // spatial kernel
 
 #if WD == 2 || M == 3 // weight discard, weighted median intensity
@@ -887,7 +874,7 @@ vec4 hook()
 #endif
 
 #if EP // extremes preserve
-	float luminance = EP_LUMA_texOff(0).x;
+	float luminance = EP_texOff(0).x;
 	// EPSILON is needed since pow(0,0) is undefined
 	float ep_weight = pow(max(min(1-luminance, luminance)*2, EPSILON), (luminance < 0.5 ? DP : BP));
 	result = mix(poi, result, ep_weight);
