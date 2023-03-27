@@ -335,18 +335,18 @@ function mark_aid_fin()
 end
 
 
+local ostime_msg = mp.create_osd_overlay("ass-events")
 local ostime_showing = false
-local ostime_style = "{\\rDefault\\fnmpv-osd-symbols\\fs55\\an9\\b1\\1c&H01DBF1\\3c&H000000}"
+local ostime_style = "{\\rDefault\\fnmpv-osd-symbols\\fs30\\bord2\\an9\\alpha&H80\\1c&H01DBF1\\3c&H000000}"
 function draw_ostime()
 	local ostime = os.date("*t")
-	local ostime_msg = mp.create_osd_overlay("ass-events")
 	ostime_msg.data = ostime_style .. "\238\128\134 " .. string.format("%02d:%02d:%02d", ostime.hour, ostime.min, ostime.sec)
 	ostime_msg:update()
-	mp.add_timeout(1, function() ostime_msg:remove() end)
 end
 function ostime_toggle()
 	if ostime_showing then
 		ostime_timer:kill()
+		ostime_msg:remove()
 		ostime_showing = false
 	else
 		ostime_timer = mp.add_periodic_timer(1, draw_ostime)
@@ -354,9 +354,17 @@ function ostime_toggle()
 	end
 end
 function ostime_display()
+	if ostime_showing then
+		return
+	end
 	draw_ostime()
-	mp.add_timeout(1, draw_ostime)
-	mp.add_timeout(2, draw_ostime)
+	mp.add_timeout(1, function()
+		ostime_msg:remove()
+		draw_ostime()
+	end)
+	mp.add_timeout(2, function()
+		ostime_msg:remove()
+	end)
 end
 
 

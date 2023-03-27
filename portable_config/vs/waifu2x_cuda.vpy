@@ -1,9 +1,8 @@
-### waifu2x 放大或降噪，性能要求非常高，N卡专用
+### waifu2x (upconv_7_anime_style_art_rgb) 放大或降噪，性能要求非常高，N卡专用
 
 import vapoursynth as vs
 from vapoursynth import core
-import math
-from vsmlrt import Waifu2x, Waifu2xModel, BackendV2
+from vsmlrt import Waifu2x, BackendV2
 
 input = video_in
 w_in, h_in = input.width, input.height
@@ -42,12 +41,13 @@ if fmt_in not in [vs.YUV410P8, vs.YUV411P8, vs.YUV420P8, vs.YUV422P8, vs.YUV444P
 	fmt_out = vs.YUV420P10
 
 cut1 = input.resize.Bilinear(format=vs.RGBH, matrix_in_s="709")
-cut2 = Waifu2x(clip=cut1, noise=Noise, scale=Scale, model=Waifu2xModel.upconv_7_anime_style_art_rgb, backend=BackendV2.TRT(
+cut2 = Waifu2x(clip=cut1, noise=Noise, scale=Scale, model=3, backend=BackendV2.TRT(
 	num_streams=GPU_t, force_fp16=True, output_format=1,
-	workspace=None if WS_size < 128 else (WS_size if St_eng else WS_size * 2), use_cuda_graph=True,
+	workspace=None if WS_size < 128 else (WS_size if St_eng else WS_size * 2),
+	use_cuda_graph=True, use_cublas=False, use_cudnn=False,
 	static_shape=St_eng, min_shapes=[0, 0] if St_eng else [64, 64],
 	opt_shapes=None if St_eng else ([1920, 1080] if Lt_HD else [1280, 720]), max_shapes=None if St_eng else ([2048, 1080] if Lt_HD else [1280, 720]),
-	use_cublas=False, use_cudnn=False, device_id=GPU))
+	device_id=GPU))
 output = core.resize.Bilinear(clip=cut2, format=vs.YUV420P8 if Lk_fmt else fmt_out, matrix_s="709", range=1 if colorlv==0 else None)
 
 output.set_output()
