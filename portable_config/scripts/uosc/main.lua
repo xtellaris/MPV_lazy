@@ -79,7 +79,7 @@ defaults = {
 	autoload_types = 'video',
 	shuffle = false,
 
-	ui_scale = 1,
+	ui_scale = 0,                             -- UI缩放倍率
 	font_scale = 1,
 	font_bold = false,
 	text_border = 1.2,
@@ -122,6 +122,27 @@ if options.autoload then mp.commandv('set', 'keep-open-pause', 'no') end
 -- Color shorthands
 fg, bg = serialize_rgba(options.foreground).color, serialize_rgba(options.background).color
 fgt, bgt = serialize_rgba(options.foreground_text).color, serialize_rgba(options.background_text).color
+-- 禁用DPI探测时的UI倍率自动计算
+function auto_ui_scale()
+	local display_w, display_h = mp.get_property_number('display-width', 0), mp.get_property_number('display-height', 0)
+	local display_aspect = display_w / display_h or 0
+	if display_aspect <= 1 then
+		options.ui_scale = 1
+		msg.warn('检测到异常的显示器分辨率，回退选项 ui_scale 为1')
+		return
+	end
+	local display_aspect_shift = display_aspect / (16 / 9)
+	if display_aspect_shift >=2 then
+		options.ui_scale = tonumber(string.format("%.2f", display_h / 1080))
+		msg.info('检测到超宽显示器，建议手动指定选项 ui_scale')
+		return
+	end
+	if display_w * display_h > 2304000 then
+		options.ui_scale = tonumber(string.format("%.2f", math.sqrt(display_w * display_h / 2073600)))
+	else
+		options.ui_scale = 1
+	end
+end
 
 --[[ CONFIG ]]
 
@@ -370,9 +391,19 @@ require('lib/menus')
 --[[ STATE UPDATERS ]]
 
 function update_display_dimensions()
-	local scale = (state.hidpi_scale or 1) * options.ui_scale
 	local real_width, real_height = mp.get_osd_size()
 	if real_width <= 0 then return end
+
+	-- 此处起才能获取到显示分辨率的信息
+	if options.ui_scale <= 0 then
+		if mp.get_property_native('hidpi-window-scale') then
+			options.ui_scale = 1
+		else
+			auto_ui_scale()
+		end
+	end
+
+	local scale = (state.hidpi_scale or 1) * options.ui_scale
 	local scaled_width, scaled_height = round(real_width / scale), round(real_height / scale)
 	display.width, display.height = scaled_width, scaled_height
 	display.scale_x, display.scale_y = real_width / scaled_width, real_height / scaled_height
