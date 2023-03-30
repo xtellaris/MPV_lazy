@@ -574,7 +574,7 @@ function stats_cycle(num_init, num_end)
 		show_page = num_init - 1
 	end
 	show_page = show_page + 1
-	mp.command("script-binding stats/display-page-" .. show_page)
+	mp.command("script-binding display-page-" .. show_page)
 end
 
 

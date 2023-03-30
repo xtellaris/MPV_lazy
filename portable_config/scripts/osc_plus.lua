@@ -2536,14 +2536,14 @@ function osc_init()
 
     ne.content = "\238\132\135"
     ne.eventresponder["mbtn_left_up"] =
-        function () mp.commandv("script-binding", "stats/display-stats-toggle") end
+        function () mp.commandv("script-binding", "display-stats-toggle") end
     ne.eventresponder["mbtn_right_up"] =
-        function () mp.commandv("script-binding", "stats/display-page-4") end
+        function () mp.commandv("script-binding", "display-page-4") end
 
     ne.eventresponder["wheel_up_press"] =
-        function () mp.commandv("script-binding", "stats/display-page-1") end
+        function () mp.commandv("script-binding", "display-page-1") end
     ne.eventresponder["wheel_down_press"] =
-        function () mp.commandv("script-binding", "stats/display-page-2") end
+        function () mp.commandv("script-binding", "display-page-2") end
 
     -- load layout
     layouts[user_opts.layout]()

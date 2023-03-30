@@ -620,12 +620,12 @@ menuList = {
 
 -- 二级菜单 —— 其它
     etc_menu = {
-        {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding stats/display-stats-toggle", "", false},
-        {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding stats/display-page-1", "", false},
-        {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding stats/display-page-2", "", false},
-        {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding stats/display-page-3", "", false},
-        {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding stats/display-page-4", "", false},
-        {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding stats/display-page-0", "", false},
+        {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding display-stats-toggle", "", false},
+        {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding display-page-1", "", false},
+        {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding display-page-2", "", false},
+        {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding display-page-3", "", false},
+        {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding display-page-4", "", false},
+        {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding display-page-0", "", false},
         {COMMAND, "【内部脚本】控制台", "", "script-binding console/enable", "", false},
     },
 
@@ -897,12 +897,12 @@ local function playmenuList()
 
 -- 二级菜单 —— 其它
         etc_menu = {
-            {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding stats/display-stats-toggle", "", false},
-            {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding stats/display-page-1", "", false},
-            {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding stats/display-page-2", "", false},
-            {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding stats/display-page-3", "", false},
-            {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding stats/display-page-4", "", false},
-            {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding stats/display-page-0", "", false},
+            {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding display-stats-toggle", "", false},
+            {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding display-page-1", "", false},
+            {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding display-page-2", "", false},
+            {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding display-page-3", "", false},
+            {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding display-page-4", "", false},
+            {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding display-page-0", "", false},
             {COMMAND, "【内部脚本】控制台", "", "script-binding console/enable", "", false},
         },
 

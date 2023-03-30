@@ -131,14 +131,13 @@ function auto_ui_scale()
 		msg.warn('检测到异常的显示器分辨率，回退选项 ui_scale 为1')
 		return
 	end
-	local display_aspect_shift = display_aspect / (16 / 9)
-	if display_aspect_shift >=2 then
-		options.ui_scale = tonumber(string.format("%.2f", display_h / 1080))
+	if display_aspect >=2 then
+		options.ui_scale = tonumber(string.format('%.2f', display_h / 1080))
 		msg.info('检测到超宽显示器，建议手动指定选项 ui_scale')
 		return
 	end
 	if display_w * display_h > 2304000 then
-		options.ui_scale = tonumber(string.format("%.2f", math.sqrt(display_w * display_h / 2073600)))
+		options.ui_scale = tonumber(string.format('%.2f', math.sqrt(display_w * display_h / 2073600)))
 	else
 		options.ui_scale = 1
 	end
@@ -171,7 +170,7 @@ local function create_default_menu()
 			{title = '切换 时间码解析模式', value = 'cycle correct-pts'},
 		},},
 		{title = '工具', items = {
-			{title = '开关 常驻统计信息', value = 'script-binding stats/display-stats-toggle'},
+			{title = '开关 常驻统计信息', value = 'script-binding display-stats-toggle'},
 			{title = '显示控制台', value = 'script-binding console/enable'},
 			{title = '切换 窗口边框', value = 'cycle border'},
 			{title = '切换 窗口置顶', value = 'cycle ontop'},
@@ -462,6 +461,7 @@ function update_margins()
 	state.margin_bottom = bottom
 
 	utils.shared_script_property_set('osc-margins', string.format('%f,%f,%f,%f', 0, 0, top, bottom))
+	mp.set_property_native('user-data/osc/margins', { l = 0, r = 0, t = top, b = bottom })
 end
 function create_state_setter(name, callback)
 	return function(_, value)
