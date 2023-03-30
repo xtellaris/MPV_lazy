@@ -1,35 +1,46 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ bca516bd2c282670aa2c92663329e7d5ddf978e0
+COMMIT_ 292a5868cb60c481ae9eaed7d21e67dcff41938f
 
-改进版本的OSC，须禁用原始mpv的内置OSC，且不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
+改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
+（可选）mpv.conf的前置条件 --osc=no （否则个别功能不可用，例如 启动时显示OSC）
 
 示例在 input.conf 中写入：
 SHIFT+DEL   script-binding osc_plus/visibility   # 切换 osc_plus 的可见性
-]]--
+
+<KEY>   script-message-to osc_plus osc-visibility <值>   # <auto|always|never|cycle> 指定 osc_plus 的可见性
+<KEY>   script-message-to osc_plus osc-idlescreen <值>   # <yes|no|cycle> 指定空闲状态Logo的可见性
+]]
+
+-- 保持禁用原始OSC
+if mp.get_property_native("osc") then
+    local mouse_stat = mp.get_property_native("input-cursor")
+    if mouse_stat then
+        mp.set_property("input-cursor", "no")
+        mp.set_property("osc", "no")
+        mp.add_timeout(0.3, function() mp.set_property("input-cursor", "yes") end)
+    else
+        mp.set_property("osc", "no")
+    end
+    mp.msg.warn("建议启动前应用 --osc=no 以确保全部功能可用")
+end
+mp.observe_property("osc", "bool", function(_, value)
+    if value == true then
+        mp.set_property("osc", "no")
+        mp.msg.error("请勿在运行时修改 osc 属性！")
+    end
+end)
 
 local assdraw = require 'mp.assdraw'
 local msg = require 'mp.msg'
 local opt = require 'mp.options'
 local utils = require 'mp.utils'
 
-mp.observe_property("osc", "bool", function(_, value)
-    local info = "检测到原OSC的启用！"
-    if value == true then
-        mp.set_property("osc", "no")
-        mp.msg.warn(info)
-        local osm = mp.create_osd_overlay("ass-events")
-        osm.data = "{\\1c&H0099FF&\\an9}" .. info
-        osm:update()
-        mp.add_timeout(3, function() osm:remove() end)
-    end
-end)
-
 --
 -- Parameters
 --
--- default user option values
--- do not touch, change them in osc.conf
+-- 用户选项的默认值
+-- 应在 osc_plus.conf 中修改
 local user_opts = {
     showwindowed = true,                 -- show OSC when windowed?
     showfullscreen = true,               -- show OSC when fullscreen?
@@ -38,29 +49,29 @@ local user_opts = {
     scalefullscreen = 1,                 -- scaling of the controller when fullscreen
     scaleforcedwindow = 2,               -- scaling when rendered on a forced window
     vidscale = true,                     -- scale the controller with the video?
-    valign = 0.8,                        -- vertical alignment, -1 (top) to 1 (bottom)
-    halign = 0,                          -- horizontal alignment, -1 (left) to 1 (right)
+    valign = 0.8,                        -- <-1...1> 垂直对齐，1 为底部（不影响 bottombox 布局）
+    halign = 0,                          -- <-1...1> 水平对齐，1 为右侧（不影响 bottombox 布局）
     barmargin = 0,                       -- vertical margin of top/bottombar
-    boxalpha = 80,                       -- alpha of the background box, 0 (opaque) to 255 (fully transparent)
+    boxalpha = 80,                       -- <0...255> 背景透明度，255 为完全透明（不影响 bottombox 布局）
     hidetimeout = 500,                   -- duration in ms until the OSC hides if no mouse movement. enforced non-negative for the user, but internally negative is "always-on".
     fadeduration = 200,                  -- duration of fade out in ms, 0 = no fade
     deadzonesize = 0.5,                  -- size of deadzone
     minmousemove = 0,                    -- minimum amount of pixels the mouse has to move between ticks to make the OSC show up
     iamaprogrammer = false,              -- use native mpv values and disable OSC internal track list management (and some functions that depend on it)
-    layout = "bottombar",                -- 原版可选为 "bottombar" "topbar" "box" "slimbox" ；在此版本中新增 "bottombox"
+    layout = "bottombar",                -- <bottombar|topbar|bottombox|box|slimbox> 布局类型。此版新增 bottombox
     seekbarstyle = "bar",                -- bar, diamond or knob
     seekbarhandlesize = 0.6,             -- size ratio of the diamond and knob handle
     seekrangestyle = "inverted",         -- bar, line, slider, inverted or none
     seekrangeseparate = true,            -- whether the seekranges overlay on the bar-style seekbar
     seekrangealpha = 200,                -- transparency of seekranges
-    seekbarkeyframes = true,             -- use keyframes when dragging the seekbar       -- 现不受全局hr-seek的控制 
+    seekbarkeyframes = true,             -- 是否在拖动时间轴时使用关键帧（现不受全局 --hr-seek 的控制）
     title = "${media-title}",            -- string compatible with property-expansion to be shown as OSC title
     tooltipborder = 1,                   -- border of tooltip in bottom/topbar
-    timetotal = true,                    -- display total time instead of remaining time? -- 原版为false
+    timetotal = true,                    -- 是否显示总时间（否为剩余时间） 原版为 false
     timems = false,                      -- display timecodes with milliseconds?
     tcspace = 100,                       -- timecode spacing (compensate font size estimation)
     visibility = "auto",                 -- only used at init to set visibility_mode(...)
-    boxmaxchars = 150,                   -- title crop threshold for box layout           -- 原版为80
+    boxmaxchars = 150,                   -- box 类布局下的标题字符数限制（原版为 80 ）
     boxvideo = false,                    -- apply osc_param.video_margins to video
     windowcontrols = "auto",             -- whether to show window controls
     windowcontrols_alignment = "right",  -- which side to show window controls on
@@ -73,11 +84,13 @@ local user_opts = {
 
     -- 以下为此版本的独占选项
 
+    scale_shift = 1,                     -- 全局界面的缩放补偿系数
+    playing_msg = "",                    -- 类似 https://mpv.io/manual/master/#options-osd-playing-msg
     wctitle = "${media-title}",          -- 无边框的上方标题
-    sub_title = " ",                     -- bottombox布局的右侧子标题
+    sub_title = "",                      -- bottombox布局的右侧子标题
     sub_title2 = "对比[${contrast}]  明度[${brightness}]  伽马[${gamma}]  饱和[${saturation}]  色相[${hue}]",
                                          -- bottombox布局的临时右侧子标题
-    seekbar_scrollseek = "fast",         -- 进度条的滚轮跳转模式 "fast" "second" "frame" 。不受全局hr-seek的控制
+    seekbar_scrollseek = "fast",         -- <fast|second|frame> 进度条的滚轮跳转模式。不受全局hr-seek的控制
     showonpause = false,                 -- 在暂停时常驻 OSC
     showonstart = false,                 -- 在播放开始或当播放下一个文件时显示 OSC
     showonseek = false,                  -- 在跳转时显示 OSC
@@ -508,7 +521,7 @@ local elements = {}
 
 function prepare_elements()
 
-    -- remove elements without layout or invisble
+    -- remove elements without layout or invisible
     local elements2 = {}
     for n, element in pairs(elements) do
         if not (element.layout == nil) and (element.visible) then
@@ -2062,7 +2075,7 @@ function osc_init()
         scale = user_opts.scalewindowed
     end
     
-    scale = scale * mp.get_property_native("display-hidpi-scale", 1.0) -- 纳入dpi系数计算缩放
+    scale = scale * mp.get_property_native("display-hidpi-scale", 1.0) * user_opts.scale_shift -- 纳入dpi系数计算缩放
 
     if user_opts.vidscale then
         osc_param.unscaled_y = baseResY
@@ -2123,7 +2136,7 @@ function osc_init()
                       mp.command_native({"expand-text", user_opts.sub_title})
         -- escape ASS, and strip newlines and trailing slashes
         title = title:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{")
-        return not (title == "") and title or "mpv"
+        return title
     end
 
     -- playlist buttons
@@ -2593,11 +2606,13 @@ function update_margins()
 
     utils.shared_script_property_set("osc-margins",
         string.format("%f,%f,%f,%f", margins.l, margins.r, margins.t, margins.b))
+    mp.set_property_native("user-data/osc/margins", margins)
 end
 
 function shutdown()
     reset_margins()
     utils.shared_script_property_set("osc-margins", nil)
+    mp.del_property("user-data/osc")
 end
 
 --
@@ -2732,7 +2747,7 @@ function render()
 
     -- init management
     if state.active_element then
-        -- mouse is held down on some element - keep ticking and igore initReq
+        -- mouse is held down on some element - keep ticking and ignore initReq
         -- till it's released, or else the mouse-up (click) will misbehave or
         -- get ignored. that's because osc_init() recreates the osc elements,
         -- but mouse handling depends on the elements staying unmodified
@@ -3264,6 +3279,7 @@ function visibility_mode(mode, no_osd)
 
     user_opts.visibility = mode
     utils.shared_script_property_set("osc-visibility", mode)
+    mp.set_property_native("user-data/osc/visibility", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
         mp.osd_message("OSC的可见性：" .. mode)
@@ -3296,6 +3312,7 @@ function idlescreen_visibility(mode, no_osd)
     end
 
     utils.shared_script_property_set("osc-idlescreen", mode)
+    mp.set_property_native("user-data/osc/idlescreen", user_opts.idlescreen)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
         mp.osd_message("OSC logo的可见性：" .. tostring(mode))
@@ -3309,6 +3326,31 @@ mp.register_script_message("osc-visibility", visibility_mode)
 mp.add_key_binding(nil, "visibility", function() visibility_mode("cycle") end)
 
 mp.register_script_message("osc-idlescreen", idlescreen_visibility)
+
+-- 实验性的 "osc-playing-msg"
+if user_opts.playing_msg ~= nil then
+    local osc_playing_msg = mp.create_osd_overlay("ass-events")
+    local opm_id = nil
+    mp.register_event("file-loaded", function()
+        path_updated = true
+        local info = mp.command_native({"expand-text", user_opts.playing_msg})
+        osc_playing_msg.data = info
+        osc_playing_msg:update()
+        if opm_id ~= nil then
+            mp.cancel_timer(opm_id)
+        end
+        opm_id = mp.add_timeout(3, function()
+            osc_playing_msg:remove()
+            opm_id = nil
+        end)
+    end)
+    mp.register_event("end-file", function()
+        if opm_id ~= nil then
+            mp.cancel_timer(opm_id)
+            opm_id = nil
+        end
+    end)
+end
 
 -- 关联 thumbfast.lua
 mp.register_script_message("thumbfast-info", function(json)
