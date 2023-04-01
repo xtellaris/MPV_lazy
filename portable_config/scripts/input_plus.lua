@@ -37,6 +37,8 @@ input.conf 示例：
  CLOSE_WIN            script-binding input_plus/quit_real           # 对执行退出命令前的确认（防止误触）
 #                     script-binding input_plus/quit_wait           # 延后退出命令的执行（执行前再次触发可取消）
 
+#                     script-binding input_plus/sids_sec_swap       # 双字幕的主次交换
+
  b                    script-binding input_plus/speed_auto          # [按住/松开] 两倍速/一倍速
 #                     script-binding input_plus/speed_auto_bullet   # [按住/松开] 子弹时间/一倍速
 #                     script-binding input_plus/speed_recover       # 仿Pot的速度重置与恢复
@@ -190,12 +192,12 @@ function info_get()
 	style_generic.."-   帧率： ".."{\\1c&H03A89E}"..fps_o.." FPS（原始） "..fps_t.." FPS（目标）".."\n"..
 	style_generic.."-   码率： ".."{\\1c&H03A89E}"..bitrateV.." kbps（当前）".."\n"..
 	style_generic.."音频 ┓".."\n"..
-	style_generic.."-   输出： ".."{\\1c&H9EA803}"..mp.get_property_native("current-ao", "...").."\n"..
-	style_generic.."-   设备： ".."{\\1c&H9EA803}"..mp.get_property_native("audio-device", "...").."\n"..
+	style_generic.."-   输出： ".."{\\1c&H9EA803}"..mp.get_property_native("current-ao", "...").."【设备】"..mp.get_property_native("audio-device", "...").."\n"..
 	style_generic.."-   编码： ".."{\\1c&H9EA803}"..mp.get_property_native("audio-codec", "...").."\n"..
 	style_generic.."-   码率： ".."{\\1c&H9EA803}"..bitrateA.." kbps（当前）".."\n"..
 	style_generic.."着色器列： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("glsl-shaders"):gsub(":\\", "/"):gsub(":/", "/"):gsub("\\", "/"):gsub(";", " "):gsub(",", " "):gsub(":", " ").."\n"..
-	style_generic.."视频滤镜： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("vf"):gsub("%(empty%)", ""):gsub(" %[", "%["):gsub("%]\n", "%] "):gsub(" %(disabled%)", "（禁用）")
+	style_generic.."视频滤镜： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("vf"):gsub("%(empty%)", ""):gsub(" %[", "%["):gsub("%]\n", "%] "):gsub(" %(disabled%)", "（禁用）").."\n"..
+	style_generic.."音频滤镜： ".."{\\fs18\\1c&HFF8821}"..mp.get_property_osd("af"):gsub("%(empty%)", ""):gsub(" %[", "%["):gsub("%]\n", "%] "):gsub(" %(disabled%)", "（禁用）")
 	)
 	return tostring(txt)
 end
@@ -483,6 +485,19 @@ function quit_wait()
 end
 
 
+function sids_sec_swap()
+	local sid_main = mp.get_property_number("sid", 0)
+	local sid_sec = mp.get_property_number("secondary-sid", 0)
+	if sid_main == 0 and sid_sec == 0 then
+		return
+	end
+	mp.set_property_number("sid", 0)
+	mp.set_property_number("secondary-sid", 0)
+	mp.set_property_number("sid", sid_sec)
+	mp.set_property_number("secondary-sid", sid_main)
+end
+
+
 local bak_speed = nil
 local spd_adapt = false
 local spd_iters_max = 10
@@ -650,6 +665,8 @@ mp.add_key_binding(nil, "playlist_tmp_load", playlist_tmp_load)
 
 mp.add_key_binding(nil, "quit_real", quit_real)
 mp.add_key_binding(nil, "quit_wait", quit_wait)
+
+mp.add_key_binding(nil, "sids_sec_swap", sids_sec_swap)
 
 mp.add_key_binding(nil, "speed_auto", speed_auto, {complex = true})
 mp.add_key_binding(nil, "speed_auto_bullet", speed_auto_bullet, {complex = true})
