@@ -51,7 +51,7 @@ local o = {
     duration = 4,
     redraw_delay = 1,                -- acts as duration in the toggling case
     ass_formatting = true,
-    persistent_overlay = false,      -- whether the stats can be overwritten by other output
+    persistent_overlay = true,       -- 是否能被其它输出覆盖（原版默认为否）
     print_perfdata_passes = false,   -- when true, print the full information about all passes
     filter_params_max_length = 100,  -- a filter list longer than this many characters will be shown one filter per line instead
     debug = false,
@@ -692,6 +692,8 @@ local function add_file(s)
         append(s, format("%.1f", demuxer_secs), {prefix="(", suffix=" sec)", nl="",
                no_prefix_markup=true, prefix_sep="", indent=o.prefix_sep})
     end
+
+    append_property(s, "speed", {prefix="播放速度："})
 end
 
 
@@ -711,7 +713,7 @@ local function add_video(s)
 
     append(s, "", {prefix=o.nl .. o.nl .. "视频轨：", nl="", indent=""})
     if append_property(s, "video-codec", {prefix_sep="", nl="", indent=""}) then
-        append_property(s, "hwdec-current", {prefix="（硬解API：", nl="", indent="",
+        append_property(s, "hwdec-current", {prefix="（硬解 API：", nl="", indent="",
                          no_prefix_markup=true, suffix="）"}, {no=true, [""]=true})
     end
     append_property(s, "avsync", {prefix="音视频同步偏移："})
@@ -743,9 +745,20 @@ local function add_video(s)
     if append(s, scaled_width, {prefix="缩放分辨率："}) then
         append(s, scaled_height, {prefix="x", nl="", indent=" ", prefix_sep=" ", no_prefix_markup=true})
     end
-    append_property(s, "current-window-scale", {prefix="窗口缩放倍率："})
+    if not mp.get_property_native("fullscreen") then
+        append_property(s, "current-window-scale", {prefix="窗口缩放系数："})
+    end
+    if mp.get_property_native("keepaspect") and mp.get_property_number("video-zoom") ~= 0 then
+        append_property(s, "video-zoom", {prefix="显示缩放补偿："})
+    end
+    if not mp.get_property_native("video-unscaled") and mp.get_property_number("panscan") > 0 then
+        append_property(s, "panscan", {prefix="裁切缩放偏移："})
+    end
+    if mp.get_property_number("display-hidpi-scale") > 1 then
+        append_property(s, "display-hidpi-scale", {prefix="HIDPI 系数："})
+    end
     if r["aspect"] ~= nil then
-        append(s, format("%.2f", r["aspect"]), {prefix="画面宽高比率："})
+        append(s, format("%.2f", r["aspect"]), {prefix="宽高比："})
     end
     append(s, r["pixelformat"], {prefix="像素格式："})
     if r["hw-pixelformat"] ~= nil then
