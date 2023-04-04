@@ -5,9 +5,11 @@ COMMIT_ 08d81035bb5020f4caa326e642341f2e8af00ffe
 适配多个OSC类脚本的新缩略图引擎
 
 示例在 input.conf 中写入：
-CTRL+t   script-binding thumbfast/toggle   # 临时显示/隐藏缩略图
 
-]]--
+ Ctrl+Alt+t   script-binding thumbfast/thumb_rerun    # 重启缩略图的获取（修复缩略图卡死）
+ Ctrl+t       script-binding thumbfast/thumb_toggle   # 启用/禁用缩略图预览
+
+]]
 
 local options = {
 
@@ -635,13 +637,22 @@ mp.register_script_message("clear", clear)
 mp.register_event("file-loaded", file_load)
 mp.register_event("shutdown", shutdown)
 
-mp.add_key_binding(nil, "toggle", function()
+mp.add_key_binding(nil, "thumb_rerun", function()
+    clear()
+    shutdown()
+    auto_run = true
+    file_load()
+    mp.osd_message("缩略图功能已重启", 2)
+end)
+mp.add_key_binding(nil, "thumb_toggle", function()
     if auto_run then
         auto_run = false
-        mp.osd_message("缩略图功能已临时禁用", 2)
+        file_load()
+        shutdown()
+        mp.osd_message("缩略图功能已禁用", 2)
     else
         auto_run = true
-        mp.osd_message("缩略图功能已临时启用", 2)
+        file_load()
+        mp.osd_message("缩略图功能已启用", 2)
     end
-    file_load()
 end)
