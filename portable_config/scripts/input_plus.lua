@@ -81,11 +81,54 @@ local plat = check_plat()
 
 
 --
--- 函数设定
+-- 变量预设
 --
 
 local adevicelist = {}
 local target_ao = nil
+
+local chap_skip = false
+local chap_keywords = { 
+	"OP$", "opening$", "オープニング$",
+	"ED$", "ending$", "エンディング$",
+}
+
+local cmds_sqnum = {}
+
+local osm = mp.create_osd_overlay("ass-events")
+local osm_showing = false
+local style_generic = "{\\rDefault\\fnConsolas\\fs20\\blur1\\bord2\\1c&HFFFFFF\\3c&H000000}"
+
+local text_pasted = nil
+
+local marked_aid_A = nil
+local marked_aid_B = nil
+local merged_aid = false
+
+local ostime_msg = mp.create_osd_overlay("ass-events")
+local ostime_showing = false
+local ostime_style = "{\\rDefault\\fnmpv-osd-symbols\\fs30\\bord2\\an9\\alpha&H80\\1c&H01DBF1\\3c&H000000}"
+
+local shuffled = false
+local shuffling = false
+local save_path = mp.command_native({"expand-path", "~~/"}) .. "/playlist_temp.mpl"
+
+local pre_quit = false
+
+local bak_speed = nil
+local spd_adapt = false
+local spd_iters_max = 10
+local spd_delta_max = 0.5
+local spd_delta_min = 0.0005
+
+local show_page = 0
+
+
+
+--
+-- 函数设定
+--
+
 function adevicelist_pre(start)
 	mp.set_property("audio-device", adevicelist[start].name)
 	adevicelist[start].description = "■ " .. adevicelist[start].description
@@ -129,11 +172,6 @@ function adevicelist_fin(start, fin, step, dynamic)
 end
 
 
-local chap_skip = false
-local chap_keywords = { 
-	"OP$", "opening$", "オープニング$",
-	"ED$", "ending$", "エンディング$",
-}
 function chap_skip_toggle()
 	if chap_skip then
 		chap_skip = false
@@ -155,8 +193,7 @@ function chapter_change(_, value)
 end
 
 
-local cmds_sqnum = {}
-local function cycle_cmds(...)
+function cycle_cmds(...)
 	local cmds_list = {...}
 	local cur_cmd = table.concat(cmds_list, "|")
 	cmds_sqnum[cur_cmd] = (cmds_sqnum[cur_cmd] or 0) % #cmds_list + 1
@@ -164,9 +201,6 @@ local function cycle_cmds(...)
 end
 
 
-local osm = mp.create_osd_overlay("ass-events")
-local osm_showing = false
-local style_generic = "{\\rDefault\\fnConsolas\\fs20\\blur1\\bord2\\1c&HFFFFFF\\3c&H000000}"
 function info_get()
 	local conf_dir = mp.get_property_bool("config") and mp.command_native({"expand-path", "~~/"}) or "no"
 	local osd_dims = mp.get_property_native("osd-dimensions")
@@ -264,7 +298,6 @@ function copy_clipboard(clip)
 	end
 	return ""
 end
-local text_pasted = nil
 function load_clipboard(action, clip)
 	if not clip and (plat == "windows" or plat == "macos") then
 		return
@@ -279,9 +312,6 @@ function load_clipboard(action, clip)
 end
 
 
-local marked_aid_A = nil
-local marked_aid_B = nil
-local merged_aid = false
 function mark_aid_A()
 	marked_aid_A = mp.get_property_number("aid", 0)
 	if marked_aid_A == 0
@@ -337,9 +367,6 @@ function mark_aid_fin()
 end
 
 
-local ostime_msg = mp.create_osd_overlay("ass-events")
-local ostime_showing = false
-local ostime_style = "{\\rDefault\\fnmpv-osd-symbols\\fs30\\bord2\\an9\\alpha&H80\\1c&H01DBF1\\3c&H000000}"
 function draw_ostime()
 	local ostime = os.date("*t")
 	ostime_msg.data = ostime_style .. "\238\128\134 " .. string.format("%02d:%02d:%02d", ostime.hour, ostime.min, ostime.sec)
@@ -370,9 +397,6 @@ function ostime_display()
 end
 
 
-local shuffled = false
-local shuffling = false
-local save_path = mp.command_native({"expand-path", "~~/"}) .. "/playlist_temp.mpl"
 function show_playlist_shuffle()
 	mp.add_timeout(0.1, function()
 		local shuffle_msg = mp.command_native({"expand-text", "${playlist}"})
@@ -453,7 +477,6 @@ function playlist_tmp_load()
 end
 
 
-local pre_quit = false
 function quit_real()
 	if pre_quit then
 		mp.command("quit")
@@ -498,11 +521,6 @@ function sids_sec_swap()
 end
 
 
-local bak_speed = nil
-local spd_adapt = false
-local spd_iters_max = 10
-local spd_delta_max = 0.5
-local spd_delta_min = 0.0005
 function speed_auto(tab)
 	if tab.event == "down" then
 		mp.set_property_number("speed", 2)
@@ -580,7 +598,6 @@ function speed_sync_toggle()
 end
 
 
-local show_page = 0
 function stats_cycle(num_init, num_end)
 	if show_page < num_init then
 		show_page = num_init - 1
