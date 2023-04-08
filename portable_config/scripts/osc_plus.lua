@@ -10,6 +10,7 @@ SHIFT+DEL   script-binding osc_plus/visibility   # 切换 osc_plus 的可见性
 
 <KEY>   script-message-to osc_plus osc-visibility <值>   # <auto|always|never|cycle> 指定 osc_plus 的可见性
 <KEY>   script-message-to osc_plus osc-idlescreen <值>   # <yes|no|cycle> 指定空闲状态Logo的可见性
+<KEY>   script-message-to osc_plus osc_layout <值>       # <bottombar|topbar|bottombox|box|slimbox> 指定 osc_plus 的布局
 ]]
 
 -- 保持禁用原始OSC
@@ -18,7 +19,7 @@ if mp.get_property_native("osc") then
     if mouse_stat then
         mp.set_property("input-cursor", "no")
         mp.set_property("osc", "no")
-        mp.add_timeout(0.3, function() mp.set_property("input-cursor", "yes") end)
+        mp.add_timeout(0.5, function() mp.set_property("input-cursor", "yes") end)
     else
         mp.set_property("osc", "no")
     end
@@ -503,7 +504,7 @@ end
 function window_controls_enabled()
     val = user_opts.windowcontrols
     if val == "auto" then
-        return not state.border
+        return not state.border or state.fullscreen  -- 全屏时启用osc顶部控件
     else
         return val ~= "no"
     end
@@ -1164,14 +1165,14 @@ function add_layout(name)
     end
 end
 
--- Window Controls
+-- Window Controls -- 窗口控制按钮
 function window_controls(topbar)
     local wc_geo = {
         x = 0,
-        y = 30 + user_opts.barmargin,
+        y = 40 + user_opts.barmargin,
         an = 1,
         w = osc_param.playresx,
-        h = 30,
+        h = 40,
     }
 
     local alignment = window_controls_alignment()
@@ -1271,7 +1272,7 @@ function window_controls(topbar)
         osc_param.video_margins.t = wc_geo.h / osc_param.playresy
     end
 
-    -- Window Title
+    -- Window Title -- 无边框的窗口标题
     ne = new_element("wctitle", "button")
     ne.content = function ()
         local title = mp.command_native({"expand-text", user_opts.wctitle}) -- 独立于无边框的标题
@@ -1283,7 +1284,7 @@ function window_controls(topbar)
     local right_pad = 10
     lo = add_layout("wctitle")
     lo.geometry =
-        { x = titlebox_left + left_pad, y = wc_geo.y - 3, an = 1,
+        { x = titlebox_left + left_pad, y = wc_geo.y - 8, an = 1,
           w = titlebox_w, h = wc_geo.h }
     lo.style = string.format("%s{\\clip(%f,%f,%f,%f)}",
         osc_styles.wcTitle,
@@ -3326,6 +3327,28 @@ mp.register_script_message("osc-visibility", visibility_mode)
 mp.add_key_binding(nil, "visibility", function() visibility_mode("cycle") end)
 
 mp.register_script_message("osc-idlescreen", idlescreen_visibility)
+
+-- 运行时变更布局
+function osc_layout(layout, no_osd)
+    if layout == "bottombar" then
+        user_opts.layout = "bottombar"
+    elseif layout == "topbar" then
+        user_opts.layout = "topbar"
+    elseif layout == "bottombox" then
+        user_opts.layout = "bottombox"
+    elseif layout == "box" then
+        user_opts.layout = "box"
+    elseif layout == "slimbox" then
+        user_opts.layout = "slimbox"
+    else
+        return
+    end
+    if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
+        mp.osd_message("OSC 的布局：" .. tostring(layout))
+    end
+    update_options(list)
+end
+mp.register_script_message("osc_layout", osc_layout)
 
 -- 实验性的 "osc-playing-msg"
 if user_opts.playing_msg ~= nil then
