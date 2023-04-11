@@ -20,9 +20,9 @@ COMMIT_ 04fe818fc703d8c5dcc3a6aabe1caeed8286bdbb
  CTRL+e   script-binding load_plus/remove_vfSub   # 移除次字幕（滤镜型）
 ]]
 
-local msg = require 'mp.msg'
-local options = require 'mp.options'
-local utils = require 'mp.utils'
+local msg = require "mp.msg"
+local options = require "mp.options"
+local utils = require "mp.utils"
 
 opt = {
 	level = -1,              -- <-1|0|1> 自动填充的等级，分别对应 按预设条件/始终阻止/仅近似名文件
@@ -62,16 +62,16 @@ if opt.video_ext ~= "default" then
 	EXTENSIONS_VIDEO = Set (video_ext_tab)
 else
 	EXTENSIONS_VIDEO = Set {
-		'3g2','3gp',
-		'amv','asf','avi',
-		'f4v','flv',
-		'm2ts','m4v','mkv','mov','mp4','mpeg','mpg',
-		'ogv',
-		'rm','rmvb',
-		'ts',
-		'vob',
-		'webm','wmv',
-		'y4m', }
+		"3g2","3gp",
+		"amv","asf","avi",
+		"f4v","flv",
+		"m2ts","m4v","mkv","mov","mp4","mpeg","mpg",
+		"ogv",
+		"rm","rmvb",
+		"ts",
+		"vob",
+		"webm","wmv",
+		"y4m" }
 end
 
 if opt.audio_ext ~= "default" then
@@ -82,13 +82,13 @@ if opt.audio_ext ~= "default" then
 	EXTENSIONS_AUDIO = Set (audio_ext_tab)
 else
 	EXTENSIONS_AUDIO = Set {
-		'aac','aiff','alac','ape','au',
-		'dsf',
-		'flac',
-		'm4a','mp3',
-		'oga','ogg','ogm','opus',
-		'tak','tta',
-		'wav','wma','wv', }
+		"aac","aiff","alac","ape","au",
+		"dsf",
+		"flac",
+		"m4a","mp3",
+		"oga","ogg","ogm","opus",
+		"tak","tta",
+		"wav","wma","wv" }
 end
 
 if opt.image_ext ~= "default" then
@@ -99,15 +99,15 @@ if opt.image_ext ~= "default" then
 	EXTENSIONS_IMAGE = Set (image_ext_tab)
 else
 	EXTENSIONS_IMAGE = Set {
-		'apng','avif',
-		'bmp',
-		'gif',
-		'j2k', 'jfif','jp2','jpeg','jpg',
-		'png',
-		'svg',
-		'tga','tif','tiff',
-		'uci',
-		'webp', }
+		"apng","avif",
+		"bmp",
+		"gif",
+		"j2k", "jfif","jp2","jpeg","jpg",
+		"png",
+		"svg",
+		"tga","tif","tiff",
+		"uci",
+		"webp" }
 end
 
 EXTENSIONS = Set {}
@@ -164,7 +164,7 @@ end
 function get_playlist_filenames()
 	local filenames = {}
 	for n = 0, pl_count - 1, 1 do
-		local filename = mp.get_property('playlist/'..n..'/filename')
+		local filename = mp.get_property("playlist/"..n.."/filename")
 		local _, file = utils.split_path(filename)
 		filenames[file] = true
 	end
@@ -303,7 +303,7 @@ function import_files()
 	if (res.status ~= 0) then return end
 	local first_file = true
 	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv('loadfile', filename, first_file and 'replace' or 'append')
+		mp.commandv("loadfile", filename, first_file and "replace" or "append")
 		first_file = false
 	end
 end
@@ -328,7 +328,7 @@ function import_url()
 	})
 	if was_ontop then mp.set_property_native("ontop", true) end
 	if (res.status ~= 0) then return end
-	mp.commandv('loadfile', res.stdout)
+	mp.commandv("loadfile", res.stdout)
 end
 
 function append_aid()
@@ -357,7 +357,7 @@ function append_aid()
 	if was_ontop then mp.set_property_native("ontop", true) end
 	if (res.status ~= 0) then return end
 	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv('audio-add', filename, 'auto')
+		mp.commandv("audio-add", filename, "auto")
 	end
 end
 
@@ -387,7 +387,7 @@ function append_sid()
 	if was_ontop then mp.set_property_native("ontop", true) end
 	if (res.status ~= 0) then return end
 	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		mp.commandv('sub-add', filename, 'cached')
+		mp.commandv("sub-add", filename, "cached")
 	end
 end
 
@@ -422,10 +422,12 @@ function append_vfSub()
 	end
 end
 
-local function filter_state(label, key, value)
+function filter_state(label, key, value)
 	local filters = mp.get_property_native("vf")
 	for _, filter in pairs(filters) do
-		if filter["label"] == label and (not key or key and filter[key] == value) then return true end
+		if filter["label"] == label and (not key or key and filter[key] == value) then
+			return true
+		end
 	end
 	return false
 end
@@ -441,14 +443,14 @@ function remove_vfSub()
 end
 
 
-mp.register_event("file-loaded", remove_vfSub)
+mp.register_event("end-file", remove_vfSub)
 
 mp.register_event("start-file", find_and_add_entries)
 
-mp.add_key_binding(nil, 'import_files', import_files)
-mp.add_key_binding(nil, 'import_url', import_url)
-mp.add_key_binding(nil, 'append_aid', append_aid)
-mp.add_key_binding(nil, 'append_sid', append_sid)
-mp.add_key_binding(nil, 'append_vfSub', append_vfSub)
-mp.add_key_binding(nil, 'toggle_vfSub', toggle_vfSub)
-mp.add_key_binding(nil, 'remove_vfSub', remove_vfSub)
+mp.add_key_binding(nil, "import_files", import_files)
+mp.add_key_binding(nil, "import_url", import_url)
+mp.add_key_binding(nil, "append_aid", append_aid)
+mp.add_key_binding(nil, "append_sid", append_sid)
+mp.add_key_binding(nil, "append_vfSub", append_vfSub)
+mp.add_key_binding(nil, "toggle_vfSub", toggle_vfSub)
+mp.add_key_binding(nil, "remove_vfSub", remove_vfSub)

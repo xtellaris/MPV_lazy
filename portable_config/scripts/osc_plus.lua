@@ -32,10 +32,10 @@ mp.observe_property("osc", "bool", function(_, value)
     end
 end)
 
-local assdraw = require 'mp.assdraw'
-local msg = require 'mp.msg'
-local opt = require 'mp.options'
-local utils = require 'mp.utils'
+local assdraw = require "mp.assdraw"
+local msg = require "mp.msg"
+local opt = require "mp.options"
+local utils = require "mp.utils"
 
 --
 -- Parameters
@@ -994,7 +994,7 @@ function limited_list(prop, pos)
         return count, proplist
     end
 
-    local fs = tonumber(mp.get_property('options/osd-font-size'))
+    local fs = tonumber(mp.get_property("options/osd-font-size"))
     local max = math.ceil(osc_param.unscaled_y*0.75 / fs)
     if max % 2 == 0 then
         max = max - 1
@@ -1013,41 +1013,41 @@ function limited_list(prop, pos)
 end
 
 function get_playlist()
-    local pos = mp.get_property_number('playlist-pos', 0) + 1
-    local count, limlist = limited_list('playlist', pos)
+    local pos = mp.get_property_number("playlist-pos", 0) + 1
+    local count, limlist = limited_list("playlist", pos)
     if count == 0 then
-        return 'Empty playlist.'
+        return "播放列表为空"
     end
 
-    local message = string.format('播放列表 [%d/%d]\n', pos, count)
+    local message = string.format("播放列表 [%d/%d]\n", pos, count)
     for i, v in ipairs(limlist) do
         local title = v.title
         local _, filename = utils.split_path(v.filename)
         if title == nil then
             title = filename
         end
-        message = string.format('%s %s %s\n', message,
-            (v.current and '●' or '○'), title)
+        message = string.format("%s %s %s\n", message,
+            (v.current and "●" or "○"), title)
     end
     return message
 end
 
 function get_chapterlist()
-    local pos = mp.get_property_number('chapter', 0) + 1
-    local count, limlist = limited_list('chapter-list', pos)
+    local pos = mp.get_property_number("chapter", 0) + 1
+    local count, limlist = limited_list("chapter-list", pos)
     if count == 0 then
-        return 'No chapters.'
+        return "无章节"
     end
 
-    local message = string.format('章节列表 [%d/%d]\n', pos, count)
+    local message = string.format("章节列表 [%d/%d]\n", pos, count)
     for i, v in ipairs(limlist) do
         local time = mp.format_time(v.time)
         local title = v.title
         if title == nil then
-            title = string.format('Chapter %02d', i)
+            title = string.format("Chapter %02d", i)
         end
-        message = string.format('%s[%s] %s %s\n', message, time,
-            (v.current and '●' or '○'), title)
+        message = string.format("%s[%s] %s %s\n", message, time,
+            (v.current and "●" or "○"), title)
     end
     return message
 end
@@ -1526,8 +1526,8 @@ layouts["bottombox"] = function ()
     -- 背景板
     --
 
-    new_element('bb_backgroud', 'box')
-	lo = add_layout('bb_backgroud')
+    new_element("bb_backgroud", "box")
+	lo = add_layout("bb_backgroud")
 	lo.geometry = {x = posX, y = osc_param.playresy, an = 5, w = osc_w, h = 0}
 	lo.layer = 10
 	lo.style = osc_styles.bb_backgroud
@@ -2281,7 +2281,7 @@ function osc_init()
     ne = new_element("cy_audio", "button")
 
     ne.enabled = (#tracks_osc.audio > 0)
-    ne.off = (get_track('audio') == 0)
+    ne.off = (get_track("audio") == 0)
     ne.content = function ()
         local aid = "–"
         if not (get_track("audio") == 0) then
@@ -2310,7 +2310,7 @@ function osc_init()
     end
 
     ne.enabled = (#tracks_osc.sub > 0)
-    ne.off = (get_track('sub') == 0)
+    ne.off = (get_track("sub") == 0)
     ne.content = function ()
         local sid = "–"
         if not (get_track("sub") == 0) then
@@ -2429,16 +2429,16 @@ function osc_init()
         function (element) element.state.lastseek = nil end
 
     ne.eventresponder["wheel_up_press"] = function ()
-        if user_opts.seekbar_scrollseek == "fast" then mp.commandv('seek', -0.1, 'keyframes')
-        elseif user_opts.seekbar_scrollseek == "second" then mp.commandv('seek', -1, 'exact')
-        elseif user_opts.seekbar_scrollseek == "frame" then mp.commandv('frame-back-step')
+        if user_opts.seekbar_scrollseek == "fast" then mp.commandv("seek", -0.1, "keyframes")
+        elseif user_opts.seekbar_scrollseek == "second" then mp.commandv("seek", -1, "exact")
+        elseif user_opts.seekbar_scrollseek == "frame" then mp.commandv("frame-back-step")
         end
     end
 
     ne.eventresponder["wheel_down_press"] = function ()
-        if user_opts.seekbar_scrollseek == "fast" then mp.commandv('seek', 0.1, 'keyframes')
-        elseif user_opts.seekbar_scrollseek == "second" then mp.commandv('seek', 1, 'exact')
-        elseif user_opts.seekbar_scrollseek == "frame" then mp.commandv('frame-step')
+        if user_opts.seekbar_scrollseek == "fast" then mp.commandv("seek", 0.1, "keyframes")
+        elseif user_opts.seekbar_scrollseek == "second" then mp.commandv("seek", 1, "exact")
+        elseif user_opts.seekbar_scrollseek == "frame" then mp.commandv("frame-step")
         end
     end
 
@@ -3157,7 +3157,7 @@ mp.register_script_message("osc-tracklist", function(dur)
     for k,v in pairs(nicetypes) do
         table.insert(msg, get_tracklist(k))
     end
-    show_message(table.concat(msg, '\n\n'), dur)
+    show_message(table.concat(msg, "\n\n"), dur)
 end)
 
 mp.observe_property("fullscreen", "bool",

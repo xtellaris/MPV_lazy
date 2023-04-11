@@ -92,7 +92,7 @@ local adevicelist = {}
 local target_ao = nil
 
 local chap_skip = false
-local chap_keywords = { 
+local chap_keywords = {
 	"OP$", "opening$", "オープニング$",
 	"ED$", "ending$", "エンディング$",
 }
@@ -107,6 +107,7 @@ local text_pasted = nil
 
 local marked_aid_A = nil
 local marked_aid_B = nil
+local mark_aid_reg = false
 local merged_aid = false
 
 local ostime_msg = mp.create_osd_overlay("ass-events")
@@ -178,24 +179,27 @@ function adevicelist_fin(start, fin, step, dynamic)
 end
 
 
-function chap_skip_toggle()
-	if chap_skip then
-		chap_skip = false
-		mp.osd_message("已禁用跳过片头片尾", 1)
-		return
-	end
-	chap_skip = true
-	mp.osd_message("已启用跳过片头片尾", 1)
-end
-function chapter_change(_, value)
+function chap_skip_check(_, value)
 	if not value then
 		return
 	end
 	for _, words in pairs(chap_keywords) do
 		if string.match(value, words) and chap_skip then
 			mp.commandv("add", "chapter", 1)
+			mp.msg.info("chap_skip_check 跳过章节")
 		end
 	end
+end
+function chap_skip_toggle()
+	if chap_skip then
+		mp.unobserve_property(chap_skip_check)
+		chap_skip = false
+		mp.osd_message("已禁用跳过片头片尾", 1)
+		return
+	end
+	mp.observe_property("chapter-metadata/TITLE", "string", chap_skip_check)
+	chap_skip = true
+	mp.osd_message("已启用跳过片头片尾", 1)
 end
 
 
@@ -318,6 +322,22 @@ function load_clipboard(action, clip)
 end
 
 
+function mark_aid_reset()
+	mp.command("no-osd set lavfi-complex \"\"")
+	merged_aid = false
+	marked_aid_A, marked_aid_B = nil, nil
+	mp.osd_message("已取消并轨和标记", 1)
+	if mark_aid_reg then
+		mp.unregister_event(mark_aid_check)
+		mark_aid_reg = false
+	end
+end
+function mark_aid_check()
+	if marked_aid_A ~= nil or marked_aid_B ~= nil then
+		mark_aid_reset()
+	end
+	mp.msg.info("mark_aid_check 重置并轨和标记", 1)
+end
 function mark_aid_A()
 	marked_aid_A = mp.get_property_number("aid", 0)
 	if marked_aid_A == 0
@@ -326,6 +346,12 @@ function mark_aid_A()
 		marked_aid_A = nil
 	else
 		mp.osd_message("预标记当前音轨序列 " .. marked_aid_A .. " 为并行轨A", 1)
+	end
+	if mark_aid_reg then
+		return
+	else
+		mp.register_event("end-file", mark_aid_check)
+		mark_aid_reg = true
 	end
 end
 function mark_aid_B()
@@ -336,6 +362,12 @@ function mark_aid_B()
 		marked_aid_B = nil
 	else
 		mp.osd_message("预标记当前音轨序列 " .. marked_aid_B .. " 为并行轨B", 1)
+	end
+	if mark_aid_reg then
+		return
+	else
+		mp.register_event("end-file", mark_aid_check)
+		mark_aid_reg = true
 	end
 end
 function mark_aid_merge()
@@ -349,15 +381,9 @@ function mark_aid_merge()
 		merged_aid = true
 	end
 end
-function mark_aid_reset()
-	mp.command("set lavfi-complex \"\"")
-	merged_aid = false
-	marked_aid_A, marked_aid_B = nil, nil
-end
 function mark_aid_fin()
 	if merged_aid then
 		mark_aid_reset()
-		mp.osd_message("已取消并轨和标记", 1)
 		mp.commandv("set", "aid", "auto")
 		return
 	end
@@ -633,9 +659,12 @@ end
 function speed_sync_toggle()
 	spd_adapt = not spd_adapt
 	if spd_adapt then
-		mp.osd_message("已启用速度自适应", 1)
 		speed_adaptive()
+		mp.osd_message("已启用速度自适应", 1)
+		mp.register_event("playback-restart", speed_adaptive)
 	else
+		mp.unregister_event(speed_adaptive)
+		mp.set_property_number("speed", 1)
 		mp.osd_message("已禁用速度自适应", 1)
 		return
 	end
@@ -678,19 +707,6 @@ end
 
 
 --
--- 其它处理
---
-
-mp.register_event("file-loaded", function() if chap_skip then mp.msg.info("chap_skip_toggle 当前文件正在使用") end end)
-mp.observe_property("chapter-metadata/TITLE", "string", chapter_change)
-
-mp.register_event("end-file", function() if marked_aid_A ~= nil or marked_aid_B ~= nil then mark_aid_reset() end end)
-
-mp.register_event("playback-restart", function() if spd_adapt then speed_adaptive() end end)
-
-
-
---
 -- 键位绑定
 --
 
@@ -711,7 +727,7 @@ mp.add_key_binding(nil, "load_cbd_alt_add", function() load_clipboard("append-pl
 mp.add_key_binding(nil, "mark_aid_A", mark_aid_A)
 mp.add_key_binding(nil, "mark_aid_B", mark_aid_B)
 mp.add_key_binding(nil, "mark_aid_merge", mark_aid_merge)
-mp.add_key_binding(nil, "mark_aid_reset", function() mark_aid_reset() mp.osd_message("已取消并轨和标记", 1) end)
+mp.add_key_binding(nil, "mark_aid_reset", mark_aid_reset)
 mp.add_key_binding(nil, "mark_aid_fin", mark_aid_fin)
 
 mp.add_key_binding(nil, "ostime_display", ostime_display)

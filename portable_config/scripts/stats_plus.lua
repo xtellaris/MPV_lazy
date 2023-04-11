@@ -24,9 +24,9 @@ input.conf 示例：
 
 ]]
 
-local mp = require 'mp'
-local options = require 'mp.options'
-local utils = require 'mp.utils'
+local mp = require "mp"
+local options = require "mp.options"
+local utils = require "mp.utils"
 
 mp.observe_property("load-stats-overlay", "bool", function(_, value)
     if value == true then
