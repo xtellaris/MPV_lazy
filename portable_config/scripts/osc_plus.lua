@@ -1,6 +1,7 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
 COMMIT_ 292a5868cb60c481ae9eaed7d21e67dcff41938f
+文档_ https://github.com/hooke007/MPV_lazy/discussions/18
 
 改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
 （可选）mpv.conf的前置条件 --osc=no （否则个别功能不可用，例如 启动时显示OSC）

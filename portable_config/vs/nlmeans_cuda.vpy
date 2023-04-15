@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### NL-means降噪，N卡专用版
 ### 另有着色器版本，例如 ../shaders/nlmeans.glsl
 

@@ -4,6 +4,8 @@
 ** Origin_ Avi Halachmi https://github.com/avih                **
 ** Extension_ Thomas Carmichael https://gitlab.com/carmanaught **
 *****************************************************************
+文档_ https://github.com/hooke007/MPV_lazy/discussions/60
+
 mpv的tcl图形菜单的核心脚本
 
 建议在 input.conf 中绑定右键以支持唤起菜单

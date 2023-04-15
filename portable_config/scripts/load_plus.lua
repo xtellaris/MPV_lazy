@@ -3,9 +3,10 @@ SOURCE_ https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
 COMMIT_ 7b09bf7ffc1a927e4d45eb0407ec7024bff2f4d5
 SOURCE_ https://github.com/rossy/mpv-open-file-dialog/blob/master/open-file-dialog.lua
 COMMIT_ 04fe818fc703d8c5dcc3a6aabe1caeed8286bdbb
+文档_ https://github.com/hooke007/MPV_lazy/discussions/106
 
 功能集一：
-  列表文件为1时自动填充同目录下的其它文件，可使用对应的 load_plus.conf 管理脚本设置。
+  列表文件数量为1时自动填充同目录下的其它文件，可使用对应的 load_plus.conf 管理脚本设置。
 
 功能集二：
   自定义快捷键 在mpv中唤起一个打开文件的窗口用于快速加载文件/网址

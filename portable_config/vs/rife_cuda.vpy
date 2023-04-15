@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### RIFE (v4.6) 补帧，性能要求较高，N卡专用
 
 import vapoursynth as vs

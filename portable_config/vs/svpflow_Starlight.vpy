@@ -1,5 +1,5 @@
-### Source: https://bbs.vcb-s.com/?14732
-### @Starlight 的个人高参脚本，性能要求较高
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
+### Port https://bbs.vcb-s.com/?14732 @Starlight 的个人高参脚本，性能要求较高
 
 import vapoursynth as vs
 from vapoursynth import core

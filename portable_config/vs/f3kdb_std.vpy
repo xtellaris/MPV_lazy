@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### Neo f3kdb 动态颗粒去色带
 
 import vapoursynth as vs

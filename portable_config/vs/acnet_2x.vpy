@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### 使用acnet算法进行两倍放大
 ### 追求速度应使用着色器版本，例如 ../shaders/ACNet_HDN_L1.glsl
 

@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### mvtools的偏保守型补帧策略，中等消耗。
 
 import vapoursynth as vs

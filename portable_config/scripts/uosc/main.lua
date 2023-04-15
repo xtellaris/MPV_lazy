@@ -1,6 +1,7 @@
 --[[
 SOURCE_ https://github.com/tomasklaen/uosc/tree/main/scripts
 COMMIT_ ec52252380f896ca709216307e3bf021fbee914b
+文档_ https://github.com/hooke007/MPV_lazy/discussions/186
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
 ]]

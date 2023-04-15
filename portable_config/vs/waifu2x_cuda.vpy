@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### waifu2x (upconv_7_anime_style_art_rgb) 放大或降噪，性能要求非常高，N卡专用
 
 import vapoursynth as vs

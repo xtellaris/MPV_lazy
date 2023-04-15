@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### 某播放器的内置脚本，开销不低
 
 import vapoursynth as vs

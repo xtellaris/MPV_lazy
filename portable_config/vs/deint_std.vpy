@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### nnedi3作参考，进行反交错（倍帧模式）
 
 import vapoursynth as vs

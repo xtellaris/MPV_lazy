@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### mvtools倍帧，一般开销
 
 import vapoursynth as vs

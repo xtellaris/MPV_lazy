@@ -28,8 +28,8 @@ input.conf 示例：
 #                     script-binding input_plus/ostime_toggle       # 启用/禁用显示系统时间
 
  Ctrl+p               script-binding input_plus/pip_dummy           # 画中画（伪）/小窗化
-#                     script-binding input_plus/pip_dummy_p05        # ...（5%的尺寸占比）
-#                     script-binding input_plus/pip_dummy_p20        # ...（20%...）
+#                     script-binding input_plus/pip_dummy_p05       # ...（5%的尺寸占比）
+#                     script-binding input_plus/pip_dummy_p20       # ...（20%...）
 
  Alt+p                script-binding input_plus/playlist_order_0    # 播放列表的洗牌与撤销
 #                     script-binding input_plus/playlist_order_0r   # ...（重定向至首个文件）

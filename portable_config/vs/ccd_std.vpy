@@ -1,5 +1,5 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### 降低彩噪，开销中等
-### port from jvsfunc (7bed2d843fd513505b209470fd82c71ef8bcc0dd)
 
 import vapoursynth as vs
 from vapoursynth import core

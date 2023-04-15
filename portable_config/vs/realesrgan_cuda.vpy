@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### Real-ESRGAN (realesr-animevideov3) 放大或降噪，性能要求极高，N卡专用
 
 import vapoursynth as vs

@@ -1,3 +1,4 @@
+### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ### 镜头防抖（此类问题常见于胶片转录作品），CPU开销很大
 
 import vapoursynth as vs
