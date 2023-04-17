@@ -34,7 +34,6 @@ Lk_Fmt = False
 
 clip = FPS_CTRL(clip, fps_in=container_fps, fps_ret=True)
 clip = RIFE_NV(clip, lt_d2k=Lt_D2k, sc_mode=Sc_Mode, fps_num=Fps_Num, t_tta=T_Tta, ext_proc=Ext_Proc, gpu=Gpu, gpu_t=Gpu_T, st_eng=St_Eng, ws_size=Ws_Size)
-if Lk_Fmt :
-	clip = FMT_CTRL(clip, fmt_pix=vs.YUV420P8)
+clip = FMT_CTRL(clip, fmt_pix=1 if Lk_Fmt else 0)
 
 clip.set_output()

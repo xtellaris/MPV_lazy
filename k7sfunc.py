@@ -1,9 +1,9 @@
 ### 文档： https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 
-__version__ = "0.0.7"
+__version__ = "0.0.11"
 
 __all__ = [
-	"FMT_CTRL", "FPS_CHANGE", "FPS_CTRL", 
+	"FMT_CTRL", "FPS_CHANGE", "FPS_CTRL",
 
 	"ACNET_STD", "CUGAN_NV", "ESRGAN_NV", "NNEDI3_STD", "WAIFU_NV",
 
@@ -11,17 +11,32 @@ __all__ = [
 
 	"BM3D_NV", "CCD_STD", "FFT3D_STD", "NLM_STD", "NLM_NV",
 
-	"AA_NV", "DEBAND_STD", "DEINT_STD", "IVTC_STD", "STAB_STD", "STAB_HQ",
+	"AA_NV", "DEBAND_STD", "DEINT_STD", "IVTC_STD", "STAB_STD", "STAB_HQ", "UAI_TRT_NV",
 ]
 
+import os
 import typing
 import math
 
 import vapoursynth as vs
 from vapoursynth import core
 
-from nnedi3_resample import nnedi3_resample
-from vsmlrt import CUGAN, RealESRGANv2, Waifu2x, RIFE, BackendV2
+import vsmlrt
+import nnedi3_resample
+
+##################################################
+##################################################
+
+vs_thd_init = os.cpu_count()
+if vs_thd_init >= 10 and vs_thd_init < 16 :
+	vs_thd_dft = vs_thd_init - 2
+elif vs_thd_init >= 16 :
+	if vs_thd_init <= 32 :
+		vs_thd_dft = (vs_thd_init // 2) + (vs_thd_init % 2)
+	else :
+		vs_thd_dft = 16
+else :
+	vs_thd_dft = vs_thd_init
 
 ##################################################
 ##################################################
@@ -30,11 +45,20 @@ def FMT_CTRL(
 	input : vs.VideoNode,
 	h_max : typing.Optional[int] = None,
 	h_ret : bool = False,
-	fmt_pix : typing.Optional[str] = None,
+	fmt_pix : typing.Literal[0, 1, 2, 3] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fmt_in = input.format.id
 	if fmt_pix :
+		if fmt_pix == 1 :
+			fmt_pix = vs.YUV420P8
+		elif fmt_pix == 2 :
+			fmt_pix = vs.YUV420P10
+		elif fmt_pix == 3 :
+			fmt_pix = vs.YUV444P16
 		fmt_out = fmt_pix
 		if fmt_out == fmt_in :
 			clip = input
@@ -104,7 +128,10 @@ def FPS_CHANGE(
 	input : vs.VideoNode,
 	fps_in : float = 24.0,
 	fps_out : float = 60.0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	def ChangeFPS(clip: vs.VideoNode, fpsnum: int, fpsden: int = 1) -> vs.VideoNode:
 
@@ -135,7 +162,10 @@ def FPS_CTRL(
 	fps_max : float = 32.0,
 	fps_out : typing.Optional[str] = None,
 	fps_ret : bool = False,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	if fps_in > fps_max :
 		if fps_ret :
@@ -156,7 +186,10 @@ def ACNET_STD(
 	nr_lv : typing.Literal[1, 2, 3] = 1,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_m : typing.Literal["opencl", "cuda"] = "opencl",
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fmt_in = input.format.id
 
@@ -177,11 +210,14 @@ def CUGAN_NV(
 	gpu_t : typing.Literal[1, 2, 3] = 2,
 	st_eng : bool = False,
 	ws_size : int = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	w_in, h_in = input.width, input.height
 	size_in = w_in * h_in
-	colorlv = input.get_frame(0).props._ColorRange
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
 	if (not lt_hd and (size_in > 1280 * 720)) or (size_in > 2048 * 1080) :
@@ -190,7 +226,7 @@ def CUGAN_NV(
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
 	cut1 = input.resize.Bilinear(format=vs.RGBH, matrix_in_s="709")
-	cut2 = CUGAN(clip=cut1, noise=nr_lv, scale=2, version=2, backend=BackendV2.TRT(
+	cut2 = vsmlrt.CUGAN(clip=cut1, noise=nr_lv, scale=2, version=2, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -207,16 +243,20 @@ def CUGAN_NV(
 def ESRGAN_NV(
 	input : vs.VideoNode,
 	lt_hd : bool = False,
-	scale : typing.Literal[1, 2] = 2,
+	model : typing.Literal[2, 5000, 5001, 5002, 5003, 5004] = 5000,
+	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : typing.Literal[1, 2, 3] = 2,
 	st_eng : bool = False,
 	ws_size : int = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	w_in, h_in = input.width, input.height
 	size_in = w_in * h_in
-	colorlv = input.get_frame(0).props._ColorRange
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
 	if (not lt_hd and (size_in > 1280 * 720)) or (size_in > 2048 * 1080) :
@@ -225,7 +265,7 @@ def ESRGAN_NV(
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
 	cut1 = input.resize.Bilinear(format=vs.RGBH, matrix_in_s="709")
-	cut2 = RealESRGANv2(clip=cut1, scale=scale, model=2, backend=BackendV2.TRT(
+	cut2 = vsmlrt.RealESRGANv2(clip=cut1, scale=scale, model=model, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -241,14 +281,33 @@ def ESRGAN_NV(
 
 def NNEDI3_STD(
 	input : vs.VideoNode,
+	ext_proc : bool = True,
 	edi_nsize : typing.Literal[0, 4] = 4,
 	edi_nns : typing.Literal[2, 3, 4] = 3,
 	cpu : bool = True,
 	gpu : typing.Literal[-1, 0, 1, 2] = -1,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
 
-	output = nnedi3_resample(input=input, target_width=input.width * 2, target_height=input.height * 2,
+	core.num_threads = vs_t
+
+	if ext_proc :
+		fmt_in = input.format.id
+		if fmt_in in [vs.YUV410P8, vs.YUV420P8, vs.YUV420P10] :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV420P16)
+		elif fmt_in in [vs.YUV411P8, vs.YUV422P8, vs.YUV422P10] :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV422P16)
+		elif fmt_in == vs.YUV444P16 :
+			clip = input
+		else :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV444P16)
+	else :
+		clip = input
+
+	output = nnedi3_resample.nnedi3_resample(input=clip, target_width=input.width * 2, target_height=input.height * 2,
 		nsize=edi_nsize, nns=edi_nns, mode="znedi3" if cpu else "nnedi3cl", device=gpu)
+	if ext_proc :
+		output = core.resize.Bilinear(clip=output, format=fmt_in)
 
 	return output
 
@@ -259,16 +318,19 @@ def WAIFU_NV(
 	input : vs.VideoNode,
 	lt_hd : bool = False,
 	nr_lv : typing.Literal[-1, 0, 1, 2, 3] = 1,
-	scale : typing.Literal[1, 2, 3, 4] = 1,
+	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : typing.Literal[1, 2, 3] = 2,
 	st_eng : bool = False,
 	ws_size : int = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	w_in, h_in = input.width, input.height
 	size_in = w_in * h_in
-	colorlv = input.get_frame(0).props._ColorRange
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
 	if (not lt_hd and (size_in > 1280 * 720)) or (size_in > 2048 * 1080) :
@@ -277,7 +339,7 @@ def WAIFU_NV(
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
 	cut1 = input.resize.Bilinear(format=vs.RGBH, matrix_in_s="709")
-	cut2 = Waifu2x(clip=cut1, noise=nr_lv, scale=scale, model=3, backend=BackendV2.TRT(
+	cut2 = vsmlrt.Waifu2x(clip=cut1, noise=nr_lv, scale=scale, model=3, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -297,7 +359,10 @@ def MVT_LQ(
 	fps_out : float = 59.940,
 	recal : bool = True,
 	block : bool = True,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	w_in, h_in = input.width, input.height
 	blk_size = 32
@@ -332,7 +397,10 @@ def MVT_STD(
 	input : vs.VideoNode,
 	fps_in : float = 23.976,
 	fps_out : float = 60.0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	vs_api = vs.__api_version__.api_major
 
@@ -365,7 +433,10 @@ def MVT_POT(
 	input : vs.VideoNode,
 	fps_in : float = 23.976,
 	fps_out : float = 59.940,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	max_flow_width  = 1280
 	max_flow_height = 720
@@ -403,10 +474,13 @@ def RIFE_STD(
 	fps_den : int = 1,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : typing.Literal[1, 2, 3] = 2,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
 
+	core.num_threads = vs_t
+
 	fmt_in = input.format.id
-	colorlv = input.get_frame(0).props._ColorRange
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 
 	if sc_mode == 0 :
 		cut0 = input
@@ -437,11 +511,14 @@ def RIFE_NV(
 	gpu_t : typing.Literal[1, 2, 3] = 2,
 	st_eng : bool = False,
 	ws_size : int = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	w_in, h_in = input.width, input.height
 	size_in = w_in * h_in
-	colorlv = input.get_frame(0).props._ColorRange
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
 	if not ext_proc :
@@ -473,7 +550,7 @@ def RIFE_NV(
 	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH if ext_proc else vs.RGBS, matrix_in_s="709")
 	if ext_proc :
 		cut1 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)
-		fin = RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=46, ensemble=t_tta, _implementation=1, backend=BackendV2.TRT(
+		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=46, ensemble=t_tta, _implementation=1, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=True, output_format=1,
 			workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 			use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -482,7 +559,7 @@ def RIFE_NV(
 			device_id=gpu))
 		fin = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 	else :
-		fin = RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=46, ensemble=t_tta, _implementation=2, backend=BackendV2.TRT(
+		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=46, ensemble=t_tta, _implementation=2, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=False, output_format=0,
 			workspace=None if ws_size < 128 else ws_size,
 			use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -502,7 +579,10 @@ def SVP_LQ(
 	fps_num : typing.Literal[2, 3, 4] = 2,
 	cpu : typing.Literal[0, 1] = 0,
 	gpu : typing.Literal[0, 11, 12, 21] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fps_num = fps_num
 	if cpu == 0 :
@@ -539,7 +619,10 @@ def SVP_STD(
 	fps_out : float = 59.940,
 	cpu : typing.Literal[0, 1] = 0,
 	gpu : typing.Literal[0, 11, 12, 21] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fps_in = fps_in
 	fps_out = fps_out * 1e6
@@ -571,7 +654,10 @@ def SVP_HQ(
 	fps_dp : float = 59.940,
 	cpu : typing.Literal[0, 1] = 0,
 	gpu : typing.Literal[0, 11, 12, 21] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fps = fps_in or 23.976
 	freq = fps_dp or 59.970
@@ -634,7 +720,10 @@ def BM3D_NV(
 	bs_ref : typing.Literal[1, 2, 3, 4, 5, 6, 7, 8] = 8,
 	bs_out : typing.Literal[1, 2, 3, 4, 5, 6, 7, 8] = 7,
 	gpu : typing.Literal[0, 1, 2] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fmt_in = input.format.id
 
@@ -652,9 +741,12 @@ def BM3D_NV(
 def CCD_STD(
 	input : vs.VideoNode,
 	nr_lv : float = 20.0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
 
-	colorlv = input.get_frame(0).props._ColorRange
+	core.num_threads = vs_t
+
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
 	def ccd(src: vs.VideoNode, threshold: float = 4) -> vs.VideoNode:
@@ -717,7 +809,10 @@ def FFT3D_STD(
 	plane : typing.List[int] = [0],
 	frame_bk : typing.Literal[-1, 0, 1, 2, 3, 4, 5] = 3,
 	cpu_t : int = 6,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	if mode == 1 :
 		output = core.fft3dfilter.FFT3DFilter(clip=input, sigma=nr_lv, planes=plane, bt=frame_bk, ncpu=cpu_t)
@@ -738,7 +833,10 @@ def NLM_STD(
 	rad_snw : int = 2,
 	nr_lv : float = 3.0,
 	gpu : typing.Literal[0, 1, 2] = 0,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fmt_in = input.format.id
 
@@ -786,7 +884,10 @@ def NLM_NV(
 	nr_lv : float = 3.0,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : typing.Literal[1, 2, 3] = 2,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	fmt_in = input.format.id
 
@@ -822,7 +923,10 @@ def AA_NV(
 	plane : typing.List[int] = [0],
 	gpu : typing.Literal[-1, 0, 1, 2] = -1,
 	gpu_t : typing.Literal[1, 2, 3] = 2,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	output = core.eedi2cuda.AA2(clip=input, mthresh=10, lthresh=20, vthresh=20, estr=2, dstr=4, maxd=24, map=0, nt=50, pp=1, planes=plane, num_streams=gpu_t, device_id=gpu)
 
@@ -841,9 +945,12 @@ def DEBAND_STD(
 	spl_m : typing.Literal[1, 2, 3, 4] = 4,
 	grain_dy : bool = True,
 	depth : typing.Literal[8, 10] = 8,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
 
-	color_lv = input.get_frame(0).props._ColorRange
+	core.num_threads = vs_t
+
+	color_lv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 
 	cut0 = core.resize.Bilinear(clip=input, format=vs.YUV444P16)
 	output = core.neo_f3kdb.Deband(clip=cut0, range=bd_range, y=bdy_rth, cb=bdc_rth, cr=bdc_rth, grainy=grainy, grainc=grainc, sample_mode=spl_m, dynamic_grain=grain_dy, mt=True, keep_tv_range=True if color_lv==1 else False, output_depth=depth)
@@ -855,15 +962,20 @@ def DEBAND_STD(
 
 def DEINT_STD(
 	input : vs.VideoNode,
-	cpu : bool = True,
+	ref_m : typing.Literal[1, 2, 3] = 1,
 	gpu : typing.Literal[-1, 0, 1, 2] = -1,
 	deint_m : typing.Literal[1, 2, 3] = 1,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
 
-	if cpu :
+	core.num_threads = vs_t
+
+	if ref_m == 1 :
 		ref = core.znedi3.nnedi3(clip=input, field=3)
-	else :
+	elif ref_m == 2 :
 		ref = core.nnedi3cl.NNEDI3CL(clip=input, field=3, device=gpu)
+	elif ref_m == 3 :
+		ref = core.eedi3m.EEDI3CL(clip=input, field=3, device=gpu)
 
 	if deint_m == 1 :
 		output = core.bwdif.Bwdif(clip=input, field=3, edeint=ref)
@@ -881,7 +993,10 @@ def IVTC_STD(
 	input : vs.VideoNode,
 	fps_in : float = 23.976,
 	ivtc_m : typing.Literal[1, 2] = 1,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	if fps_in <= 24 or fps_in >= 31 or (fps_in >= 26 and fps_in <= 29) :
 		# 无解，跳过
@@ -906,7 +1021,10 @@ def IVTC_STD(
 
 def STAB_STD(
 	input : vs.VideoNode,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	threshold = 255 << (input.format.bits_per_sample - 8)
 	temp = input.focus2.TemporalSoften2(7, threshold, threshold, 25, 2)
@@ -923,7 +1041,10 @@ def STAB_STD(
 
 def STAB_HQ(
 	input : vs.VideoNode,
+	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
+
+	core.num_threads = vs_t
 
 	def SCDetect(clip: vs.VideoNode, threshold: float = 0.1) -> vs.VideoNode:
 		def copy_property(n: int, f: vs.VideoFrame) -> vs.VideoFrame:
@@ -967,3 +1088,33 @@ def STAB_HQ(
 ##################################################
 ##################################################
 
+def UAI_TRT_NV(
+	input : vs.VideoNode,
+	model_pth : str = None,
+	res_opt : typing.List[int] = None,
+	res_max : typing.List[int] = None,
+	fp16 : bool = False,
+	gpu : typing.Literal[0, 1, 2] = 0,
+	gpu_t : typing.Literal[1, 2, 3] = 2,
+	st_eng : bool = False,
+	ws_size : int = 0,
+	vs_t : int = vs_thd_dft,
+) -> vs.VideoNode :
+
+	core.num_threads = vs_t
+
+	fmt_in = input.format.id
+	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
+
+	clip = core.resize.Bilinear(clip=input, format=vs.RGBH if fp16 else vs.RGBS, matrix_in_s="709")
+	be_param = vsmlrt.BackendV2.TRT(
+		num_streams=gpu_t, force_fp16=fp16, output_format=1 if fp16 else 0, workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
+		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
+		static_shape=st_eng, min_shapes=[0, 0] if st_eng else [64, 64], opt_shapes=None if st_eng else res_opt, max_shapes=None if st_eng else res_max, device_id=0)
+	infer = vsmlrt.inference(clips=clip, network_path=os.path.join(vsmlrt.models_path, model_pth), backend=be_param)
+	output = core.resize.Bilinear(clip=infer, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+
+	return output
+
+##################################################
+##################################################

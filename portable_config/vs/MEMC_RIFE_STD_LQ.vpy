@@ -1,5 +1,5 @@
 ### https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
-### rife v4 倍帧（强制输出8比特），性能要求很高
+### rife v4 倍帧，性能要求很高
 
 import vapoursynth as vs
 from vapoursynth import core
