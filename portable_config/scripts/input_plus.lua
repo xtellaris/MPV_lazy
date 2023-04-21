@@ -41,6 +41,11 @@ input.conf 示例：
  CLOSE_WIN            script-binding input_plus/quit_real           # 对执行退出命令前的确认（防止误触）
 #                     script-binding input_plus/quit_wait           # 延后退出命令的执行（执行前再次触发可取消）
 
+ Shift+RIGHT          script-binding input_plus/seek_acc            # [按住/松开] 非线性向前跳转（模拟流媒体平台的跳转方式）
+#                     script-binding input_plus/seek_acc_back       # [按住/松开] ......向后...
+#                     script-binding input_plus/seek_acc_alt        # [按住/松开] ...（防止关键帧异常的备用）
+#                     script-binding input_plus/seek_acc_back_alt   # [按住/松开] ...
+
 #                     script-binding input_plus/sids_sec_swap       # 双字幕的主次交换
 
  b                    script-binding input_plus/speed_auto          # [按住/松开] 两倍速/一倍速
@@ -59,8 +64,8 @@ input.conf 示例：
 #                     script-binding input_plus/trackV_next         # 下...
 
 #                     script-binding input_plus/trackA_refresh      # 刷新当前轨道（音频）
-#                     script-binding input_plus/trackS_refresh      # ...（字幕）
-#                     script-binding input_plus/trackV_refresh      # ...（视频）
+#                     script-binding input_plus/trackS_refresh      # ............（字幕）
+#                     script-binding input_plus/trackV_refresh      # ............（视频）
 
 
 #                     script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循环触发命令
@@ -121,6 +126,10 @@ local shuffling = false
 local save_path = mp.command_native({"expand-path", "~~/"}) .. "/playlist_temp.mpl"
 
 local pre_quit = false
+
+local seek_dur_init = 0
+local seek_dur_step = 1
+local seek_dur = seek_dur_init
 
 local bak_speed = nil
 local spd_adapt = false
@@ -578,6 +587,45 @@ function quit_wait()
 end
 
 
+-- 另一种版本 https://github.com/mpv-player/mpv/issues/11589#issuecomment-1513535980
+function acc_seeking(back, flag)
+	seek_dur = seek_dur + seek_dur_step
+	if not back then
+		mp.command("seek " .. seek_dur .. " " .. flag)
+	else
+		mp.command("seek -" .. seek_dur .. " " .. flag)
+	end
+end
+function seek_acc(evt)
+	if evt.event == "repeat" then
+		acc_seeking(false, "keyframes")
+	elseif evt.event == "up" then
+		seek_dur = seek_dur_init
+	end
+end
+function seek_acc_alt(evt)
+	if evt.event == "repeat" then
+		acc_seeking(false, "exact")
+	elseif evt.event == "up" then
+		seek_dur = seek_dur_init
+	end
+end
+function seek_acc_back(evt)
+	if evt.event == "repeat" then
+		acc_seeking(true, "keyframes")
+	elseif evt.event == "up" then
+		seek_dur = seek_dur_init
+	end
+end
+function seek_acc_back_alt(evt)
+	if evt.event == "repeat" then
+		acc_seeking(true, "exact")
+	elseif evt.event == "up" then
+		seek_dur = seek_dur_init
+	end
+end
+
+
 function sids_sec_swap()
 	local sid_main = mp.get_property_number("sid", 0)
 	local sid_sec = mp.get_property_number("secondary-sid", 0)
@@ -746,6 +794,11 @@ mp.add_key_binding(nil, "playlist_tmp_load", playlist_tmp_load)
 
 mp.add_key_binding(nil, "quit_real", quit_real)
 mp.add_key_binding(nil, "quit_wait", quit_wait)
+
+mp.add_key_binding(nil, "seek_acc", seek_acc, {complex = true})
+mp.add_key_binding(nil, "seek_acc_back", seek_acc_back, {complex = true})
+mp.add_key_binding(nil, "seek_acc_alt", seek_acc_alt, {complex = true})
+mp.add_key_binding(nil, "seek_acc_back_alt", seek_acc_back_alt, {complex = true})
 
 mp.add_key_binding(nil, "sids_sec_swap", sids_sec_swap)
 
