@@ -1,10 +1,10 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ 292a5868cb60c481ae9eaed7d21e67dcff41938f
+COMMIT_ b7ffe0d16eec8153d9609382997baaf6a29e5e4f
 文档_ https://github.com/hooke007/MPV_lazy/discussions/18
 
 改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
-（可选）mpv.conf的前置条件 --osc=no （否则个别功能不可用，例如 启动时显示OSC）
+（可选）mpv.conf的前置条件 --osc=no （否则个别功能可能不可用）
 
 示例在 input.conf 中写入：
 SHIFT+DEL   script-binding osc_plus/visibility   # 切换 osc_plus 的可见性
@@ -2408,8 +2408,8 @@ function osc_init()
             -- mouse move events may pile up during seeking and may still get
             -- sent when the user is done seeking, so we need to throw away
             -- identical seeks
-            thumbfast.pause = false --暂停渲染缩略图
-            mp.commandv("script-message-to", "thumbfast", "clear")
+            thumbfast.pause = false -- 暂停渲染缩略图
+            -- mp.commandv("script-message-to", "thumbfast", "clear") -- 会有高几率冻结
             local seekto = get_slider_value(element)
             if (element.state.lastseek == nil) or
                 (not (element.state.lastseek == seekto)) then
@@ -2639,6 +2639,12 @@ end
 
 function hide_osc()
     msg.trace("hide_osc")
+
+    -- 关联 thumbfast.lua
+    if thumbfast.width ~= 0 or thumbfast.height ~= 0 then
+        mp.commandv("script-message-to", "thumbfast", "clear")
+    end
+
     if not state.enabled then
         -- typically hide happens at render() from tick(), but now tick() is
         -- no-op and won't render again to remove the osc, so do that manually.
@@ -2800,14 +2806,14 @@ function render()
 
     --mouse show/hide area
     for k,cords in pairs(osc_param.areas["showhide"]) do
-        set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "showhide")
+        set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "showhide_osc_plus")
     end
     if osc_param.areas["showhide_wc"] then
         for k,cords in pairs(osc_param.areas["showhide_wc"]) do
-            set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "showhide_wc")
+            set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "showhide_wc_osc_plus")
         end
     else
-        set_virt_mouse_area(0, 0, 0, 0, "showhide_wc")
+        set_virt_mouse_area(0, 0, 0, 0, "showhide_wc_osc_plus")
     end
     do_enable_keybindings()
 
@@ -2816,13 +2822,13 @@ function render()
 
     for _,cords in ipairs(osc_param.areas["input"]) do
         if state.osc_visible then -- activate only when OSC is actually visible
-            set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "input")
+            set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "input_osc_plus")
         end
         if state.osc_visible ~= state.input_enabled then
             if state.osc_visible then
-                mp.enable_key_bindings("input")
+                mp.enable_key_bindings("input_osc_plus")
             else
-                mp.disable_key_bindings("input")
+                mp.disable_key_bindings("input_osc_plus")
             end
             state.input_enabled = state.osc_visible
         end
@@ -2835,13 +2841,13 @@ function render()
     if osc_param.areas["window-controls"] then
         for _,cords in ipairs(osc_param.areas["window-controls"]) do
             if state.osc_visible then -- activate only when OSC is actually visible
-                set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "window-controls")
+                set_virt_mouse_area(cords.x1, cords.y1, cords.x2, cords.y2, "window-controls_osc_plus")
             end
             if state.osc_visible ~= state.windowcontrols_buttons then
                 if state.osc_visible then
-                    mp.enable_key_bindings("window-controls")
+                    mp.enable_key_bindings("window-controls_osc_plus")
                 else
-                    mp.disable_key_bindings("window-controls")
+                    mp.disable_key_bindings("window-controls_osc_plus")
                 end
                 state.windowcontrols_buttons = state.osc_visible
             end
@@ -3018,6 +3024,9 @@ function tick()
         -- render idle message
         msg.trace("idle message")
         local _, _, display_aspect = mp.get_osd_size()
+        if display_aspect == 0 then
+            return
+        end
         local display_h = 360
         local display_w = display_h * display_aspect
         -- logo is rendered at 2^(6-1) = 32 times resolution with size 1800x1800
@@ -3050,8 +3059,8 @@ function tick()
         set_osd(display_w, display_h, ass.text)
 
         if state.showhide_enabled then
-            mp.disable_key_bindings("showhide")
-            mp.disable_key_bindings("showhide_wc")
+            mp.disable_key_bindings("showhide_osc_plus")
+            mp.disable_key_bindings("showhide_wc_osc_plus")
             state.showhide_enabled = false
         end
 
@@ -3086,8 +3095,8 @@ end
 function do_enable_keybindings()
     if state.enabled then
         if not state.showhide_enabled then
-            mp.enable_key_bindings("showhide", "allow-vo-dragging+allow-hide-cursor")
-            mp.enable_key_bindings("showhide_wc", "allow-vo-dragging+allow-hide-cursor")
+            mp.enable_key_bindings("showhide_osc_plus", "allow-vo-dragging+allow-hide-cursor")
+            mp.enable_key_bindings("showhide_wc_osc_plus", "allow-vo-dragging+allow-hide-cursor")
         end
         state.showhide_enabled = true
     end
@@ -3100,8 +3109,8 @@ function enable_osc(enable)
     else
         hide_osc() -- acts immediately when state.enabled == false
         if state.showhide_enabled then
-            mp.disable_key_bindings("showhide")
-            mp.disable_key_bindings("showhide_wc")
+            mp.disable_key_bindings("showhide_osc_plus")
+            mp.disable_key_bindings("showhide_wc_osc_plus")
         end
         state.showhide_enabled = false
     end
@@ -3204,11 +3213,11 @@ end)
 mp.set_key_bindings({
     {"mouse_move",              function(e) process_event("mouse_move", nil) end},
     {"mouse_leave",             mouse_leave},
-}, "showhide", "force")
+}, "showhide_osc_plus", "force")
 mp.set_key_bindings({
     {"mouse_move",              function(e) process_event("mouse_move", nil) end},
     {"mouse_leave",             mouse_leave},
-}, "showhide_wc", "force")
+}, "showhide_wc_osc_plus", "force")
 do_enable_keybindings()
 
 --mouse input bindings
@@ -3227,14 +3236,14 @@ mp.set_key_bindings({
     {"mbtn_left_dbl",       "ignore"},
     {"shift+mbtn_left_dbl", "ignore"},
     {"mbtn_right_dbl",      function(e) process_event("mbtn_right_dbl", "press") end}, -- 右键双击检查
-}, "input", "force")
-mp.enable_key_bindings("input")
+}, "input_osc_plus", "force")
+mp.enable_key_bindings("input_osc_plus")
 
 mp.set_key_bindings({
     {"mbtn_left",           function(e) process_event("mbtn_left", "up") end,
                             function(e) process_event("mbtn_left", "down")  end},
-}, "window-controls", "force")
-mp.enable_key_bindings("window-controls")
+}, "window-controls_osc_plus", "force")
+mp.enable_key_bindings("window-controls_osc_plus")
 
 function get_hidetimeout()
     if user_opts.visibility == "always" then
@@ -3290,8 +3299,8 @@ function visibility_mode(mode, no_osd)
     -- Reset the input state on a mode change. The input state will be
     -- recalculated on the next render cycle, except in 'never' mode where it
     -- will just stay disabled.
-    mp.disable_key_bindings("input")
-    mp.disable_key_bindings("window-controls")
+    mp.disable_key_bindings("input_osc_plus")
+    mp.disable_key_bindings("window-controls_osc_plus")
     state.input_enabled = false
 
     update_margins()
@@ -3386,5 +3395,5 @@ mp.register_script_message("thumbfast-info", function(json)
     end
 end)
 
-set_virt_mouse_area(0, 0, 0, 0, "input")
-set_virt_mouse_area(0, 0, 0, 0, "window-controls")
+set_virt_mouse_area(0, 0, 0, 0, "input_osc_plus")
+set_virt_mouse_area(0, 0, 0, 0, "window-controls_osc_plus")
