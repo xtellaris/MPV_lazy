@@ -32,7 +32,7 @@ local options = {
     binpath = "mpv",             -- 自定义mpv路径
     min_duration = 0,            -- 对短视频关闭预览（秒）
     precise = 0,                 -- 预览精度
-    quality = 1,                 -- 预览质量
+    quality = 0,                 -- 预览质量
     frequency = 0.1,             -- 解码频率（秒）
     auto_run = true,             -- 自动运行
 
@@ -299,39 +299,43 @@ local activity_timer
 
 local scale_sw = "fast-bilinear"
 local vf_str
+local quality = options.quality
 
-if options.quality == 0 then
+if quality == 0 then
     if options.precise == 2 then
-        options.quality = 2
+        quality = 2
     elseif options.precise == 0 then
-        options.quality = 1
+        quality = 1
     elseif options.precise == 1 then
-        options.quality = 1
+        quality = 1
     end
-    if options.sw_threads >= 4 then
-        options.quality = 2
+    if options.sw_threads >= 3 then
+        quality = 2
+        if options.sw_threads >= 5 then
+            quality = 3
+        end
     elseif options.sw_threads == 1 then
-        options.quality = 1
+        quality = 1
     end
 end
 
-if options.quality == 2 then
+if quality >= 2 then
     scale_sw = "bicublin"
 end
 
-local function quality()
+local function quality_fin()
+    local vf_str_pre = "scale=w="..effective_w..":h="..effective_h
     local vf_str_suffix = "format=fmt=bgra"
-    local vf_str_pre
-    if options.quality == 1 then
-        vf_str = "scale=w="..effective_w..":h="..effective_h..":flags=fast_bilinear,"..vf_str_suffix
-    elseif options.quality == 2 then
-        vf_str_pre = "scale=w="..effective_w..":h="..effective_h..":flags=bicublin,"
-        vf_str = vf_str_pre..vf_str_suffix
+    if quality == 1 then
+        vf_str = vf_str_pre..":flags=fast_bilinear,"..vf_str_suffix
+    elseif quality == 2 then
+        vf_str = vf_str_pre..":flags=bicublin,"..vf_str_suffix
         if mp.get_property_number("video-params/sig-peak", 1) > 1 then
-            vf_str = vf_str_pre.."format=fmt=gbrapf32,zscale=transfer=linear,tonemap=tonemap=mobius:desat=8.0,zscale=transfer=709,"..vf_str_suffix
+            vf_str = vf_str_pre..":flags=bicublin,format=fmt=gbrapf32,zscale=t=linear:npl=203,tonemap=tonemap=hable:desat=0.0,zscale=p=709:t=709:m=709,"..vf_str_suffix
         end
+    elseif quality == 3 then
+        vf_str = "libplacebo=w="..effective_w..":h="..effective_h..":colorspace=bt709:color_primaries=bt709:color_trc=bt709:tonemapping=hable:format=bgra"
     end
-    print(vf_str)
     return vf_str
 end
 
@@ -369,7 +373,7 @@ local function spawn(time)
         "--gpu-dumb-mode=yes", "--tone-mapping=clip", "--hdr-compute-peak=no",
         "--sws-allow-zimg=no", "--sws-fast=yes", "--sws-scaler="..scale_sw,
         "--audio-pitch-correction=no",
-        "--vf="..quality(),
+        "--vf="..quality_fin(),
         "--ovc=rawvideo", "--of=image2", "--ofopts=update=1", "--ocopy-metadata=no", "--o="..options.tnpath
     }
 
@@ -509,6 +513,10 @@ local function seek(fast)
 end
 
 local seek_period = options.frequency
+if quality == 3 and seek_period < 0.8 then
+    seek_period = 0.8
+    mp.msg.warn("已延迟请求以匹配性能需求")
+end
 local seek_period_counter = 0
 local seek_timer
 seek_timer = mp.add_periodic_timer(seek_period, function()
