@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ b7ffe0d16eec8153d9609382997baaf6a29e5e4f
+COMMIT_ 945d7c1eda47c97c4bfba884fb21f398a64b2289
 文档_ https://github.com/hooke007/MPV_lazy/discussions/18
 
 改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
@@ -1432,6 +1432,11 @@ layouts["box"] = function ()
         {x = posX - pos_offsetX, y = bigbtnrowY, an = 7, w = 70, h = 18}
     lo.style = osc_styles.smallButtonsL
 
+    lo = add_layout("tog_forced_only")
+    lo.geometry =
+        {x = posX - pos_offsetX + 70, y = bigbtnrowY - 1, an = 7, w = 25, h = 18}
+    lo.style = osc_styles.smallButtonsL
+
     lo = add_layout("tog_fs")
     lo.geometry =
         {x = posX+pos_offsetX - 25, y = bigbtnrowY, an = 4, w = 25, h = 25}
@@ -1941,6 +1946,12 @@ function bar_layout(direction)
     lo.geometry = geo
     lo.style = osc_styles.smallButtonsBar
 
+    -- Forced-subs-only button
+    geo = { x = geo.x - geo.w - padX, y = geo.y, an = geo.an, w = geo.w, h = geo.h }
+    lo = add_layout("tog_forced_only")
+    lo.geometry = geo
+    lo.style = osc_styles.smallButtonsBar
+
     -- Track selection buttons
     geo = { x = geo.x - tsW - padX, y = geo.y, an = geo.an, w = tsW, h = geo.h }
     lo = add_layout("cy_sub")
@@ -2326,6 +2337,32 @@ function osc_init()
         function () set_track("sub", -1) end
     ne.eventresponder["shift+mbtn_left_down"] =
         function () show_message(get_tracklist("sub"), 2) end
+
+    -- tog_forced_only
+    local tog_forced_only = new_element("tog_forced_only", "button")
+
+    ne = tog_forced_only
+    ne.content = function ()
+        sub_codec = mp.get_property("current-tracks/sub/codec")
+        if (sub_codec ~= "dvd_subtitle" and sub_codec ~= "hdmv_pgs_subtitle") then
+            return ""
+        end
+        local base_a = tog_forced_only.layout.alpha
+        local alpha = base_a[1]
+        if not mp.get_property_bool("sub-forced-only-cur") then
+            alpha = 255
+        end
+        local ret = assdraw.ass_new()
+        ret:append("[")
+        ass_append_alpha(ret, {[1] = alpha, [2] = 1, [3] = base_a[3], [4] = base_a[4]}, 0)
+        ret:append("F")
+        ass_append_alpha(ret, base_a, 0)
+        ret:append("]")
+        return ret.text
+    end
+    ne.eventresponder["mbtn_left_up"] = function ()
+        mp.set_property_bool("sub-forced-only", (not mp.get_property_bool("sub-forced-only-cur")))
+    end
 
     ne.eventresponder["wheel_up_press"] =
         function () set_track("sub", -1) end
