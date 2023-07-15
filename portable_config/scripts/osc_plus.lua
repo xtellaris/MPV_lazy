@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ 945d7c1eda47c97c4bfba884fb21f398a64b2289
+COMMIT_ dfbdf7516586427083a868307a77c35bab8bc764
 文档_ https://github.com/hooke007/MPV_lazy/discussions/18
 
 改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
@@ -57,7 +57,7 @@ local user_opts = {
     boxalpha = 80,                       -- <0...255> 背景透明度，255 为完全透明（不影响 bottombox 布局）
     hidetimeout = 500,                   -- duration in ms until the OSC hides if no mouse movement. enforced non-negative for the user, but internally negative is "always-on".
     fadeduration = 200,                  -- duration of fade out in ms, 0 = no fade
-    deadzonesize = 0.5,                  -- size of deadzone
+    deadzonesize = 1,                    -- <0...1> 显隐逻辑，原版为 0.5
     minmousemove = 0,                    -- minimum amount of pixels the mouse has to move between ticks to make the OSC show up
     iamaprogrammer = false,              -- use native mpv values and disable OSC internal track list management (and some functions that depend on it)
     layout = "bottombar",                -- <bottombar|topbar|bottombox|box|slimbox> 布局类型。此版新增 bottombox
@@ -70,6 +70,7 @@ local user_opts = {
     title = "${media-title}",            -- string compatible with property-expansion to be shown as OSC title
     tooltipborder = 1,                   -- border of tooltip in bottom/topbar
     timetotal = true,                    -- 是否显示总时间（否为剩余时间） 原版为 false
+    remaining_playtime = false,          -- 是否显示基于速度计算的剩余时间 原版为 true
     timems = false,                      -- display timecodes with milliseconds?
     tcspace = 100,                       -- timecode spacing (compensate font size estimation)
     visibility = "auto",                 -- only used at init to set visibility_mode(...)
@@ -930,6 +931,7 @@ function render_elements(master_ass)
 
                             elem_ass:new_event()
                             elem_ass:pos(thumb_x * r_w, thumb_y * r_h)
+                            elem_ass:an(7)
                             elem_ass:append(("{\\bord0\\1c&H%s&\\1a&H%X&}"):format("000000", user_opts.boxalpha))
                             elem_ass:draw_start()
                             elem_ass:rect_cw(-thumb_pad * r_h, -thumb_pad * r_h, (thumbfast.width + thumb_pad) * r_w, (thumbfast.height + thumb_pad) * r_h)
@@ -1260,9 +1262,8 @@ function window_controls(topbar)
     -- deadzone below window controls
     local sh_area_y0, sh_area_y1
     sh_area_y0 = user_opts.barmargin
-    sh_area_y1 = (wc_geo.y + (wc_geo.h / 2)) +
-                 get_align(1 - (2 * user_opts.deadzonesize),
-                 osc_param.playresy - (wc_geo.y + (wc_geo.h / 2)), 0, 0)
+    sh_area_y1 = wc_geo.y + get_align(1 - (2 * user_opts.deadzonesize),
+                                      osc_param.playresy - wc_geo.y, 0, 0)
     add_area("showhide_wc", wc_geo.x, sh_area_y0, wc_geo.w, sh_area_y1)
 
     if topbar then
@@ -1851,13 +1852,11 @@ function bar_layout(direction)
     if direction > 0 then
         -- deadzone below OSC
         sh_area_y0 = user_opts.barmargin
-        sh_area_y1 = (osc_geo.y + (osc_geo.h / 2)) +
-                     get_align(1 - (2*user_opts.deadzonesize),
-                     osc_param.playresy - (osc_geo.y + (osc_geo.h / 2)), 0, 0)
+        sh_area_y1 = osc_geo.y + get_align(1 - (2 * user_opts.deadzonesize),
+                                           osc_param.playresy - osc_geo.y, 0, 0)
     else
         -- deadzone above OSC
-        sh_area_y0 = get_align(-1 + (2*user_opts.deadzonesize),
-                               osc_geo.y - (osc_geo.h / 2), 0, 0)
+        sh_area_y0 = get_align(-1 + (2 * user_opts.deadzonesize), osc_geo.y, 0, 0)
         sh_area_y1 = osc_param.playresy - user_opts.barmargin
     end
     add_area("showhide", 0, sh_area_y0, osc_param.playresx, sh_area_y1)
@@ -2508,10 +2507,12 @@ function osc_init()
     ne.content = function ()
         if (state.rightTC_trem) then
             local minus = user_opts.unicodeminus and UNICODE_MINUS or "-"
+            local property = user_opts.remaining_playtime and "playtime-remaining"
+                                                           or "time-remaining"
             if state.tc_ms then
-                return (minus..mp.get_property_osd("playtime-remaining/full"))
+                return return (minus..mp.get_property_osd(property .. "/full"))
             else
-                return (minus..mp.get_property_osd("playtime-remaining"))
+                return (minus..mp.get_property_osd(property))
             end
         else
             if state.tc_ms then
