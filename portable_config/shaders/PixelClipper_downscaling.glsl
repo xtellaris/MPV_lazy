@@ -20,46 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!PARAM radius
-//!DESC [pixel_clipper_next] Clipping Radius
-//!TYPE int
-//!MINIMUM 1
-//!MAXIMUM 7
-2
-
-//!PARAM strength
-//!DESC [pixel_clipper_next] Clipping Strength
-//!TYPE float
-//!MINIMUM 0.0
-//!MAXIMUM 1.0
-1.0
-
 //!HOOK POSTKERNEL
 //!BIND POSTKERNEL
 //!BIND PREKERNEL
-//!DESC [pixel_clipper_next] Pixel Clipper (Anti-Ringing)
-//!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 > POSTKERNEL.h PREKERNEL.h / 1.000 > *
+//!DESC [PixelClipper_downscaling] Pixel Clipper (Anti-Ringing)
+//!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 < POSTKERNEL.h PREKERNEL.h / 1.000 < *
+
+const float strength = 1.0;
+
 vec4 hook() {
-    //Sample 5x5 low-res pixel cluster around high-res pixel
-    vec4 min_pix = PREKERNEL_texOff(0);
-    vec4 max_pix = min_pix;
-    vec4 cur_pix;
-    for (int y = -radius; y <= radius; y++) {
-        for (int x = -radius; x <= radius; x++) {
-            if (abs(x*x + y*y) <= radius*radius) {
-                cur_pix = PREKERNEL_texOff(vec2(y, x));
-                min_pix = min(min_pix, cur_pix);
-                max_pix = max(max_pix, cur_pix);
-            }
+    int radius = int(ceil((PREKERNEL_size.x / POSTKERNEL_size.x) * 0.5));
+    vec4 pix = vec4(0.0);
+    vec4 min_pix = vec4(1e8);
+    vec4 max_pix = vec4(1e-8);
+
+    for (int dx = -radius; dx <= radius; dx++) {
+        for (int dy = -radius; dy <= radius; dy++) {
+            pix = PREKERNEL_texOff(vec2(dx, dy));
+            min_pix = min(pix, min_pix);
+            max_pix = max(pix, max_pix);
         }
     }
 
-    //Sample current high-res pixel
-    vec4 hr_pix = POSTKERNEL_texOff(0);
-    vec4 clipped;
-    
-    // Clamp the intensity so it doesn't ring
-    clipped = clamp(hr_pix, min_pix, max_pix);
-    return mix(hr_pix, clipped, strength);
+    vec4 lr_pix = POSTKERNEL_texOff(0.0);
+    vec4 clipped = clamp(lr_pix, min_pix, max_pix);
+    return mix(lr_pix, clipped, strength);
 }
 
