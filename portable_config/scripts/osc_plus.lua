@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-COMMIT_ dfbdf7516586427083a868307a77c35bab8bc764
+COMMIT_ 9c22d6b4382f46ed04d0daa3f8dceb96fd56f0b2
 文档_ https://github.com/hooke007/MPV_lazy/discussions/18
 
 改进版本的OSC，不兼容其它OSC类脚本（实现全部功能需搭配 新缩略图引擎 thumbfast ）
@@ -218,7 +218,7 @@ function kill_animation()
     state.anitype =  nil
 end
 
-function set_osd(res_x, res_y, text)
+function set_osd(res_x, res_y, text, z)
     if state.osd.res_x == res_x and
        state.osd.res_y == res_y and
        state.osd.data == text then
@@ -227,7 +227,7 @@ function set_osd(res_x, res_y, text)
     state.osd.res_x = res_x
     state.osd.res_y = res_y
     state.osd.data = text
-    state.osd.z = 1000
+    state.osd.z = z
     state.osd:update()
 end
 
@@ -901,7 +901,7 @@ function render_elements(master_ass)
                             elseif (sliderpos > (s_max - 3)) then
                                 an = an + 1
                             end
-                        elseif (sliderpos > (s_max-s_min)/2) then
+                        elseif (sliderpos > (s_max+s_min)/2) then
                             an = an + 1
                             tx = tx - 5
                         else
@@ -1433,11 +1433,6 @@ layouts["box"] = function ()
         {x = posX - pos_offsetX, y = bigbtnrowY, an = 7, w = 70, h = 18}
     lo.style = osc_styles.smallButtonsL
 
-    lo = add_layout("tog_forced_only")
-    lo.geometry =
-        {x = posX - pos_offsetX + 70, y = bigbtnrowY - 1, an = 7, w = 25, h = 18}
-    lo.style = osc_styles.smallButtonsL
-
     lo = add_layout("tog_fs")
     lo.geometry =
         {x = posX+pos_offsetX - 25, y = bigbtnrowY, an = 4, w = 25, h = 25}
@@ -1945,12 +1940,6 @@ function bar_layout(direction)
     lo.geometry = geo
     lo.style = osc_styles.smallButtonsBar
 
-    -- Forced-subs-only button
-    geo = { x = geo.x - geo.w - padX, y = geo.y, an = geo.an, w = geo.w, h = geo.h }
-    lo = add_layout("tog_forced_only")
-    lo.geometry = geo
-    lo.style = osc_styles.smallButtonsBar
-
     -- Track selection buttons
     geo = { x = geo.x - tsW - padX, y = geo.y, an = geo.an, w = tsW, h = geo.h }
     lo = add_layout("cy_sub")
@@ -2337,32 +2326,6 @@ function osc_init()
     ne.eventresponder["shift+mbtn_left_down"] =
         function () show_message(get_tracklist("sub"), 2) end
 
-    -- tog_forced_only
-    local tog_forced_only = new_element("tog_forced_only", "button")
-
-    ne = tog_forced_only
-    ne.content = function ()
-        sub_codec = mp.get_property("current-tracks/sub/codec")
-        if (sub_codec ~= "dvd_subtitle" and sub_codec ~= "hdmv_pgs_subtitle") then
-            return ""
-        end
-        local base_a = tog_forced_only.layout.alpha
-        local alpha = base_a[1]
-        if not mp.get_property_bool("sub-forced-only-cur") then
-            alpha = 255
-        end
-        local ret = assdraw.ass_new()
-        ret:append("[")
-        ass_append_alpha(ret, {[1] = alpha, [2] = 1, [3] = base_a[3], [4] = base_a[4]}, 0)
-        ret:append("F")
-        ass_append_alpha(ret, base_a, 0)
-        ret:append("]")
-        return ret.text
-    end
-    ne.eventresponder["mbtn_left_up"] = function ()
-        mp.set_property_bool("sub-forced-only", (not mp.get_property_bool("sub-forced-only-cur")))
-    end
-
     ne.eventresponder["wheel_up_press"] =
         function () set_track("sub", -1) end
     ne.eventresponder["wheel_down_press"] =
@@ -2644,14 +2607,11 @@ function update_margins()
         reset_margins()
     end
 
-    utils.shared_script_property_set("osc-margins",
-        string.format("%f,%f,%f,%f", margins.l, margins.r, margins.t, margins.b))
     mp.set_property_native("user-data/osc/margins", margins)
 end
 
 function shutdown()
     reset_margins()
-    utils.shared_script_property_set("osc-margins", nil)
     mp.del_property("user-data/osc")
 end
 
@@ -2938,7 +2898,7 @@ function render()
 
     -- submit
     set_osd(osc_param.playresy * osc_param.display_aspect,
-            osc_param.playresy, ass.text)
+            osc_param.playresy, ass.text, 1000)
 end
 
 --
@@ -3094,7 +3054,7 @@ function tick()
             ass:an(8)
             ass:append("拖入文件或地址进行播放")
         end
-        set_osd(display_w, display_h, ass.text)
+        set_osd(display_w, display_h, ass.text, -1000)
 
         if state.showhide_enabled then
             mp.disable_key_bindings("showhide_osc_plus")
@@ -3327,7 +3287,6 @@ function visibility_mode(mode, no_osd)
     end
 
     user_opts.visibility = mode
-    utils.shared_script_property_set("osc-visibility", mode)
     mp.set_property_native("user-data/osc/visibility", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
@@ -3360,7 +3319,6 @@ function idlescreen_visibility(mode, no_osd)
         user_opts.idlescreen = false
     end
 
-    utils.shared_script_property_set("osc-idlescreen", mode)
     mp.set_property_native("user-data/osc/idlescreen", user_opts.idlescreen)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
