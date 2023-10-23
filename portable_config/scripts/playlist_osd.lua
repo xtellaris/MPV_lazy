@@ -332,7 +332,7 @@ function draw_playlist()
 end
 
 function toggle_playlist(show_function)
-	local show = show_function or showplaylist
+	local show = show_function or playlist_show
 	if playlist_visible then
 		remove_keybinds()
 	else
@@ -592,7 +592,7 @@ function handlemessage(msg, value, value2)
 			playlist_show(value2)
 			return
 		else
-			toggle_playlist(showplaylist)
+			toggle_playlist(playlist_show)
 			return
 		end
 	end
