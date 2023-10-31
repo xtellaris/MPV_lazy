@@ -118,7 +118,10 @@ function Timeline:on_prop_fullormaxed()
 	self:update_dimensions()
 end
 function Timeline:on_display() self:update_dimensions() end
-function Timeline:on_options() self:update_dimensions() end
+function Timeline:on_options()
+	self:decide_progress_size()
+	self:update_dimensions()
+end
 function Timeline:handle_cursor_up()
 	if self.pressed then
 		mp.set_property_native('pause', self.pressed.pause)
@@ -350,11 +353,12 @@ function Timeline:render()
 
 	-- Time values
 	if text_opacity > 0 then
-		local time_opts = {size = self.font_size, opacity = text_opacity, border = 2}
+		local time_opts = {size = self.font_size, opacity = text_opacity, border = 2 * state.scale}
 		-- Upcoming cache time
 		if buffered_playtime and options.buffered_time_threshold > 0
 			and buffered_playtime < options.buffered_time_threshold then
-			local x, align = fbx + 5, 4
+			local margin = 5 * state.scale
+			local x, align = fbx + margin, 4
 			local cache_opts = {
 				size = self.font_size * 0.8, opacity = text_opacity * 0.6, border = options.text_border * state.scale,
 			}
@@ -362,7 +366,7 @@ function Timeline:render()
 			local width = text_width(human, cache_opts)
 			local time_width = timestamp_width(state.time_human, time_opts)
 			local time_width_end = timestamp_width(state.destination_time_human, time_opts)
-			local min_x, max_x = bax + spacing + 5 + time_width, bbx - spacing - 5 - time_width_end
+			local min_x, max_x = bax + spacing + margin + time_width, bbx - spacing - margin - time_width_end
 			if x < min_x then x = min_x elseif x + width > max_x then x, align = max_x, 6 end
 			draw_timeline_text(x, fcy, align, human, cache_opts)
 		end

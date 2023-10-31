@@ -1,6 +1,6 @@
 --[[
-SOURCE_ https://github.com/tomasklaen/uosc/tree/main/scripts/uosc
-COMMIT_ 6e19bee95591e3c7653ba1d887d09e7708544eac
+SOURCE_ https://github.com/tomasklaen/uosc/tree/main/dist/scripts/uosc
+COMMIT_ bf7f97029544f01c7a2c5447e41c357402a5e1fe
 文档_ https://github.com/hooke007/MPV_lazy/discussions/186
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
@@ -52,6 +52,7 @@ defaults = {
 
 	menu_item_height = 36,
 	menu_min_width = 260,
+	menu_padding = 4,
 	menu_type_to_search = true,
 
 	top_bar = 'no-border',
@@ -74,7 +75,7 @@ defaults = {
 	font_scale = 1,
 	font_bold = false,
 	text_border = 1.2,
-	border_radius = 2,
+	border_radius = 4,
 	color = '',
 	opacity = '',
 	animation_duration = 100,
@@ -495,9 +496,6 @@ function update_margins()
 	state.margin_left = left
 	state.margin_right = right
 
-	if utils.shared_script_property_set then
-		utils.shared_script_property_set('osc-margins', string.format('%f,%f,%f,%f', 0, 0, top, bottom))
-	end
 	mp.set_property_native('user-data/osc/margins', {l = left, r = right, t = top, b = bottom})
 
 	if not options.adjust_osd_margins then return end
@@ -1124,7 +1122,6 @@ if options.idlescreen then
 	mp.register_script_message('osc-idlescreen', function(mode, no_osd)
 		if mode == 'cycle' then mode = state.idlescreen and 'no' or 'yes' end
 		set_state('idlescreen', mode == 'yes')
-		utils.shared_script_property_set('osc-idlescreen', mode)
 		mp.set_property_native('user-data/osc', { idlescreen = state.idlescreen })
 
 		if not no_osd and mp.get_property_number('osd-level', 1) >= 1 then
