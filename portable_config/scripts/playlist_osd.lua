@@ -38,8 +38,7 @@ local settings = {
 	--allow the playlist cursor to loop from end to start and vice versa
 	loop_cursor = true,
 
-	-- reset cursor navigation when closing or opening playlist
-	reset_cursor_on_close = true,
+	-- reset cursor navigation when or opening playlist
 	reset_cursor_on_open = true,
 
 	--osd timeout on inactivity in seconds, use 0 for no timeout
@@ -111,13 +110,13 @@ local cursor = 0
 local title_table = {}
 
 function is_protocol(path)
-	return type(path) == 'string' and path:match('^%a[%a%d-_]+://') ~= nil
+	return type(path) == "string" and path:match("^%a[%a%d-_]+://") ~= nil
 end
 
 function on_file_loaded()
 	refresh_globals()
 	filename = mp.get_property("filename")
-	path = mp.get_property('path')
+	path = mp.get_property("path")
 	local media_title = mp.get_property("media-title")
 	if is_protocol(path) and not title_table[path] and path ~= media_title then
 		title_table[path] = media_title
@@ -129,21 +128,21 @@ function on_file_loaded()
 		if playlist_visible then draw_playlist() end
 	end
 
-	strippedname = stripfilename(mp.get_property('media-title'))
+	strippedname = stripfilename(mp.get_property("media-title"))
 	if settings.show_playlist_on_fileload == 2 then
 		playlist_show()
 	elseif settings.show_playlist_on_fileload == 1 then
-		mp.commandv('show-text', strippedname)
+		mp.commandv("show-text", strippedname)
 	end
 end
 
 function on_start_file()
 	refresh_globals()
 	filename = mp.get_property("filename")
-	path = mp.get_property('path')
+	path = mp.get_property("path")
 	--if not a url then join path with working directory
 	if not is_protocol(path) then
-		path = utils.join_path(mp.get_property('working-directory'), path)
+		path = utils.join_path(mp.get_property("working-directory"), path)
 		directory = utils.split_path(path)
 	else
 		directory = nil
@@ -159,29 +158,29 @@ function on_end_file()
 end
 
 function refresh_globals()
-	pos = mp.get_property_number('playlist-pos', 0)
-	plen = mp.get_property_number('playlist-count', 0)
+	pos = mp.get_property_number("playlist-pos", 0)
+	plen = mp.get_property_number("playlist-count", 0)
 end
 
 --strip a filename based on its extension or protocol according to rules in settings
 function stripfilename(pathfile, media_title)
-	if pathfile == nil then return '' end
+	if pathfile == nil then return "" end
 	local ext = pathfile:match("%.([^%.]+)$")
 	if not ext then ext = "" end
 	local tmp = pathfile
 	if settings.slice_longfilenames and tmp:len()>settings.slice_longfilenames_amount+5 then
-		tmp = tmp:sub(1, settings.slice_longfilenames_amount).." ..."
+		tmp = tmp:sub(1, settings.slice_longfilenames_amount):gsub(".[\128-\191]*$", "") .. " ..."
 	end
 	return tmp
 end
 
 --gets the file info of an item
 function get_file_info(item)
-	local path = mp.get_property('playlist/' .. item - 1 .. '/filename')
+	local path = mp.get_property("playlist/" .. item - 1 .. "/filename")
 	if is_protocol(path) then return {} end
 	local file_info = utils.file_info(path)
 	if not file_info then
-		msg.warn('failed to read file info for', path)
+		msg.warn("failed to read file info for", path)
 		return {}
 	end
 
@@ -193,14 +192,14 @@ function get_name_from_index(i, notitle)
 	refresh_globals()
 	if plen <= i then msg.error("no index in playlist", i, "length", plen); return nil end
 	local _, name = nil
-	local title = mp.get_property('playlist/'..i..'/title')
-	local name = mp.get_property('playlist/'..i..'/filename')
+	local title = mp.get_property("playlist/" .. i .. "/title")
+	local name = mp.get_property("playlist/" .. i .. "/filename")
 
-	local should_use_title = settings.prefer_titles == 'all' or is_protocol(name) and settings.prefer_titles == 'url'
+	local should_use_title = settings.prefer_titles == "all" or is_protocol(name) and settings.prefer_titles == "url"
 	--check if file has a media title stored or as property
 	if not title and should_use_title then
-		local mtitle = mp.get_property('media-title')
-		if i == pos and mp.get_property('filename') ~= mtitle then
+		local mtitle = mp.get_property("media-title")
+		if i == pos and mp.get_property("filename") ~= mtitle then
 			if not title_table[name] then
 				title_table[name] = mtitle
 			end
@@ -214,14 +213,14 @@ function get_name_from_index(i, notitle)
 	if title and not notitle and should_use_title then
 		-- Escape a string for verbatim display on the OSD
 		-- Ref: https://github.com/mpv-player/mpv/blob/94677723624fb84756e65c8f1377956667244bc9/player/lua/stats.lua#L145
-		return stripfilename(title, true):gsub("\\", '\\\239\187\191'):gsub("{", "\\{"):gsub("^ ", "\\h")
+		return stripfilename(title, true):gsub("\\", "\\\239\187\191"):gsub("{", "\\{"):gsub("^ ", "\\h")
 	end
 
 	--remove paths if they exist, keeping protocols for stripping
-	if string.sub(name, 1, 1) == '/' or name:match("^%a:[/\\]") then
+	if string.sub(name, 1, 1) == "/" or name:match("^%a:[/\\]") then
 		_, name = utils.split_path(name)
 	end
-	return stripfilename(name):gsub("\\", '\\\239\187\191'):gsub("{", "\\{"):gsub("^ ", "\\h")
+	return stripfilename(name):gsub("\\", "\\\239\187\191"):gsub("{", "\\{"):gsub("^ ", "\\h")
 end
 
 function parse_header(string)
@@ -241,7 +240,7 @@ function parse_filename(string, name, index)
 	local base = tostring(plen):len()
 	local esc_name = stripfilename(name):gsub("%%", "%%%%")
 	return string:gsub("%%N", "\\N")
-				 :gsub("%%pos", string.format("%0"..base.."d", index+1))
+				 :gsub("%%pos", string.format("%0" .. base .. "d", index+1))
 				 :gsub("%%name", esc_name)
 				 -- undo name escape
 				 :gsub("%%%%", "%%")
@@ -250,7 +249,7 @@ end
 function parse_filename_by_index(index)
 	local template = settings.normal_file
 
-	local is_idle = mp.get_property_native('idle-active')
+	local is_idle = mp.get_property_native("idle-active")
 	local position = is_idle and -1 or pos
 
 	if index == position then
@@ -285,7 +284,7 @@ function draw_playlist()
 	ass:append(settings.style_ass_tags)
 
 	if settings.playlist_header ~= "" then
-		ass:append(parse_header(settings.playlist_header).."\\N")
+		ass:append(parse_header(settings.playlist_header) .. "\\N")
 	end
 
 	-- (visible index, playlist index) pairs of playlist entries that should be rendered
@@ -318,12 +317,12 @@ function draw_playlist()
 	-- both indices are 1 based
 	for display_index, playlist_index in pairs(visible_indices) do
 		if display_index == 1 and playlist_index ~= 1 then
-			ass:append(settings.playlist_sliced_prefix.."\\N")
+			ass:append(settings.playlist_sliced_prefix .. "\\N")
 		elseif display_index == settings.showamount and playlist_index ~= plen then
 			ass:append(settings.playlist_sliced_suffix)
 		else
 			-- parse_filename_by_index expects 0 based index
-			ass:append(parse_filename_by_index(playlist_index - 1).."\\N")
+			ass:append(parse_filename_by_index(playlist_index - 1) .. "\\N")
 		end
 	end
 
@@ -394,7 +393,7 @@ end
 
 function resetcursor()
 	selection = nil
-	cursor = mp.get_property_number('playlist-pos', 1)
+	cursor = mp.get_property_number("playlist-pos", 1)
 end
 
 function removefile()
@@ -487,7 +486,7 @@ function playfile()
 	refresh_globals()
 	if plen == 0 then return end
 	selection = nil
-	local is_idle = mp.get_property_native('idle-active')
+	local is_idle = mp.get_property_native("idle-active")
 	if cursor ~= pos or is_idle then
 		mp.set_property("playlist-pos", cursor)
 	else
@@ -508,8 +507,8 @@ function bind_keys(keys, name, func, opts)
 	end
 	local i = 1
 	for key in keys:gmatch("[^%s]+") do
-		local prefix = i == 1 and '' or i
-		mp.add_key_binding(key, name..prefix, func, opts)
+		local prefix = i == 1 and "" or i
+		mp.add_key_binding(key, name .. prefix, func, opts)
 		i = i + 1
 	end
 end
@@ -521,8 +520,8 @@ function bind_keys_forced(keys, name, func, opts)
 	end
 	local i = 1
 	for key in keys:gmatch("[^%s]+") do
-		local prefix = i == 1 and '' or i
-		mp.add_forced_key_binding(key, name..prefix, func, opts)
+		local prefix = i == 1 and "" or i
+		mp.add_forced_key_binding(key, name .. prefix, func, opts)
 		i = i + 1
 	end
 end
@@ -534,24 +533,24 @@ function unbind_keys(keys, name)
 	end
 	local i = 1
 	for key in keys:gmatch("[^%s]+") do
-		local prefix = i == 1 and '' or i
-		mp.remove_key_binding(name..prefix)
+		local prefix = i == 1 and "" or i
+		mp.remove_key_binding(name .. prefix)
 		i = i + 1
 	end
 end
 
 function add_keybinds()
-	bind_keys_forced(settings.key_move2up, 'moveup', moveup, "repeatable")
-	bind_keys_forced(settings.key_move2down, 'movedown', movedown, "repeatable")
-	bind_keys_forced(settings.key_move2pageup, 'movepageup', movepageup, "repeatable")
-	bind_keys_forced(settings.key_move2pagedown, 'movepagedown', movepagedown, "repeatable")
-	bind_keys_forced(settings.key_move2begin, 'movebegin', movebegin, "repeatable")
-	bind_keys_forced(settings.key_move2end, 'moveend', moveend, "repeatable")
-	bind_keys_forced(settings.key_file_select, 'selectfile', selectfile)
-	bind_keys_forced(settings.key_file_unselect, 'unselectfile', unselectfile)
-	bind_keys_forced(settings.key_file_play, 'playfile', playfile)
-	bind_keys_forced(settings.key_file_remove, 'removefile', removefile, "repeatable")
-	bind_keys_forced(settings.key_playlist_close, 'closeplaylist', remove_keybinds)
+	bind_keys_forced(settings.key_move2up, "moveup", moveup, "repeatable")
+	bind_keys_forced(settings.key_move2down, "movedown", movedown, "repeatable")
+	bind_keys_forced(settings.key_move2pageup, "movepageup", movepageup, "repeatable")
+	bind_keys_forced(settings.key_move2pagedown, "movepagedown", movepagedown, "repeatable")
+	bind_keys_forced(settings.key_move2begin, "movebegin", movebegin, "repeatable")
+	bind_keys_forced(settings.key_move2end, "moveend", moveend, "repeatable")
+	bind_keys_forced(settings.key_file_select, "selectfile", selectfile)
+	bind_keys_forced(settings.key_file_unselect, "unselectfile", unselectfile)
+	bind_keys_forced(settings.key_file_play, "playfile", playfile)
+	bind_keys_forced(settings.key_file_remove, "removefile", removefile, "repeatable")
+	bind_keys_forced(settings.key_playlist_close, "closeplaylist", remove_keybinds)
 end
 
 function remove_keybinds()
@@ -560,21 +559,18 @@ function remove_keybinds()
 	keybindstimer:kill()
 	mp.set_osd_ass(0, 0, "")
 	playlist_visible = false
-	if settings.reset_cursor_on_close then
-		resetcursor()
-	end
 	if dynamic_binds then
-		unbind_keys(settings.key_move2up, 'moveup')
-		unbind_keys(settings.key_move2down, 'movedown')
-		unbind_keys(settings.key_move2pageup, 'movepageup')
-		unbind_keys(settings.key_move2pagedown, 'movepagedown')
-		unbind_keys(settings.key_move2begin, 'movebegin')
-		unbind_keys(settings.key_move2end, 'moveend')
-		unbind_keys(settings.key_file_select, 'selectfile')
-		unbind_keys(settings.key_file_unselect, 'unselectfile')
-		unbind_keys(settings.key_file_play, 'playfile')
-		unbind_keys(settings.key_file_remove, 'removefile')
-		unbind_keys(settings.key_playlist_close, 'closeplaylist')
+		unbind_keys(settings.key_move2up, "moveup")
+		unbind_keys(settings.key_move2down, "movedown")
+		unbind_keys(settings.key_move2pageup, "movepageup")
+		unbind_keys(settings.key_move2pagedown, "movepagedown")
+		unbind_keys(settings.key_move2begin, "movebegin")
+		unbind_keys(settings.key_move2end, "moveend")
+		unbind_keys(settings.key_file_select, "selectfile")
+		unbind_keys(settings.key_file_unselect, "unselectfile")
+		unbind_keys(settings.key_file_play, "playfile")
+		unbind_keys(settings.key_file_remove, "removefile")
+		unbind_keys(settings.key_playlist_close, "closeplaylist")
 	end
 end
 
@@ -606,10 +602,10 @@ function handlemessage(msg, value, value2)
 		end
 	end
 	if msg == "show" and value == "filename" and strippedname and value2 then
-		mp.commandv('show-text', strippedname, tonumber(value2)*1000 ) ; return
+		mp.commandv("show-text", strippedname, tonumber(value2)*1000 ) ; return
 	end
 	if msg == "show" and value == "filename" and strippedname then
-		mp.commandv('show-text', strippedname ) ; return
+		mp.commandv("show-text", strippedname ) ; return
 	end
 
 	if msg == "playlist-next" then playlist_next() ; return end
