@@ -1,12 +1,12 @@
 --[[
 SOURCE_ https://github.com/tomasklaen/uosc/tree/main/src/uosc
-COMMIT_ 26d71a863015a3af45a41d17bb2f8678b8cde0d0
+COMMIT_ 9cebb07fcb3ab4ce4673c737226c0893490f409f
 文档_ https://github.com/hooke007/MPV_lazy/discussions/186
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
 ]]
 
-local uosc_version = '5.0.0'
+local uosc_version = '5.1.0'
 
 mp.commandv('script-message', 'uosc-version', uosc_version)
 
@@ -178,6 +178,7 @@ local config_defaults = {
 		idle_indicator = 0.8,
 		audio_indicator = 0.5,
 		buffering_indicator = 0.3,
+		playlist_position = 0.8,
 	},
 }
 config = {
