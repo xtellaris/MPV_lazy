@@ -67,6 +67,9 @@ input.conf 示例：
 #                     script-binding input_plus/trackS_refresh      # ............（字幕）
 #                     script-binding input_plus/trackV_refresh      # ............（视频）
 
+ -                    script-binding input_plus/volume_db_dec       # 减少音量（以分贝为单位）
+ =                    script-binding input_plus/volume_db_inc       # 增加...
+
 
 #                     script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循环触发命令
 
@@ -85,13 +88,18 @@ function check_plat()
 	end
 	return "x11"
 end
-local plat = check_plat()
+
+function round(n)
+	return n + (2^52 + 2^51) - (2^52 + 2^51)
+end
 
 
 
 --
 -- 变量预设
 --
+
+local plat = check_plat()
 
 local adevicelist = {}
 local target_ao = nil
@@ -753,6 +761,27 @@ function track_refresh(id)
 end
 
 
+-- 另一种实现 https://github.com/mpv-player/mpv/pull/11444#issuecomment-1469229943
+function volume2db(vol)
+	return 60.0 * math.log(vol / 100.0) / math.log(10.0)
+end
+-- https://github.com/mpv-player/mpv/blob/051ba909b4107240d643e4793efa2ceb714fd1b4/player/audio.c#L175
+function db2volume(db)
+	return math.exp(math.log(10.0) * (db / 60.0 + 2))
+end
+function volume_add(diff)
+	local gain = round(volume2db(mp.get_property_number("volume"))) + diff
+	local cap = mp.get_property_number("volume-max")
+	if db2volume(gain) > cap then
+		gain = volume2db(cap)
+	elseif db2volume(gain) < 10 then
+		gain = volume2db(10)
+	end
+	mp.set_property_number("volume", db2volume(gain))
+	mp.osd_message(string.format("音量增益： %+.2f dB", gain))
+end
+
+
 
 --
 -- 键位绑定
@@ -820,5 +849,9 @@ mp.add_key_binding(nil, "trackV_next", function() track_seek("vid", 1) end)
 mp.add_key_binding(nil, "trackA_refresh", function() track_refresh("aid") end)
 mp.add_key_binding(nil, "trackS_refresh", function() track_refresh("sid") end)
 mp.add_key_binding(nil, "trackV_refresh", function() track_refresh("vid") end)
+
+mp.add_key_binding(nil, "volume_db_dec", function() volume_add(-1) end, {repeatable = true})
+mp.add_key_binding(nil, "volume_db_inc", function() volume_add(1) end, {repeatable = true})
+
 
 mp.register_script_message("cycle-cmds", cycle_cmds)
