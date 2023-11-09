@@ -390,7 +390,7 @@ local function stateABLoop()
     local abLoopState = ""
     local abLoopA, abLoopB = propNative("ab-loop-a"), propNative("ab-loop-b")
 
-    if (abLoopA == "no") and (abLoopB == "no") then abLoopState =  "off"
+    if (abLoopA == "no") and (abLoopB == "no") then abLoopState = "off"
     elseif not (abLoopA == "no") and (abLoopB == "no") then abLoopState = "a"
     elseif not (abLoopA == "no") and not (abLoopB == "no") then abLoopState = "b" end
 
@@ -940,15 +940,16 @@ local function playmenuList()
     for key, value in pairs(menuList) do
         -- Skip the 'file_loaded_menu' key as the following for loop will fail due to an
         -- attempt to get the length of a boolean value.
-        if (key == "file_loaded_menu") then goto keyjump end
-
-        for i = 1, #value do
-            if (value[i][1] ~= SEP) then
-                if (#value[i] < 6 or #value[i] > 7) then mpdebug("Menu item at index of " .. i .. " is " .. #value[i] .. " items long for: " .. key) end
+        if (key ~= "file_loaded_menu") then
+            for i = 1, #value do
+                if (value[i][1] ~= SEP) then
+                    if (#value[i] < 6 or #value[i] > 7) then
+                        mpdebug("Menu item at index of " .. i .. " is " .. #value[i] .. " items long for: " .. key)
+                        mp.osd_message("Menu structure check failed!")
+                    end
+                end
             end
         end
-        
-        ::keyjump::
     end
 end
 

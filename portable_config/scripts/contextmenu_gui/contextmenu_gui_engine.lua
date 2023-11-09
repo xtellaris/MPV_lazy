@@ -275,7 +275,7 @@ local function doMenu(menuList, menuName, x, y, menuPaths, menuIndexes)
                     if not (i == (#pathList - 1)) then
                         menuPaths = menuPaths .. "?"
                     end
-                    menuFind = menuList[pathList[i]]
+                    local menuFind = menuList[pathList[i]]
                     for subi = 1, (#menuFind) do
                         if (menuFind[subi][1] == CASCADE) then
                             if (menuFind[subi][3] == pathList[i+1]) then
