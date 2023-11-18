@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/po5/thumbfast/blob/master/thumbfast.lua
-COMMIT_ 4241c7daa444d3859b51b65a39d30e922adb87e9
+COMMIT_ 8498a34b594578a8b5ddd38c8c2ba20023638fc0
 
 适配多个OSC类脚本的新缩略图引擎
 
@@ -14,10 +14,10 @@ COMMIT_ 4241c7daa444d3859b51b65a39d30e922adb87e9
 local options = {
 
     socket = "",                 -- Socket path (leave empty for auto)
-    tnpath = "",                 -- 缩略图缓存路径（确保目录真实存在），留空即自动
+    tnpath = "",
 
-    max_height = 300,            -- Maximum thumbnail size in pixels (scaled down to fit) Values are scaled when hidpi is enabled
-    max_width = 300,
+    max_height = 360,
+    max_width = 360,
 
     overlay_id = 42,             -- Overlay id
 
@@ -25,16 +25,16 @@ local options = {
     quit_after_inactivity = 0,   -- Close thumbnailer process after an inactivity period in seconds, 0 to disable
     network = false,             -- Enable on network playback
     audio = false,               -- Enable on audio playback
-    hwdec = true,                -- 启用硬解加速
+    hwdec = true,
     direct_io = true,            -- Windows only: use native Windows API to write to pipe (requires LuaJIT)
 
-    sw_threads = 2,              -- 软解线程
-    binpath = "mpv",             -- 自定义mpv路径
-    min_duration = 0,            -- 对短视频关闭预览（秒）
-    precise = 0,                 -- 预览精度
-    quality = 0,                 -- 预览质量 require vf_libplacebo for 3
-    frequency = 0.1,             -- 解码频率（秒）
-    auto_run = true,             -- 自动运行
+    sw_threads = 2,
+    binpath = "mpv",
+    min_duration = 0,
+    precise = 0,
+    quality = 0,                 -- require vf_libplacebo for 3
+    frequency = 0.1,
+    auto_run = true,
 
 }
 
@@ -106,7 +106,7 @@ if options.direct_io then
     end
 end
 
-local file = nil
+local file
 local file_bytes = 0
 local spawned = false
 local disabled = false
@@ -116,28 +116,23 @@ local script_written = false
 
 local dirty = false
 
-local x = nil
-local y = nil
-local last_x = x
-local last_y = y
+local x, y
+local last_x, last_y
 
-local last_seek_time = nil
+local last_seek_time
 
-local effective_w = options.max_width
-local effective_h = options.max_height
-local real_w = nil
-local real_h = nil
-local last_real_w = nil
-local last_real_h = nil
+local effective_w, effective_h = options.max_width, options.max_height
+local real_w, real_h
+local last_real_w, last_real_h
 
-local script_name = nil
+local script_name
 
 local show_thumbnail = false
 
 local last_has_vid = 0
 local has_vid = 0
 
-local file_timer = nil
+local file_timer
 local file_check_period = 1/60
 
 local mac_bundle_mode = false
@@ -238,12 +233,33 @@ if os_name == "darwin" and options.binpath == "bundle" and unique then
     mac_bundle_mode = true
 end
 
+local function auto_ui_scale()
+    local display_w, display_h = mp.get_property_number('display-width', 0), mp.get_property_number('display-height', 0)
+    local display_aspect = display_w / display_h or 0
+    if display_aspect <= 1 then
+        return 1
+    end
+    if display_aspect >=2 then
+        return tonumber(string.format('%.2f', display_h / 1080))
+    end
+    if display_w * display_h > 2304000 then
+        return tonumber(string.format('%.2f', math.sqrt(display_w * display_h / 2073600)))
+    else
+        return 1
+    end
+end
+
 local function calc_dimensions()
     local width = properties["video-params"] and properties["video-params"]["w"]
     local height = properties["video-params"] and properties["video-params"]["h"]
     if not width or not height then return end
 
-    local scale = properties["display-hidpi-scale"] or 1
+    local scale
+    if properties["hidpi-window-scale"] then
+        scale = properties["display-hidpi-scale"] or 1
+    else
+        scale = auto_ui_scale() or 1
+    end
 
     if width / height > options.max_width / options.max_height then
         effective_w = math.floor(options.max_width * scale + 0.5)
@@ -300,13 +316,17 @@ local activity_timer
 local scale_sw = "fast-bilinear"
 local vf_str
 local quality = options.quality
+local seek_period_raw = options.frequency
+local seek_period_cur = seek_period_raw
+local precise_raw = options.precise
+local precise_cur = precise_raw
 
 if quality == 0 then
-    if options.precise == 2 then
+    if precise_raw == 2 then
         quality = 2
-    elseif options.precise == 0 then
+    elseif precise_raw == 0 then
         quality = 1
-    elseif options.precise == 1 then
+    elseif precise_raw == 1 then
         quality = 1
     end
     if options.sw_threads >= 3 then
@@ -334,7 +354,30 @@ local function quality_fin()
             vf_str = vf_str_pre..":flags=bicublin,format=fmt=gbrapf32,zscale=t=linear:npl=203,tonemap=tonemap=hable:desat=0.0,zscale=p=709:t=709:m=709,"..vf_str_suffix
         end
     elseif quality == 3 then
-        vf_str = "lavfi=[libplacebo=w="..effective_w..":h="..effective_h..":colorspace=bt709:color_primaries=bt709:color_trc=bt709:tonemapping=hable:format=bgra]"
+        if mp.get_property_number("video-out-params/max-luma", 1) > 203 then
+            vf_str = "lavfi=[libplacebo=w="..effective_w..":h="..effective_h..":colorspace=bt709:color_primaries=bt709:color_trc=bt709:tonemapping=hable:format=bgra]"
+
+            -- 无奈的workaround
+            if seek_period_cur < 0.5 then
+                seek_period_cur = 0.5
+                mp.msg.warn("已延迟请求频率以匹配性能需求")
+            end
+            if precise_cur == 0 then
+                precise_cur = 1
+                mp.msg.info("已降低时间轴精度以匹配性能需求")
+            end
+
+        else -- down2lv2
+            vf_str = vf_str_pre..":flags=bicublin,"..vf_str_suffix
+
+            if seek_period_cur ~= seek_period_raw then
+                seek_period_cur = seek_period_raw
+            end
+            if precise_cur ~= precise_raw then
+                precise_cur = precise_raw
+            end
+
+        end
     end
     return vf_str
 end
@@ -508,22 +551,17 @@ end
 
 local function seek(fast)
     if last_seek_time then
-        if options.precise == 2 then run("async seek " .. last_seek_time .. " absolute+exact")
-        elseif options.precise == 1 then run("async seek " .. last_seek_time .. " absolute+keyframes")
-        elseif options.precise == 0 then
+        if precise_cur == 2 then run("async seek " .. last_seek_time .. " absolute+exact")
+        elseif precise_cur == 1 then run("async seek " .. last_seek_time .. " absolute+keyframes")
+        elseif precise_cur == 0 then
             run("async seek " .. last_seek_time .. (fast and " absolute+keyframes" or " absolute+exact"))
         end
     end
 end
 
-local seek_period = options.frequency
-if quality == 3 and seek_period < 0.8 then
-    seek_period = 0.8
-    mp.msg.warn("已延迟请求以匹配性能需求")
-end
 local seek_period_counter = 0
 local seek_timer
-seek_timer = mp.add_periodic_timer(seek_period, function()
+seek_timer = mp.add_periodic_timer(seek_period_cur, function()
     if seek_period_counter == 0 then
         seek(true)
         seek_period_counter = 1
@@ -627,8 +665,7 @@ local function thumb(time, r_x, r_y, script)
     script_name = script
     if last_x ~= x or last_y ~= y or not show_thumbnail then
         show_thumbnail = true
-        last_x = x
-        last_y = y
+        last_x, last_y = x, y
         draw(real_w, real_h, script)
     end
 
