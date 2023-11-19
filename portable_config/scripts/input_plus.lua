@@ -1,77 +1,78 @@
 --[[
+文档_ 无
 
 快捷指令增强
 
-input.conf 示例：
+可用的快捷键示例（在 input.conf 中写入）：
 
- Ctrl+a               script-binding input_plus/adevice_back        # 上一个音频输出设备
-#                     script-binding input_plus/adevice_next        # 下...
-#                     script-binding input_plus/adevice_all_back    # 上...（包括不属于当前 --ao 的设备）
-#                     script-binding input_plus/adevice_all_next    # 下...
+ <KEY>   script-binding input_plus/adevice_back        # 上一个音频输出设备
+ <KEY>   script-binding input_plus/adevice_next        # 下...
+ <KEY>   script-binding input_plus/adevice_all_back    # 上...（包括不属于当前 --ao 的设备）
+ <KEY>   script-binding input_plus/adevice_all_next    # 下...
 
-#                     script-binding input_plus/chap_skip_toggle    # 启用/禁用强制自动跳过章节（片头片尾）
+ <KEY>   script-binding input_plus/chap_skip_toggle    # 启用/禁用强制自动跳过章节（片头片尾）
 
-#                     script-binding input_plus/info_toggle         # 启用/禁用仿Pot的OSD常驻显示简要信息
+ <KEY>   script-binding input_plus/info_toggle         # 启用/禁用仿Pot的OSD常驻显示简要信息
 
- Ctrl+v               script-binding input_plus/load_cbd            # 加载剪贴板地址
-#                     script-binding input_plus/load_cbd_add        # ...（追加到列表）
-#                     script-binding input_plus/load_cbd_alt        # 加载主缓冲区地址（仅Linux可用）
-#                     script-binding input_plus/load_cbd_alt_add    # ...（追加到列表）
+ <KEY>   script-binding input_plus/load_cbd            # 加载剪贴板地址
+ <KEY>   script-binding input_plus/load_cbd_add        # ...（追加到列表）
+ <KEY>   script-binding input_plus/load_cbd_alt        # 加载主缓冲区地址（仅Linux可用）
+ <KEY>   script-binding input_plus/load_cbd_alt_add    # ...（追加到列表）
 
-#                     script-binding input_plus/mark_aid_A          # 标记当前音轨为A
-#                     script-binding input_plus/mark_aid_B          # 标记当前音轨为B
-#                     script-binding input_plus/mark_aid_merge      # 合并AB音轨
-#                     script-binding input_plus/mark_aid_reset      # 取消AB并轨和标记
- m                    script-binding input_plus/mark_aid_fin        # （单键实现上述四项命令）
+ <KEY>   script-binding input_plus/mark_aid_A          # 标记当前音轨为A
+ <KEY>   script-binding input_plus/mark_aid_B          # 标记当前音轨为B
+ <KEY>   script-binding input_plus/mark_aid_merge      # 合并AB音轨
+ <KEY>   script-binding input_plus/mark_aid_reset      # 取消AB并轨和标记
+ <KEY>   script-binding input_plus/mark_aid_fin        # （单键实现上述四项命令）
 
-#                     script-binding input_plus/ostime_display      # 临时显示系统时间
-#                     script-binding input_plus/ostime_toggle       # 启用/禁用显示系统时间
+ <KEY>   script-binding input_plus/ostime_display      # 临时显示系统时间
+ <KEY>   script-binding input_plus/ostime_toggle       # 启用/禁用显示系统时间
 
- Ctrl+p               script-binding input_plus/pip_dummy           # 画中画（伪）/小窗化
-#                     script-binding input_plus/pip_dummy_p05       # ...（5%的尺寸占比）
-#                     script-binding input_plus/pip_dummy_p20       # ...（20%...）
+ <KEY>   script-binding input_plus/pip_dummy           # 画中画（伪）/小窗化
+ <KEY>   script-binding input_plus/pip_dummy_p05       # ...（5%的尺寸占比）
+ <KEY>   script-binding input_plus/pip_dummy_p20       # ...（20%...）
 
- Alt+p                script-binding input_plus/playlist_order_0    # 播放列表的洗牌与撤销
-#                     script-binding input_plus/playlist_order_0r   # ...（重定向至首个文件）
-#                     script-binding input_plus/playlist_order_1    # 播放列表连续洗牌（可用上两项命令恢复）
-#                     script-binding input_plus/playlist_order_1r   # ...
-#                     script-binding input_plus/playlist_tmp_save   # 保存当前播放列表为临时列表（位于主设置目录 playlist_temp.mpl ）
-#                     script-binding input_plus/playlist_tmp_load   # 打开临时播放列表
+ <KEY>   script-binding input_plus/playlist_order_0    # 播放列表的洗牌与撤销
+ <KEY>   script-binding input_plus/playlist_order_0r   # ...（重定向至首个文件）
+ <KEY>   script-binding input_plus/playlist_order_1    # 播放列表连续洗牌（可用上两项命令恢复）
+ <KEY>   script-binding input_plus/playlist_order_1r   # ...
+ <KEY>   script-binding input_plus/playlist_tmp_save   # 保存当前播放列表为临时列表（位于主设置目录 playlist_temp.mpl ）
+ <KEY>   script-binding input_plus/playlist_tmp_load   # 打开临时播放列表
 
- CLOSE_WIN            script-binding input_plus/quit_real           # 对执行退出命令前的确认（防止误触）
-#                     script-binding input_plus/quit_wait           # 延后退出命令的执行（执行前再次触发可取消）
+ <KEY>   script-binding input_plus/quit_real           # 对执行退出命令前的确认（防止误触）
+ <KEY>   script-binding input_plus/quit_wait           # 延后退出命令的执行（执行前再次触发可取消）
 
- Shift+RIGHT          script-binding input_plus/seek_acc            # [按住/松开] 非线性向前跳转（模拟流媒体平台的跳转方式）
-#                     script-binding input_plus/seek_acc_back       # [按住/松开] ......向后...
-#                     script-binding input_plus/seek_acc_alt        # [按住/松开] ...（防止关键帧异常的备用）
-#                     script-binding input_plus/seek_acc_back_alt   # [按住/松开] ...
+ <KEY>   script-binding input_plus/seek_acc            # [按住/松开] 非线性向前跳转（模拟流媒体平台的跳转方式）
+ <KEY>   script-binding input_plus/seek_acc_back       # [按住/松开] ......向后...
+ <KEY>   script-binding input_plus/seek_acc_alt        # [按住/松开] ...（防止关键帧异常的备用）
+ <KEY>   script-binding input_plus/seek_acc_back_alt   # [按住/松开] ...
 
-#                     script-binding input_plus/sids_sec_swap       # 双字幕的主次交换
+ <KEY>   script-binding input_plus/sids_sec_swap       # 双字幕的主次交换
 
- b                    script-binding input_plus/speed_auto          # [按住/松开] 两倍速/一倍速
-#                     script-binding input_plus/speed_auto_bullet   # [按住/松开] 子弹时间/一倍速
-#                     script-binding input_plus/speed_recover       # 仿Pot的速度重置与恢复
-#                     script-binding input_plus/speed_sync_toggle   # 启用/禁用自适应速度偏移（补偿显示刷新率）
+ <KEY>   script-binding input_plus/speed_auto          # [按住/松开] 两倍速/一倍速
+ <KEY>   script-binding input_plus/speed_auto_bullet   # [按住/松开] 子弹时间/一倍速
+ <KEY>   script-binding input_plus/speed_recover       # 仿Pot的速度重置与恢复
+ <KEY>   script-binding input_plus/speed_sync_toggle   # 启用/禁用自适应速度偏移（补偿显示刷新率）
 
-#                     script-binding input_plus/stats_1_2           # 单键浏览统计数据第1至2页
-#                     script-binding input_plus/stats_0_4           # 单键浏览统计数据第0至4页
+ <KEY>   script-binding input_plus/stats_1_2           # 单键浏览统计数据第1至2页
+ <KEY>   script-binding input_plus/stats_0_4           # 单键浏览统计数据第0至4页
 
-#                     script-binding input_plus/trackA_back         # 上一个音频轨道（自动跳过无轨道）
-#                     script-binding input_plus/trackA_next         # 下...
-#                     script-binding input_plus/trackS_back         # 上一个字幕轨道...
-#                     script-binding input_plus/trackS_next         # 下...
-#                     script-binding input_plus/trackV_back         # 上一个视频轨道...
-#                     script-binding input_plus/trackV_next         # 下...
+ <KEY>   script-binding input_plus/trackA_back         # 上一个音频轨道（自动跳过无轨道）
+ <KEY>   script-binding input_plus/trackA_next         # 下...
+ <KEY>   script-binding input_plus/trackS_back         # 上一个字幕轨道...
+ <KEY>   script-binding input_plus/trackS_next         # 下...
+ <KEY>   script-binding input_plus/trackV_back         # 上一个视频轨道...
+ <KEY>   script-binding input_plus/trackV_next         # 下...
 
-#                     script-binding input_plus/trackA_refresh      # 刷新当前轨道（音频）
-#                     script-binding input_plus/trackS_refresh      # ............（字幕）
-#                     script-binding input_plus/trackV_refresh      # ............（视频）
+ <KEY>   script-binding input_plus/trackA_refresh      # 刷新当前轨道（音频）
+ <KEY>   script-binding input_plus/trackS_refresh      # ............（字幕）
+ <KEY>   script-binding input_plus/trackV_refresh      # ............（视频）
 
- -                    script-binding input_plus/volume_db_dec       # 减少音量（以分贝为单位）
- =                    script-binding input_plus/volume_db_inc       # 增加...
+ <KEY>   script-binding input_plus/volume_db_dec       # 减少音量（以分贝为单位）
+ <KEY>   script-binding input_plus/volume_db_inc       # 增加...
 
 
-#                     script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循环触发命令
+ <KEY>   script-message-to input_plus cycle-cmds "cmd1" "cmd2"   # 循环触发命令
 
 ]]
 

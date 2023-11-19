@@ -8,9 +8,9 @@
 
 mpv的tcl图形菜单的核心脚本
 
-建议在 input.conf 中绑定右键以支持唤起菜单
- MOUSE_BTN2   script-message-to contextmenu_gui contextmenu_tk
-]]--
+可用的快捷键示例（在 input.conf 中写入）：
+ <KEY>   script-message-to contextmenu_gui contextmenu_tk   # 唤起菜单
+]]
 
 local langcodes = require "contextmenu_gui_lang"
 local function mpdebug(x) mp.msg.info(x) end

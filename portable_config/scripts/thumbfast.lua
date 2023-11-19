@@ -1,30 +1,31 @@
 --[[
 SOURCE_ https://github.com/po5/thumbfast/blob/master/thumbfast.lua
 COMMIT_ 8498a34b594578a8b5ddd38c8c2ba20023638fc0
+文档_ thumbfast.conf
 
 适配多个OSC类脚本的新缩略图引擎
 
-示例在 input.conf 中写入：
+可用的快捷键示例（在 input.conf 中写入）：
 
- Ctrl+Alt+t   script-binding thumbfast/thumb_rerun    # 重启缩略图的获取（修复缩略图卡死）
- Ctrl+t       script-binding thumbfast/thumb_toggle   # 启用/禁用缩略图预览
+ <KEY>   script-binding thumbfast/thumb_rerun    # 重启缩略图的获取（可用来手动修复缩略图卡死）
+ <KEY>   script-binding thumbfast/thumb_toggle   # 启用/禁用缩略图预览
 
 ]]
 
 local options = {
 
-    socket = "",                 -- Socket path (leave empty for auto)
+    socket = "",
     tnpath = "",
 
     max_height = 360,
     max_width = 360,
 
-    overlay_id = 42,             -- Overlay id
+    overlay_id = 42,
 
-    spawn_first = false,         -- Spawn thumbnailer on file load for faster initial thumbnails
-    quit_after_inactivity = 0,   -- Close thumbnailer process after an inactivity period in seconds, 0 to disable
-    network = false,             -- Enable on network playback
-    audio = false,               -- Enable on audio playback
+    spawn_first = false,
+    quit_after_inactivity = 0,
+    network = false,
+    audio = false,
     hwdec = true,
     direct_io = true,            -- Windows only: use native Windows API to write to pipe (requires LuaJIT)
 

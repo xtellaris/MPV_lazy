@@ -5,7 +5,7 @@
 ** Extension_ Thomas Carmichael https://gitlab.com/carmanaught **
 *****************************************************************
 mpv的tcl图形菜单的附属脚本 (1)/(3)
---]]
+]]
 
 local utils = require "mp.utils"
 local verbose = false  -- true -> Dump console messages also without -v

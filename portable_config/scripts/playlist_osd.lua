@@ -1,17 +1,16 @@
 --[[
+文档_ playlist_osd.conf
 
 精简 https://github.com/jonniek/mpv-playlistmanager/blob/master/playlistmanager.lua
 仅保留最核心的导航功能
 
-示例在 input.conf 中写入：
- Shift+ENTER   script-binding playlist_osd/display   # 显示高级播放列表
+可用的快捷键示例（在 input.conf 中写入）：
+ <KEY>   script-binding playlist_osd/display   # 显示高级播放列表
 
-]]--
+]]
 
 local settings = {
 
-	-- to bind multiple keys separate them by a space
-	-- dynamic keys
 	key_move2up = "UP",
 	key_move2down = "DOWN",
 	key_move2pageup = "PGUP",
@@ -24,57 +23,29 @@ local settings = {
 	key_file_remove = "BS",
 	key_playlist_close = "ESC",
 
-	--show playlist or filename every time a new file is loaded
-	--2 shows playlist, 1 shows current file(filename strip applied) as osd text, 0 shows nothing
-	--instead of using this you can also call script-message playlist_osd show playlist/filename
-	--ex. KEY playlist-next ; script-message playlist_osd show playlist
-	show_playlist_on_fileload = 0,
+	show_title_on_file_load = false,
+	show_playlist_on_file_load = false,
+	close_playlist_on_playfile = false,
 
-	--sync cursor when file is loaded from outside reasons(file-ending, playlist-next shortcut etc.)
-	--has the sideeffect of moving cursor if file happens to change when navigating
-	--good side is cursor always following current file when going back and forth files with playlist-next/prev
 	sync_cursor_on_load = true,
 
-	--allow the playlist cursor to loop from end to start and vice versa
 	loop_cursor = true,
 
-	-- reset cursor navigation when or opening playlist
 	reset_cursor_on_open = true,
 
-	--osd timeout on inactivity in seconds, use 0 for no timeout
 	playlist_display_timeout = 4,
 
-	-- the maximum amount of lines playlist will render. Optimal value depends on font/video size etc.
 	showamount = 15,
 
-	--font size scales by window, if false requires larger font and padding sizes
 	scale_playlist_by_window=true,
-	--playlist ass style overrides inside curly brackets, \keyvalue is one field, extra \ for escape in lua
-	--example {\\fnUbuntu\\fs10\\b0\\bord1} equals: font=Ubuntu, size=10, bold=no, border=1
-	--read http://docs.aegisub.org/3.2/ASS_Tags/ for reference of tags
-	--undeclared tags will use default osd settings
-	--these styles will be used for the whole playlist
+
 	style_ass_tags = "{\\rDefault\\an7\\fs12\\b0\\blur0\\bord1\\1c&H996F9A\\3c&H000000\\q2}",
 
-	--slice long filenames, and how many chars to show
 	slice_longfilenames = false,
 	slice_longfilenames_amount = 80,
 
-	--Playlist header template
-	--%mediatitle or %filename = title or name of playing file
-	--%pos = position of playing file
-	--%cursor = position of navigation
-	--%plen = playlist length
-	--%N = newline
 	playlist_header = "播放列表 [%cursor/%plen]",
 
-	--Playlist file templates
-	--%pos = position of file with leading zeros
-	--%name = title or name of file
-	--%N = newline
-	--you can also use the ass tags mentioned above. For example:
-	--  selected_file="{\\c&HFF00FF&}➔ %name"   | to add a color for selected file. However, if you
-	--  use ass tags you need to reset them for every line
 	normal_file = "{\\c&HFFFFFF&}□ %name",
 	hovered_file = "{\\c&H33FFFF&}■ %name",
 	selected_file = "{\\c&C1C1FF&}➔ %name",
@@ -82,7 +53,6 @@ local settings = {
 	playing_hovered_file = "{\\c&H00FF00&}▶ %name",
 	playing_selected_file = "{\\c&C1C1FF&}➔ %name",
 
-	-- what to show when playlist is truncated
 	playlist_sliced_prefix = "▲",
 	playlist_sliced_suffix = "▼",
 
@@ -129,10 +99,11 @@ function on_file_loaded()
 	end
 
 	strippedname = stripfilename(mp.get_property("media-title"))
-	if settings.show_playlist_on_fileload == 2 then
-		playlist_show()
-	elseif settings.show_playlist_on_fileload == 1 then
+	if settings.show_title_on_file_load then
 		mp.commandv("show-text", strippedname)
+	end
+	if settings.show_playlist_on_file_load then
+		showplaylist()
 	end
 end
 
@@ -476,10 +447,18 @@ end
 
 function playlist_next()
 	mp.commandv("playlist-next", "weak")
+	if settings.close_playlist_on_playfile then
+		remove_keybinds()
+	end
+	if playlist_visible then showplaylist() end
 end
 
 function playlist_prev()
 	mp.commandv("playlist-prev", "weak")
+	if settings.close_playlist_on_playfile then
+		remove_keybinds()
+	end
+	if playlist_visible then showplaylist() end
 end
 
 function playfile()
@@ -495,9 +474,10 @@ function playfile()
 		end
 		mp.commandv("playlist-next", "weak")
 	end
-	if settings.show_playlist_on_fileload ~= 2 then
+	if settings.close_playlist_on_playfile then
 		remove_keybinds()
 	end
+	if playlist_visible then showplaylist() end
 end
 
 function bind_keys(keys, name, func, opts)

@@ -2,12 +2,13 @@
 
 SOURCE_ https://github.com/zenwarr/mpv-config/blob/master/scripts/remember-props.lua
 COMMIT_ 20220811 03cfc0e39682a73d9d24a6e01a3c02716a019d1d
+文档_ save_global_props.conf
 
 记录全局的属性变化，支持在下次程序启动时恢复，其对应数据保存在对应文件 saved-props.json
 （选项 --save-position-on-quit 保存的是基于具体文件的属性，不要与 --watch-later-options 保存的属性相冲突）
 
-示例在 input.conf 中写入（清除已记录的数据）：
-CTRL+r script-message-to save_global_props clean_data
+可用的快捷键示例（在 input.conf 中写入）：
+ <KEY>   script-message-to save_global_props clean_data   # 清除已记录的数据
 
 ]]
 
