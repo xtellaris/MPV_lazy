@@ -2,12 +2,12 @@
 ### 文档： https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ##################################################
 
-__version__ = "0.1.23"
+__version__ = "0.1.25"
 
 __all__ = [
 	"FMT_CHANGE", "FMT_CTRL", "FPS_CHANGE", "FPS_CTRL",
 	"ACNET_STD", "CUGAN_NV", "ESRGAN_DML", "ESRGAN_NV", "EDI_US_STD", "WAIFU_DML", "WAIFU_NV",
-	"MVT_LQ", "MVT_STD", "MVT_POT", "MVT_MQ", "RIFE_STD", "RIFE_NV", "RIFE_NV_ORT", "SVP_LQ", "SVP_STD", "SVP_HQ", "SVP_PRO",
+	"MVT_LQ", "MVT_STD", "MVT_POT", "MVT_MQ", "RIFE_STD", "RIFE_NV", "SVP_LQ", "SVP_STD", "SVP_HQ", "SVP_PRO",
 	"BILA_NV", "BM3D_NV", "CCD_STD", "DFTT_STD", "DFTT_NV", "FFT3D_STD", "NLM_STD", "NLM_NV",
 	"COLOR_P3W_FIX", "CSC_RB", "DEBAND_STD", "DEINT_LQ", "DEINT_STD", "DEINT_EX", "EDI_AA_STD", "EDI_AA_NV", "IVTC_STD", "STAB_STD", "STAB_HQ", "UAI_DML", "UAI_NV_TRT",
 ]
@@ -1053,12 +1053,13 @@ def MVT_MQ(
 
 def RIFE_STD(
 	input : vs.VideoNode,
-	model : typing.Literal[9, 21, 24] = 9,
+	model : typing.Literal[21, 33, 35] = 21,
+	t_tta : bool = False,
+	fps_num : int = 2,
+	fps_den : int = 1,
 	sc_mode : typing.Literal[0, 1, 2] = 1,
 	skip : bool = True,
 	stat_th : float = 60.0,
-	fps_num : int = 2,
-	fps_den : int = 1,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	vs_t : int = vs_thd_dft,
@@ -1067,18 +1068,20 @@ def RIFE_STD(
 	func_name = "RIFE_STD"
 	if not isinstance(input, vs.VideoNode) :
 		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-	if model not in [9, 21, 24] :
+	if model not in [21, 33, 35] :
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
+	if not isinstance(t_tta, bool) :
+		raise vs.Error(f"模块 {func_name} 的子参数 t_tta 的值无效")
+	if not isinstance(fps_num, int) or fps_num <= 1 :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
+	if not isinstance(fps_den, int) or fps_den >= fps_num :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if sc_mode not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 sc_mode 的值无效")
 	if not isinstance(skip, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 skip 的值无效")
 	if stat_th <= 0.0 :
 		raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
-	if not isinstance(fps_num, int) or fps_num <= 1 :
-		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-	if not isinstance(fps_den, int) or fps_den >= fps_num :
-		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -1100,7 +1103,7 @@ def RIFE_STD(
 		cut0 = core.mv.SCDetection(clip=input, vectors=vec, thscd1=240, thscd2=130)
 
 	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBS, matrix_in_s="709")
-	cut2 = core.rife.RIFE(clip=cut1, model=model, factor_num=fps_num, factor_den=fps_den, gpu_id=gpu, gpu_thread=gpu_t, sc=True if sc_mode else False, skip=skip, skip_threshold=stat_th)
+	cut2 = core.rife.RIFE(clip=cut1, model=(model+1) if t_tta else model, factor_num=fps_num, factor_den=fps_den, gpu_id=gpu, gpu_thread=gpu_t, sc=True if sc_mode else False, skip=skip, skip_threshold=stat_th)
 	output = core.resize.Bilinear(clip=cut2, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
 
 	return output
@@ -1112,11 +1115,11 @@ def RIFE_STD(
 def RIFE_NV(
 	input : vs.VideoNode,
 	lt_d2k : bool = False,
-	model : typing.Literal[40, 46, 48] = 40,
-	sc_mode : typing.Literal[0, 1, 2] = 1,
-	fps_num : typing.Literal[2, 3, 4] = 2,
-	t_tta : bool = False,
+	model : typing.Literal[46, 412, 4121] = 46,
 	ext_proc : bool = True,
+	t_tta : bool = False,
+	fps_num : typing.Literal[2, 3, 4] = 2,
+	sc_mode : typing.Literal[0, 1, 2] = 1,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	st_eng : bool = False,
@@ -1129,16 +1132,16 @@ def RIFE_NV(
 		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if not isinstance(lt_d2k, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 lt_d2k 的值无效")
-	if model not in [40, 46, 48] :
+	if model not in [46, 412, 4121] :
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
-	if sc_mode not in [0, 1, 2] :
-		raise vs.Error(f"模块 {func_name} 的子参数 sc_mode 的值无效")
-	if fps_num not in [2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 fps_num 的值无效")
-	if not isinstance(t_tta, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 t_tta 的值无效")
 	if not isinstance(ext_proc, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 ext_proc 的值无效")
+	if not isinstance(t_tta, bool) :
+		raise vs.Error(f"模块 {func_name} 的子参数 t_tta 的值无效")
+	if fps_num not in [2, 3, 4] :
+		raise vs.Error(f"模块 {func_name} 的子参数 fps_num 的值无效")
+	if sc_mode not in [0, 1, 2] :
+		raise vs.Error(f"模块 {func_name} 的子参数 sc_mode 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -1160,9 +1163,9 @@ def RIFE_NV(
 	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
 
-	if not ext_proc :
+	if not ext_proc and model >= 47 : # https://github.com/AmusementClub/vs-mlrt/issues/72
 		st_eng = True
-	if (not lt_d2k and (size_in > 2048 * 1088)) or (size_in  > 4096 * 2176) :
+	if (not lt_d2k and (size_in > 2048 * 1088)) or (size_in > 4096 * 2176) :
 		raise Exception("源分辨率超过限制的范围，已临时中止。")
 	if not st_eng and (((w_in > 4096) or (h_in > 2176)) or ((w_in < 289) or (h_in < 225))) :
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
@@ -1170,13 +1173,10 @@ def RIFE_NV(
 	scale_model = 1
 	if lt_d2k and st_eng and (size_in > 2048 * 1088) :
 		scale_model = 0.5
-		if not ext_proc :
+		if not ext_proc : # https://github.com/AmusementClub/vs-mlrt/blob/f911df428f085b8d78504d9e4515641900d31046/scripts/vsmlrt.py#L899
 			scale_model = 1
-
-	if model >=47 : # https://github.com/AmusementClub/vs-mlrt/blob/6c71b9546b1151542795f458968af562436d1065/scripts/vsmlrt.py#L875
-		t_tta = False
-		scale_model = 1.0
-		ext_proc = True
+	if model >= 47 : # https://github.com/AmusementClub/vs-mlrt/blob/f911df428f085b8d78504d9e4515641900d31046/scripts/vsmlrt.py#L891
+		scale_model = 1
 
 	tile_size = 32 / scale_model
 	w_tmp = math.ceil(w_in / tile_size) * tile_size - w_in
@@ -1191,8 +1191,8 @@ def RIFE_NV(
 		vec = core.mv.Analyse(super=sup, isb=True)
 		cut0 = core.mv.SCDetection(clip=input, vectors=vec, thscd1=240, thscd2=130)
 
-	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH if ext_proc else vs.RGBS, matrix_in_s="709")
-	if ext_proc : # https://github.com/AmusementClub/vs-mlrt/blob/6c71b9546b1151542795f458968af562436d1065/scripts/vsmlrt.py#L883
+	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
+	if ext_proc :
 		cut1 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)
 		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=model, ensemble=t_tta, _implementation=1, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=True, output_format=1,
@@ -1204,76 +1204,13 @@ def RIFE_NV(
 		fin = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 	else :
 		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=model, ensemble=t_tta, _implementation=2, backend=vsmlrt.BackendV2.TRT(
-			num_streams=gpu_t, fp16=False, force_fp16=False, tf32=True, output_format=0,
+			num_streams=gpu_t, fp16=True, force_fp16=False, tf32=True, output_format=1,
 			workspace=None if ws_size < 128 else ws_size,
 			use_cuda_graph=True, use_cublas=False, use_cudnn=False,
 			static_shape=st_eng, min_shapes=[0, 0],
 			opt_shapes=None, max_shapes=None,
 			device_id=gpu, short_path=True))
 	output = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
-
-	return output
-
-##################################################
-## RIFE补帧
-##################################################
-
-def RIFE_NV_ORT(
-	input : vs.VideoNode,
-	sc_mode : typing.Literal[0, 1, 2] = 1,
-	fps_num : typing.Literal[2, 3, 4] = 2,
-	cudnn : bool = False,
-	ext_proc : bool = False,
-	gpu : typing.Literal[0, 1, 2] = 0,
-	gpu_t : int = 2,
-	vs_t : int = vs_thd_dft,
-) -> vs.VideoNode :
-
-	func_name = "RIFE_NV_ORT"
-	if not isinstance(input, vs.VideoNode) :
-		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-	if sc_mode not in [0, 1, 2] :
-		raise vs.Error(f"模块 {func_name} 的子参数 sc_mode 的值无效")
-	if fps_num not in [2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 fps_num 的值无效")
-	if not isinstance(cudnn, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 cudnn 的值无效")
-	if not isinstance(ext_proc, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 ext_proc 的值无效")
-	if gpu not in [0, 1, 2] :
-		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
-	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
-		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
-
-	global vsmlrt
-	if vsmlrt is None :
-		import vsmlrt
-
-	core.num_threads = vs_t
-	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
-	fmt_in = input.format.id
-	w_p = (input.width  + 31) // 32 * 32 - input.width
-	h_p = (input.height + 31) // 32 * 32 - input.height
-
-	if sc_mode == 0 :
-		cut0 = input
-	elif sc_mode == 1 :
-		cut0 = core.misc.SCDetect(clip=input, threshold=0.15)
-	elif sc_mode == 2 :
-		sup = core.mv.Super(clip=input, pel=1)
-		vec = core.mv.Analyse(super=sup, isb=True)
-		cut0 = core.mv.SCDetection(clip=input, vectors=vec, thscd1=240, thscd2=130)
-
-	be = vsmlrt.BackendV2.ORT_CUDA(fp16=True, num_streams=gpu_t, cudnn_benchmark=cudnn, device_id=gpu)
-
-	if ext_proc :
-		pad = cut0.std.AddBorders(right=w_p, bottom=h_p).resize.Bilinear(format=vs.RGBS, matrix_in_s="709")
-		memc = vsmlrt.RIFE(pad, multi=fps_num, model=46, _implementation=1, backend=be)
-		output = memc.resize.Bilinear(format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None).std.Crop(right=w_p, bottom=h_p)
-	else :
-		cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBS, matrix_in_s="709")
-		memc =vsmlrt.RIFE(cut1, multi=fps_num, model=46, _implementation=2, backend=be)
-		output = core.resize.Bilinear(clip=memc, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
 
 	return output
 
