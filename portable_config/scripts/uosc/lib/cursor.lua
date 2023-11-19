@@ -319,6 +319,7 @@ mp.set_key_bindings({
 	},
 }, 'mbtn_left', 'force')
 mp.set_key_bindings({
+	{'mouse_move', 'ignore'}, -- https://github.com/mpv-player/mpv/issues/11154
 	{'mbtn_left_dbl', 'ignore'},
 }, 'mbtn_left_dbl', 'force')
 mp.set_key_bindings({
