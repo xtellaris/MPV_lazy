@@ -30,7 +30,7 @@ local options = {
     direct_io = true,            -- Windows only: use native Windows API to write to pipe (requires LuaJIT)
 
     sw_threads = 2,
-    binpath = "mpv",
+    binpath = "default",
     min_duration = 0,
     precise = 0,
     quality = 0,                 -- require vf_libplacebo for 3
@@ -136,8 +136,6 @@ local has_vid = 0
 local file_timer
 local file_check_period = 1/60
 
-local mac_bundle_mode = false
-
 local client_script = [=[
 #!/usr/bin/env bash
 MPV_IPC_FD=0; MPV_IPC_PATH="%s"
@@ -228,10 +226,18 @@ end
 
 local mpv_path = options.binpath
 
-if os_name == "darwin" and options.binpath == "bundle" and unique then
-    mpv_path = string.gsub(subprocess({"ps", "-o", "comm=", "-p", tostring(unique)}).stdout, "[\n\r]", "")
-    mpv_path = string.gsub(mpv_path, "/mpv%-bundle$", "/mpv")
-    mac_bundle_mode = true
+if mpv_path == "default" or mpv_path == "bundle" then
+    if os_name == "darwin" and unique then
+        local tmp_path = string.gsub(subprocess({"ps", "-o", "comm=", "-p", tostring(unique)}).stdout, "[\n\r]", "")
+        if mpv_path == "bundle" then
+            mpv_path = tmp_path
+            mpv_path = string.gsub(mpv_path, "/mpv%-bundle$", "/mpv")
+        elseif mpv_path == "default" then
+            mpv_path = tmp_path
+        end
+    else
+        mpv_path = "mpv"
+    end
 end
 
 local function auto_ui_scale()
@@ -421,8 +427,8 @@ local function spawn(time)
         "--ovc=rawvideo", "--of=image2", "--ofopts=update=1", "--ocopy-metadata=no", "--o="..options.tnpath
     }
 
-    if mac_bundle_mode then
-        table.insert(args, "--macos-app-activation-policy=accessory")
+    if os_name == "darwin" then
+        table.insert(args, "--macos-app-activation-policy=prohibited")
     end
 
     if os_name == "windows" then
