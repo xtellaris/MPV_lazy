@@ -4,11 +4,13 @@
 ** Origin_ Avi Halachmi https://github.com/avih                **
 ** Extension_ Thomas Carmichael https://gitlab.com/carmanaught **
 *****************************************************************
+文档_ https://github.com/hooke007/MPV_lazy/discussions/60
+
 mpv的tcl图形菜单的核心脚本
 
-建议在 input.conf 中绑定右键以支持唤起菜单
- MOUSE_BTN2   script-message-to contextmenu_gui contextmenu_tk
-]]--
+可用的快捷键示例（在 input.conf 中写入）：
+ <KEY>   script-message-to contextmenu_gui contextmenu_tk   # 唤起菜单
+]]
 
 local langcodes = require "contextmenu_gui_lang"
 local function mpdebug(x) mp.msg.info(x) end
@@ -236,8 +238,8 @@ local function vidTrackMenu()
             local vidTrackTitle = propNative("track-list/" .. vidTrackNum .. "/title")
             local vidTrackCodec = propNative("track-list/" .. vidTrackNum .. "/codec"):upper()
             local vidTrackImage = propNative("track-list/" .. vidTrackNum .. "/image")
-            local vidTrackwh = propNative("track-list/" .. vidTrackNum .. "/demux-w") .. "x" .. propNative("track-list/" .. vidTrackNum .. "/demux-h") 
-            local vidTrackFps = string.format("%.3f", propNative("track-list/" .. vidTrackNum .. "/demux-fps"))
+            local vidTrackwh = propNative("track-list/" .. vidTrackNum .. "/demux-w", 0) .. "x" .. propNative("track-list/" .. vidTrackNum .. "/demux-h", 0) 
+            local vidTrackFps = string.format("%.3f", propNative("track-list/" .. vidTrackNum .. "/demux-fps", 0))
             local vidTrackDefault = propNative("track-list/" .. vidTrackNum .. "/default")
             local vidTrackForced = propNative("track-list/" .. vidTrackNum .. "/forced")
             local vidTrackExternal = propNative("track-list/" .. vidTrackNum .. "/external")
@@ -388,7 +390,7 @@ local function stateABLoop()
     local abLoopState = ""
     local abLoopA, abLoopB = propNative("ab-loop-a"), propNative("ab-loop-b")
 
-    if (abLoopA == "no") and (abLoopB == "no") then abLoopState =  "off"
+    if (abLoopA == "no") and (abLoopB == "no") then abLoopState = "off"
     elseif not (abLoopA == "no") and (abLoopB == "no") then abLoopState = "a"
     elseif not (abLoopA == "no") and not (abLoopB == "no") then abLoopState = "b" end
 
@@ -620,12 +622,12 @@ menuList = {
 
 -- 二级菜单 —— 其它
     etc_menu = {
-        {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding stats/display-stats-toggle", "", false},
-        {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding stats/display-page-1", "", false},
-        {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding stats/display-page-2", "", false},
-        {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding stats/display-page-3", "", false},
-        {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding stats/display-page-4", "", false},
-        {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding stats/display-page-0", "", false},
+        {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding display-stats-toggle", "", false},
+        {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding display-page-1", "", false},
+        {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding display-page-2", "", false},
+        {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding display-page-3", "", false},
+        {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding display-page-4", "", false},
+        {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding display-page-0", "", false},
         {COMMAND, "【内部脚本】控制台", "", "script-binding console/enable", "", false},
     },
 
@@ -897,12 +899,12 @@ local function playmenuList()
 
 -- 二级菜单 —— 其它
         etc_menu = {
-            {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding stats/display-stats-toggle", "", false},
-            {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding stats/display-page-1", "", false},
-            {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding stats/display-page-2", "", false},
-            {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding stats/display-page-3", "", false},
-            {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding stats/display-page-4", "", false},
-            {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding stats/display-page-0", "", false},
+            {COMMAND, "【内部脚本】状态信息（开/关）", "", "script-binding display-stats-toggle", "", false},
+            {COMMAND, "【内部脚本】状态信息-概览", "", "script-binding display-page-1", "", false},
+            {COMMAND, "【内部脚本】状态信息-帧计时（可翻页）", "", "script-binding display-page-2", "", false},
+            {COMMAND, "【内部脚本】状态信息-输入缓存", "", "script-binding display-page-3", "", false},
+            {COMMAND, "【内部脚本】状态信息-快捷键（可翻页）", "", "script-binding display-page-4", "", false},
+            {COMMAND, "【内部脚本】状态信息-内部流（可翻页）", "", "script-binding display-page-0", "", false},
             {COMMAND, "【内部脚本】控制台", "", "script-binding console/enable", "", false},
         },
 
@@ -938,15 +940,16 @@ local function playmenuList()
     for key, value in pairs(menuList) do
         -- Skip the 'file_loaded_menu' key as the following for loop will fail due to an
         -- attempt to get the length of a boolean value.
-        if (key == "file_loaded_menu") then goto keyjump end
-
-        for i = 1, #value do
-            if (value[i][1] ~= SEP) then
-                if (#value[i] < 6 or #value[i] > 7) then mpdebug("Menu item at index of " .. i .. " is " .. #value[i] .. " items long for: " .. key) end
+        if (key ~= "file_loaded_menu") then
+            for i = 1, #value do
+                if (value[i][1] ~= SEP) then
+                    if (#value[i] < 6 or #value[i] > 7) then
+                        mpdebug("Menu item at index of " .. i .. " is " .. #value[i] .. " items long for: " .. key)
+                        mp.osd_message("Menu structure check failed!")
+                    end
+                end
             end
         end
-        
-        ::keyjump::
     end
 end
 

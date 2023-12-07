@@ -5,7 +5,7 @@
 ** Extension_ Thomas Carmichael https://gitlab.com/carmanaught **
 *****************************************************************
 mpv的tcl图形菜单的附属脚本 (2)/(3)
---]]
+]]
 
 local function iso639_1(isoVal)
     local iso639_1_vals = {

@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-//desc: "Self-guided" guided filter
+// Description: guided_s.glsl: Self-guided
 
 /* The radius can be adjusted with the MEANIP stage's downscaling factor. 
  * Higher numbers give a bigger radius.
@@ -46,8 +46,8 @@ vec4 hook()
 //!HOOK RGB
 //!DESC Guided filter (MEANIP)
 //!BIND IP
-//!WIDTH IP.w 2.0 /
-//!HEIGHT IP.h 2.0 /
+//!WIDTH IP.w 1.5 /
+//!HEIGHT IP.h 1.5 /
 //!SAVE MEANIP
 
 vec4 hook()
@@ -93,7 +93,7 @@ vec4 hook()
 //!HEIGHT IP.h
 //!SAVE A
 
-#define E 0.001
+#define E 0.002
 
 vec4 hook()
 {

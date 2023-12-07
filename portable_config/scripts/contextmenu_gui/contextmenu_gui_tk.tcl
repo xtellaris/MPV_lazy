@@ -224,7 +224,7 @@ if {$pos_x == -1 && $pos_y == -1} {
 # On item-click/menu-dismissed, we print a json object to stdout with values to be
 # used in the menu engine
 proc done {menuName index menuPath} {
-    puts "{\"x\":\"$::pos_x\", \"y\":\"$::pos_y\", \"menuname\":\"$menuName\", \"index\":\"$index\", \"menupath\":\"$menuPath\", \"errorvalue\":\"$::errorValue\"}"
+    puts " {\"x\":\"$::pos_x\", \"y\":\"$::pos_y\", \"menuname\":\"$menuName\", \"index\":\"$index\", \"menupath\":\"$menuPath\", \"errorvalue\":\"$::errorValue\"} "
     exit
 }
 

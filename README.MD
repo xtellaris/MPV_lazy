@@ -10,21 +10,18 @@ _从萌新到大白，<s>用前嫌麻烦</s> 用后真香_
 从零开始接触mpv且不使用懒人包的话可参考
 - [《win10/11 mpv播放器通用教程》](https://hooke007.github.io/unofficial/mpv_start.html)  
 
-## 分支区别
+## 主要分支
 
 - [**main**](https://github.com/hooke007/MPV_lazy/tree/main) 当前使用与曾使用过的全部文件（附详细说明、持续维护）
-- [**lite**](https://github.com/hooke007/MPV_lazy/tree/lite) 个人设置同步
-
-###
-
-- [**obs**](https://github.com/hooke007/MPV_lazy/tree/obs) 旧版个人设置（仅备份、不再更新）
-- _[img](https://github.com/hooke007/MPV_lazy/tree/img) 尝试取代图片查看器（仅供娱乐）_
+- [**lite**](https://github.com/hooke007/MPV_lazy/tree/lite) 懒人包的核心设置同步
 
 ## 懒人包 mpv-lazy
 
-懒人包是解压即可使用的完整解决方案 [《新快速说明》](https://github.com/hooke007/MPV_lazy/discussions/194)  
-下载见 [**🏷Releases 发布版块🏷**](../../releases)  
-反馈前往 [**💬Discussions 讨论版块🗨️**](../../discussions)
+懒人包是解压即可使用的完整解决方案  
+使用前务必完整阅读 [《新快速说明》](https://github.com/hooke007/MPV_lazy/discussions/194)  
+
+下载请见 [**🏷发布版块 Releases🏷**](../../releases)  
+反馈前往 [**💬讨论版块 Discussions🗨️**](../../discussions)
 
 ## 预览
 

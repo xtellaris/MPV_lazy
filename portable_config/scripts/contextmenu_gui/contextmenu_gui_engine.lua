@@ -5,7 +5,7 @@
 ** Extension_ Thomas Carmichael https://gitlab.com/carmanaught **
 *****************************************************************
 mpv的tcl图形菜单的附属脚本 (1)/(3)
---]]
+]]
 
 local utils = require "mp.utils"
 local verbose = false  -- true -> Dump console messages also without -v
@@ -275,7 +275,7 @@ local function doMenu(menuList, menuName, x, y, menuPaths, menuIndexes)
                     if not (i == (#pathList - 1)) then
                         menuPaths = menuPaths .. "?"
                     end
-                    menuFind = menuList[pathList[i]]
+                    local menuFind = menuList[pathList[i]]
                     for subi = 1, (#menuFind) do
                         if (menuFind[subi][1] == CASCADE) then
                             if (menuFind[subi][3] == pathList[i+1]) then
