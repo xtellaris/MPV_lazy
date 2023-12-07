@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/tomasklaen/uosc/tree/main/src/uosc
-COMMIT_ 96b57b259ee6ca547564c20745531804deff0f0d
+COMMIT_ 9a02a60684a8701c8d4dfaa902fca5496671e87c
 文档_ https://github.com/hooke007/MPV_lazy/discussions/186
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
@@ -111,6 +111,7 @@ defaults = {
 	idlemsg = 'default',
 	idle_call_menu = 0,
 	custom_font = 'default',
+	ziggy_pth = 'default',
 }
 options = table_copy(defaults)
 opt.read_options(options, nil, function(_)
@@ -411,7 +412,7 @@ require('lib/menus')
 -- Determine path to ziggy
 do
 	local bin = 'ziggy-' .. (state.platform == 'windows' and 'windows.exe' or state.platform)
-	config.ziggy_path = join_path(mp.get_script_directory(), join_path('bin', bin))
+	config.ziggy_path = options.ziggy_pth ~= "default" and options.ziggy_pth or (join_path(mp.get_script_directory(), join_path('bin', bin)))
 end
 
 --[[ STATE UPDATERS ]]
@@ -948,7 +949,7 @@ bind_command('show-in-directory', function()
 	if not state.path or is_protocol(state.path) then return end
 
 	if state.platform == 'windows' then
-		utils.subprocess_detached({args = {'explorer', '/select,', state.path}, cancellable = false})
+		utils.subprocess_detached({args = {'explorer', '/select,', state.path .. ' '}, cancellable = false})
 	elseif state.platform == 'darwin' then
 		utils.subprocess_detached({args = {'open', '-R', state.path}, cancellable = false})
 	elseif state.platform == 'linux' then
