@@ -1,5 +1,5 @@
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 __all__ = ["QTGMC", "QTGMC_obs", "QTGMCv2"]
 
@@ -13,7 +13,7 @@ vstools = None
 QTGMC_globals = {}
 dfttest2 = None
 
-### MOD HAvsFunc (0f6a7d9d9712d59b4e74e1e570fc6e3a526917f9)
+### MOD HAvsFunc (f11d79c98589c9dcb5b10beec35b631db68b495c)
 
 def QTGMC(
 	Input: vs.VideoNode,
@@ -850,8 +850,7 @@ def QTGMC(
 				]
 			)
 		if Denoiser == 'bm3d':
-			import mvsfunc as mvf
-			dnWindow = mvf.BM3D(noiseWindow, radius1=NoiseTR, sigma=[Sigma if vstools.plane in CNplanes else 0 for vstools.plane in range(3)])
+			dnWindow = vsdenoise.BM3D.denoise(noiseWindow, Sigma, NoiseTR, planes=CNplanes)
 		elif Denoiser == 'dfttest':
 			dnWindow = dfttest2.DFTTest(clip=noiseWindow, sigma=Sigma * 4, tbsize=noiseTD, planes=CNplanes) #TODO:GPU
 		elif Denoiser in ['knlm', 'knlmeanscl']:

@@ -2,7 +2,7 @@
 ### 文档： https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ##################################################
 
-__version__ = "0.1.25"
+__version__ = "0.1.27"
 
 __all__ = [
 	"FMT_CHANGE", "FMT_CTRL", "FPS_CHANGE", "FPS_CTRL",
@@ -15,6 +15,7 @@ __all__ = [
 import os
 import typing
 import math
+import fractions
 
 import vapoursynth as vs
 from vapoursynth import core
@@ -412,9 +413,9 @@ def FPS_CHANGE(
 		attribute_clip = clip.std.BlankClip(length=math.floor(len(clip) * factor), fpsnum=fpsnum, fpsden=fpsden)
 		return attribute_clip.std.FrameEval(eval=_frame_adjuster)
 
-	src = core.std.AssumeFPS(clip=input, fpsnum=fps_in * 1000, fpsden=1000)
-	fin = _ChangeFPS(clip=src, fpsnum=fps_out * 1000, fpsden=1000)
-	output = core.std.AssumeFPS(clip=fin, fpsnum=fps_out * 1000, fpsden=1000)
+	src = core.std.AssumeFPS(clip=input, fpsnum=fps_in * 1e6, fpsden=1e6)
+	fin = _ChangeFPS(clip=src, fpsnum=fps_out * 1e6, fpsden=1e6)
+	output = core.std.AssumeFPS(clip=fin, fpsnum=fps_out * 1e6, fpsden=1e6)
 
 	return output
 
@@ -877,7 +878,7 @@ def MVT_LQ(
 	h_tmp = math.ceil(h_in / blk_size) * blk_size - h_in
 
 	cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
-	cut1 = core.std.AssumeFPS(clip=cut0, fpsnum=int(fps_in * 1000), fpsden=1000)
+	cut1 = core.std.AssumeFPS(clip=cut0, fpsnum=int(fps_in * 1e6), fpsden=1e6)
 	cut_s = core.mv.Super(clip=cut1, pel=1, sharp=0)
 	cut_b = core.mv.Analyse(super=cut_s, blksize=blk_size, search=2, isb=True)
 	cut_f = core.mv.Analyse(super=cut_s, blksize=blk_size, search=2)
@@ -889,9 +890,9 @@ def MVT_LQ(
 		cut_b, cut_f = cut_b, cut_f
 
 	if block :
-		fin = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=1000)
+		fin = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6)
 	else :
-		fin = core.mv.FlowFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=1000, mask=1)
+		fin = core.mv.FlowFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6, mask=1)
 	output = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 
 	return output
@@ -919,6 +920,10 @@ def MVT_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
 	core.num_threads = vs_t
+	w_in, h_in = input.width, input.height
+	blk_size = 80
+	w_tmp = math.ceil(w_in / blk_size) * blk_size - w_in
+	h_tmp = math.ceil(h_in / blk_size) * blk_size - h_in
 
 	def _ffps(fps) :
 		rfps = int('%.0f' % fps)
@@ -929,7 +934,8 @@ def MVT_STD(
 		return vfps, vden
 
 	vfps, vden = _ffps(fps_in)
-	cut1 = core.std.AssumeFPS(input, fpsnum=int(vfps), fpsden=vden)
+	cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
+	cut1 = core.std.AssumeFPS(clip=cut0, fpsnum=int(vfps), fpsden=vden)
 	cut_s = core.mv.Super(clip=cut1, sharp=1, rfilter=4)
 
 	if vs_api >=4 :
@@ -938,7 +944,8 @@ def MVT_STD(
 	else :
 		cut_b = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, isb=True, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
 		cut_f = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
-	output = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=vden, mode=2, thscd1=970, thscd2=255, blend=False)
+	fin = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=vden, mode=2, thscd1=970, thscd2=255, blend=False)
+	output = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 
 	return output
 
@@ -1115,10 +1122,12 @@ def RIFE_STD(
 def RIFE_NV(
 	input : vs.VideoNode,
 	lt_d2k : bool = False,
-	model : typing.Literal[46, 412, 4121] = 46,
+	model : typing.Literal[46, 413, 4131] = 46,
 	ext_proc : bool = True,
 	t_tta : bool = False,
-	fps_num : typing.Literal[2, 3, 4] = 2,
+	fps_in : float = 23.976,
+	fps_num : int = 2,
+	fps_den : int = 1,
 	sc_mode : typing.Literal[0, 1, 2] = 1,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
@@ -1132,14 +1141,18 @@ def RIFE_NV(
 		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if not isinstance(lt_d2k, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 lt_d2k 的值无效")
-	if model not in [46, 412, 4121] :
+	if model not in [46, 413, 4131] :
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
 	if not isinstance(ext_proc, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 ext_proc 的值无效")
 	if not isinstance(t_tta, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 t_tta 的值无效")
-	if fps_num not in [2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 fps_num 的值无效")
+	if fps_in <= 0.0 :
+		raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
+	if not isinstance(fps_num, int) or fps_num <= 1 :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
+	if not isinstance(fps_den, int) or fps_den >= fps_num or fps_num/fps_den < 2 :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if sc_mode not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 sc_mode 的值无效")
 	if gpu not in [0, 1, 2] :
@@ -1162,6 +1175,7 @@ def RIFE_NV(
 	size_in = w_in * h_in
 	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
 	fmt_in = input.format.id
+	fps_factor = fps_num/fps_den
 
 	if not ext_proc and model >= 47 : # https://github.com/AmusementClub/vs-mlrt/issues/72
 		st_eng = True
@@ -1173,9 +1187,9 @@ def RIFE_NV(
 	scale_model = 1
 	if lt_d2k and st_eng and (size_in > 2048 * 1088) :
 		scale_model = 0.5
-		if not ext_proc : # https://github.com/AmusementClub/vs-mlrt/blob/f911df428f085b8d78504d9e4515641900d31046/scripts/vsmlrt.py#L899
+		if not ext_proc : # https://github.com/AmusementClub/vs-mlrt/blob/57cfe194fa8c21d221bdfaffebe4fee1af43d40c/scripts/vsmlrt.py#L903
 			scale_model = 1
-	if model >= 47 : # https://github.com/AmusementClub/vs-mlrt/blob/f911df428f085b8d78504d9e4515641900d31046/scripts/vsmlrt.py#L891
+	if model >= 47 : # https://github.com/AmusementClub/vs-mlrt/blob/57cfe194fa8c21d221bdfaffebe4fee1af43d40c/scripts/vsmlrt.py#L895
 		scale_model = 1
 
 	tile_size = 32 / scale_model
@@ -1194,7 +1208,7 @@ def RIFE_NV(
 	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
 	if ext_proc :
 		cut1 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)
-		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=model, ensemble=t_tta, _implementation=1, backend=vsmlrt.BackendV2.TRT(
+		fin = vsmlrt.RIFE(clip=cut1, multi=fractions.Fraction(fps_num, fps_den), scale=scale_model, model=model, ensemble=t_tta, _implementation=1, video_player=True, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=True, output_format=1,
 			workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 			use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -1203,14 +1217,16 @@ def RIFE_NV(
 			device_id=gpu, short_path=True))
 		fin = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 	else :
-		fin = vsmlrt.RIFE(clip=cut1, multi=fps_num, scale=scale_model, model=model, ensemble=t_tta, _implementation=2, backend=vsmlrt.BackendV2.TRT(
-			num_streams=gpu_t, fp16=True, force_fp16=False, tf32=True, output_format=1,
+		fin = vsmlrt.RIFE(clip=cut1, multi=fractions.Fraction(fps_num, fps_den), scale=scale_model, model=model, ensemble=t_tta, _implementation=2, video_player=True, backend=vsmlrt.BackendV2.TRT(
+			num_streams=gpu_t, force_fp16=True, output_format=1,
 			workspace=None if ws_size < 128 else ws_size,
 			use_cuda_graph=True, use_cublas=False, use_cudnn=False,
 			static_shape=st_eng, min_shapes=[0, 0],
 			opt_shapes=None, max_shapes=None,
 			device_id=gpu, short_path=True))
 	output = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+	if not fps_factor.is_integer() :
+		output = core.std.AssumeFPS(clip=output, fpsnum=fps_in * fps_num * 1e6, fpsden=fps_den * 1e6)
 
 	return output
 
@@ -2206,7 +2222,7 @@ def EDI_AA_NV(
 
 def IVTC_STD(
 	input : vs.VideoNode,
-	fps_in : float = 23.976,
+	fps_in : float = 25,
 	ivtc_m : typing.Literal[1, 2] = 1,
 	vs_t : int = vs_thd_dft,
 ) -> vs.VideoNode :
@@ -2232,7 +2248,7 @@ def IVTC_STD(
 			elif fps_in > 29 and fps_in < 31 :
 				output = core.vivtc.VDecimate(clip=input, cycle=5)
 		elif ivtc_m == 2 :
-			cut0 = core.std.AssumeFPS(clip=input, fpsnum=fps_in * 1000, fpsden=1000)
+			cut0 = core.std.AssumeFPS(clip=input, fpsnum=fps_in * 1e6, fpsden=1e6)
 			cut1 = core.tivtc.TDecimate(clip=cut0, mode=7, rate=24 / 1.001)
 			output = core.std.AssumeFPS(clip=cut1, fpsnum=24000, fpsden=1001)
 
@@ -2369,7 +2385,6 @@ def UAI_NV_TRT(
 	opt_lv : typing.Literal[0, 1, 2, 3, 4, 5] = 3,
 	cuda_opt : typing.List[int] = [0, 0, 0],
 	fp16 : bool = False,
-	tf32 : bool = True,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	st_eng : bool = False,
@@ -2392,8 +2407,6 @@ def UAI_NV_TRT(
 		raise vs.Error(f"模块 {func_name} 的子参数 cuda_opt 的值无效")
 	if not isinstance(fp16, bool) :
 		raise vs.Error(f"模块 {func_name} 的子参数 fp16 的值无效")
-	if not isinstance(tf32, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 tf32 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -2428,7 +2441,7 @@ def UAI_NV_TRT(
 	be_param = vsmlrt.BackendV2.TRT(
 		builder_optimization_level=opt_lv, short_path=True, device_id=gpu,
 		num_streams=gpu_t, use_cuda_graph=nv1, use_cublas=nv2, use_cudnn=nv3,
-		fp16=fp16, force_fp16=False, tf32=tf32, output_format=1 if fp16 else 0, workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
+		fp16=fp16, force_fp16=False, tf32=True, output_format=1 if fp16 else 0, workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		static_shape=st_eng, min_shapes=[0, 0] if st_eng else [64, 64], opt_shapes=None if st_eng else res_opt, max_shapes=None if st_eng else res_max)
 	infer = vsmlrt.inference(clips=clip, network_path=os.path.join(vsmlrt.models_path, model_pth), backend=be_param)
 	output = core.resize.Bilinear(clip=infer, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
