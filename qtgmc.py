@@ -1,14 +1,16 @@
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 __all__ = ["QTGMC", "QTGMC_obs", "QTGMCv2"]
 
-import vapoursynth as vs
-from vapoursynth import core
-import typing
+
+from distutils.version import LooseVersion
 import functools
 import math
+import typing
+import vapoursynth as vs
 
+core = vs.core
 vstools = None
 QTGMC_globals = {}
 dfttest2 = None
@@ -370,6 +372,8 @@ def QTGMC(
 	global dfttest2
 	if dfttest2 is None :
 		import dfttest2
+	if LooseVersion(dfttest2.__version__) < LooseVersion("0.3.3") :
+		raise EnvironmentError("依赖 dfttest2 的版本号过低，至少 0.3.3")
 
 	def _average_frames(
 		clip: vs.VideoNode, weights: float | typing.Sequence[float], scenechange: float | None = None, planes: vstools.PlanesT = None
@@ -1657,6 +1661,8 @@ def QTGMC_obs(
 	global dfttest2
 	if dfttest2 is None :
 		import dfttest2
+	if LooseVersion(dfttest2.__version__) < LooseVersion("0.3.3") :
+		raise EnvironmentError("依赖 dfttest2 的版本号过低，至少 0.3.3")
 
 	def _Clamp(clip, bright_limit, dark_limit, overshoot=0, undershoot=0, planes=None):
 		if not (isinstance(clip, vs.VideoNode) and isinstance(bright_limit, vs.VideoNode) and isinstance(dark_limit, vs.VideoNode)):
@@ -2656,7 +2662,7 @@ def QTGMCv2(
 		func_name = "QTGMCv2"
 		if not isinstance(input, vs.VideoNode) :
 			raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-		if fps_in <= 0.0 :
+		if not isinstance(fps_in, (int, float)) or fps_in <= 0.0 :
 			raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
 		if not isinstance(obs, bool) :
 			raise vs.Error(f"模块 {func_name} 的子参数 obs 的值无效")
