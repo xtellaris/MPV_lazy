@@ -2,7 +2,7 @@
 ### 文档： https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ##################################################
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = [
 	"FMT_CHANGE", "FMT_CTRL", "FPS_CHANGE", "FPS_CTRL",
@@ -568,7 +568,6 @@ def ESRGAN_DML(
 	input : vs.VideoNode,
 	lt_hd : bool = False,
 	model : typing.Literal[0, 2, 5005, 5006, 5007] = 5005,
-	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	vs_t : int = vs_thd_dft,
@@ -581,8 +580,6 @@ def ESRGAN_DML(
 		raise vs.Error(f"模块 {func_name} 的子参数 lt_hd 的值无效")
 	if model not in [0, 2, 5005, 5006, 5007] :
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
-	if scale not in [1, 2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 scale 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -606,7 +603,7 @@ def ESRGAN_DML(
 		raise Exception("源分辨率超过限制的范围，已临时中止。")
 
 	cut1 = core.resize.Bilinear(clip=input, format=vs.RGBS, matrix_in_s="709")
-	cut2 = vsmlrt.RealESRGANv2(clip=cut1, scale=scale, model=model, backend=vsmlrt.BackendV2.ORT_DML(
+	cut2 = vsmlrt.RealESRGANv2(clip=cut1, scale=4 if model==2 else 2, model=model, backend=vsmlrt.BackendV2.ORT_DML(
 		device_id=gpu, num_streams=gpu_t, fp16=True))
 	output = core.resize.Bilinear(clip=cut2, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
 
@@ -620,7 +617,6 @@ def ESRGAN_NV(
 	input : vs.VideoNode,
 	lt_hd : bool = False,
 	model : typing.Literal[0, 2, 5005, 5006, 5007] = 5005,
-	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	st_eng : bool = False,
@@ -635,8 +631,6 @@ def ESRGAN_NV(
 		raise vs.Error(f"模块 {func_name} 的子参数 lt_hd 的值无效")
 	if model not in [0, 2, 5005, 5006, 5007] :
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
-	if scale not in [1, 2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 scale 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -666,7 +660,7 @@ def ESRGAN_NV(
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
 	cut1 = core.resize.Bilinear(clip=input, format=vs.RGBH, matrix_in_s="709")
-	cut2 = vsmlrt.RealESRGANv2(clip=cut1, scale=scale, model=model, backend=vsmlrt.BackendV2.TRT(
+	cut2 = vsmlrt.RealESRGANv2(clip=cut1, scale=4 if model==2 else 2, model=model, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -744,7 +738,6 @@ def WAIFU_DML(
 	lt_hd : bool = False,
 	model : typing.Literal[3, 5, 6] = 3,
 	nr_lv : typing.Literal[-1, 0, 1, 2, 3] = 1,
-	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	vs_t : int = vs_thd_dft,
@@ -759,8 +752,6 @@ def WAIFU_DML(
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
 	if nr_lv not in [-1, 0, 1, 2, 3] :
 		raise vs.Error(f"模块 {func_name} 的子参数 nr_lv 的值无效")
-	if scale not in [1, 2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 scale 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -784,7 +775,7 @@ def WAIFU_DML(
 		raise Exception("源分辨率超过限制的范围，已临时中止。")
 
 	cut1 = core.resize.Bilinear(clip=input, format=vs.RGBS, matrix_in_s="709")
-	cut2 = vsmlrt.Waifu2x(clip=cut1, noise=nr_lv, scale=scale, model=model, backend=vsmlrt.BackendV2.ORT_DML(
+	cut2 = vsmlrt.Waifu2x(clip=cut1, noise=nr_lv, scale=2, model=model, backend=vsmlrt.BackendV2.ORT_DML(
 		device_id=gpu, num_streams=gpu_t, fp16=True))
 	output = core.resize.Bilinear(clip=cut2, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
 
@@ -799,7 +790,6 @@ def WAIFU_NV(
 	lt_hd : bool = False,
 	model : typing.Literal[3, 5, 6] = 3,
 	nr_lv : typing.Literal[-1, 0, 1, 2, 3] = 1,
-	scale : typing.Literal[1, 2, 3, 4] = 2,
 	gpu : typing.Literal[0, 1, 2] = 0,
 	gpu_t : int = 2,
 	st_eng : bool = False,
@@ -816,8 +806,6 @@ def WAIFU_NV(
 		raise vs.Error(f"模块 {func_name} 的子参数 model 的值无效")
 	if nr_lv not in [-1, 0, 1, 2, 3] :
 		raise vs.Error(f"模块 {func_name} 的子参数 nr_lv 的值无效")
-	if scale not in [1, 2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 scale 的值无效")
 	if gpu not in [0, 1, 2] :
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(gpu_t, int) or gpu_t <= 0 :
@@ -847,7 +835,7 @@ def WAIFU_NV(
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
 	cut1 = core.resize.Bilinear(clip=input, format=vs.RGBH, matrix_in_s="709")
-	cut2 = vsmlrt.Waifu2x(clip=cut1, noise=nr_lv, scale=scale, model=model, backend=vsmlrt.BackendV2.TRT(
+	cut2 = vsmlrt.Waifu2x(clip=cut1, noise=nr_lv, scale=2, model=model, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -890,8 +878,11 @@ def MVT_LQ(
 	blk_size = 32
 	w_tmp = math.ceil(w_in / blk_size) * blk_size - w_in
 	h_tmp = math.ceil(h_in / blk_size) * blk_size - h_in
+	if w_tmp + h_tmp > 0 :
+		cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
+	else :
+		cut0 = input
 
-	cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
 	cut1 = core.std.AssumeFPS(clip=cut0, fpsnum=int(fps_in * 1e6), fpsden=1e6)
 	cut_s = core.mv.Super(clip=cut1, pel=1, sharp=0)
 	cut_b = core.mv.Analyse(super=cut_s, blksize=blk_size, search=2, isb=True)
@@ -904,10 +895,11 @@ def MVT_LQ(
 		cut_b, cut_f = cut_b, cut_f
 
 	if block :
-		fin = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6)
+		output = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6)
 	else :
-		fin = core.mv.FlowFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6, mask=1)
-	output = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
+		output = core.mv.FlowFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1e6, den=1e6, mask=1)
+	if w_tmp + h_tmp > 0 :
+		output = core.std.Crop(clip=output, right=w_tmp, bottom=h_tmp)
 
 	return output
 
@@ -933,12 +925,6 @@ def MVT_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
-	core.num_threads = vs_t
-	w_in, h_in = input.width, input.height
-	blk_size = 80
-	w_tmp = math.ceil(w_in / blk_size) * blk_size - w_in
-	h_tmp = math.ceil(h_in / blk_size) * blk_size - h_in
-
 	def _ffps(fps) :
 		rfps = int('%.0f' % fps)
 		if ( abs(fps - (rfps/1.001)) < abs(fps - (rfps/1.000)) ) :
@@ -946,20 +932,26 @@ def MVT_STD(
 		else :
 			vfps, vden = rfps*1000, 1000
 		return vfps, vden
-
 	vfps, vden = _ffps(fps_in)
-	cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
+
+	core.num_threads = vs_t
+	w_in, h_in = input.width, input.height
+	blk_size = 80
+	w_tmp = math.ceil(w_in / blk_size) * blk_size - w_in
+	h_tmp = math.ceil(h_in / blk_size) * blk_size - h_in
+	if w_tmp + h_tmp > 0 :
+		cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
+	else :
+		cut0 = input
+
 	cut1 = core.std.AssumeFPS(clip=cut0, fpsnum=int(vfps), fpsden=vden)
 	cut_s = core.mv.Super(clip=cut1, sharp=1, rfilter=4)
+	cut_b = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, isb=True, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
+	cut_f = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
 
-	if vs_api >=4 :
-		cut_b = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, isb=True, lambda_=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
-		cut_f = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, lambda_=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
-	else :
-		cut_b = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, isb=True, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
-		cut_f = core.mv.Analyse(super=cut_s, blksize=64, searchparam=0, pelsearch=3, _lambda=0, lsad=10000, overlapv=16, badrange=0, search_coarse=4)
-	fin = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=vden, mode=2, thscd1=970, thscd2=255, blend=False)
-	output = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
+	output = core.mv.BlockFPS(clip=cut1, super=cut_s, mvbw=cut_b, mvfw=cut_f, num=fps_out * 1000, den=vden, mode=2, thscd1=970, thscd2=255, blend=False)
+	if w_tmp + h_tmp > 0 :
+		output = core.std.Crop(clip=output, right=w_tmp, bottom=h_tmp)
 
 	return output
 
@@ -1223,7 +1215,8 @@ def RIFE_NV(
 
 	cut1 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
 	if ext_proc :
-		cut1 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)
+		if w_tmp + h_tmp > 0 :
+			cut1 = core.std.AddBorders(clip=cut1, right=w_tmp, bottom=h_tmp)
 		fin = vsmlrt.RIFE(clip=cut1, multi=fractions.Fraction(fps_num, fps_den), scale=scale_model, model=model, ensemble=t_tta, _implementation=1, video_player=True, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=True, output_format=1,
 			workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
@@ -1231,7 +1224,8 @@ def RIFE_NV(
 			static_shape=st_eng, min_shapes=[0, 0] if st_eng else [320, 256],
 			opt_shapes=None if st_eng else [1920, 1088], max_shapes=None if st_eng else ([4096, 2176] if lt_d2k else [2048, 1088]),
 			device_id=gpu, short_path=True))
-		fin = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
+		if w_tmp + h_tmp > 0 :
+			fin = core.std.Crop(clip=fin, right=w_tmp, bottom=h_tmp)
 	else :
 		fin = vsmlrt.RIFE(clip=cut1, multi=fractions.Fraction(fps_num, fps_den), scale=scale_model, model=model, ensemble=t_tta, _implementation=2, video_player=True, backend=vsmlrt.BackendV2.TRT(
 			num_streams=gpu_t, force_fp16=True, output_format=1,
@@ -1782,15 +1776,23 @@ def DPIR_NR_NV(
 	if not st_eng and (((w_in > 2048) or (h_in > 1080)) or ((w_in < 64) or (h_in < 64))) :
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
-	if model == 0 :
-		#cut0 = core.resize.Bilinear(clip=input, format=vs.GRAYH, matrix_in_s="709")
-		#cut1 = core.std.ShufflePlanes(clips=cut0, planes=0, colorfamily=vs.GRAY)
-		cut0 = core.std.ShufflePlanes(clips=input, planes=0, colorfamily=vs.GRAY)
-		cut1 = core.resize.Bilinear(clip=cut0, format=vs.GRAYH, matrix_in_s="709")
+	tile_size = 8
+	w_tmp = math.ceil(w_in / tile_size) * tile_size - w_in
+	h_tmp = math.ceil(h_in / tile_size) * tile_size - h_in
+	if w_tmp + h_tmp > 0 :
+		cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
 	else :
-		cut1 = core.resize.Bilinear(clip=input, format=vs.RGBH, matrix_in_s="709")
+		cut0 = input
 
-	fin = vsmlrt.DPIR(clip=cut1, strength=nr_lv, model=model, backend=vsmlrt.BackendV2.TRT(
+	if model == 0 :
+#		cut1 = core.resize.Bilinear(clip=cut0, format=vs.GRAYH, matrix_in_s="709")
+#		cut2 = core.std.ShufflePlanes(clips=cut1, planes=0, colorfamily=vs.GRAY)
+		cut1 = core.std.ShufflePlanes(clips=cut0, planes=0, colorfamily=vs.GRAY)
+		cut2 = core.resize.Bilinear(clip=cut1, format=vs.GRAYH, matrix_in_s="709")
+	else :
+		cut2 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
+
+	fin = vsmlrt.DPIR(clip=cut2, strength=nr_lv, model=model, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -1799,11 +1801,14 @@ def DPIR_NR_NV(
 		device_id=gpu, short_path=True))
 
 	if model == 0 :
-		#pre_mg = core.resize.Bilinear(clip=fin, format=fin.format.replace(bits_per_sample=fmt_bit_in))
-		pre_mg = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
-		output = core.std.ShufflePlanes(clips=[pre_mg, input, input], planes=[0, 1, 2], colorfamily=fmt_cf_in)
+		pre_mg = core.resize.Bilinear(clip=fin, format=fin.format.replace(bits_per_sample=fmt_bit_in, sample_type=0))
+#		pre_mg = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+		output = core.std.ShufflePlanes(clips=[pre_mg, cut0, cut0], planes=[0, 1, 2], colorfamily=fmt_cf_in)
 	else :
 		output = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+
+	if w_tmp + h_tmp > 0 :
+		output = core.std.Crop(clip=output, right=w_tmp, bottom=h_tmp)
 
 	return output
 
@@ -2306,15 +2311,23 @@ def DPIR_DBLK_NV(
 	if not st_eng and (((w_in > 2048) or (h_in > 1080)) or ((w_in < 64) or (h_in < 64))) :
 		raise Exception("源分辨率不属于动态引擎支持的范围，已临时中止。")
 
-	if model == 2 :
-		#cut0 = core.resize.Bilinear(clip=input, format=vs.GRAYH, matrix_in_s="709")
-		#cut1 = core.std.ShufflePlanes(clips=cut0, planes=0, colorfamily=vs.GRAY)
-		cut0 = core.std.ShufflePlanes(clips=input, planes=0, colorfamily=vs.GRAY)
-		cut1 = core.resize.Bilinear(clip=cut0, format=vs.GRAYH, matrix_in_s="709")
+	tile_size = 8
+	w_tmp = math.ceil(w_in / tile_size) * tile_size - w_in
+	h_tmp = math.ceil(h_in / tile_size) * tile_size - h_in
+	if w_tmp + h_tmp > 0 :
+		cut0 = core.std.AddBorders(clip=input, right=w_tmp, bottom=h_tmp)
 	else :
-		cut1 = core.resize.Bilinear(clip=input, format=vs.RGBH, matrix_in_s="709")
+		cut0 = input
 
-	fin = vsmlrt.DPIR(clip=cut1, strength=nr_lv, model=model, backend=vsmlrt.BackendV2.TRT(
+	if model == 2 :
+#		cut1 = core.resize.Bilinear(clip=cut0, format=vs.GRAYH, matrix_in_s="709")
+#		cut2 = core.std.ShufflePlanes(clips=cut1, planes=0, colorfamily=vs.GRAY)
+		cut1 = core.std.ShufflePlanes(clips=cut0, planes=0, colorfamily=vs.GRAY)
+		cut2 = core.resize.Bilinear(clip=cut1, format=vs.GRAYH, matrix_in_s="709")
+	else :
+		cut2 = core.resize.Bilinear(clip=cut0, format=vs.RGBH, matrix_in_s="709")
+
+	fin = vsmlrt.DPIR(clip=cut2, strength=nr_lv, model=model, backend=vsmlrt.BackendV2.TRT(
 		num_streams=gpu_t, force_fp16=True, output_format=1,
 		workspace=None if ws_size < 128 else (ws_size if st_eng else ws_size * 2),
 		use_cuda_graph=True, use_cublas=False, use_cudnn=False,
@@ -2323,11 +2336,14 @@ def DPIR_DBLK_NV(
 		device_id=gpu, short_path=True))
 
 	if model == 2 :
-		#pre_mg = core.resize.Bilinear(clip=fin, format=fin.format.replace(bits_per_sample=fmt_bit_in))
-		pre_mg = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
-		output = core.std.ShufflePlanes(clips=[pre_mg, input, input], planes=[0, 1, 2], colorfamily=fmt_cf_in)
+		pre_mg = core.resize.Bilinear(clip=fin, format=fin.format.replace(bits_per_sample=fmt_bit_in, sample_type=0))
+#		pre_mg = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+		output = core.std.ShufflePlanes(clips=[pre_mg, cut0, cut0], planes=[0, 1, 2], colorfamily=fmt_cf_in)
 	else :
 		output = core.resize.Bilinear(clip=fin, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+
+	if w_tmp + h_tmp > 0 :
+		output = core.std.Crop(clip=output, right=w_tmp, bottom=h_tmp)
 
 	return output
 
