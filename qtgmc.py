@@ -1,5 +1,8 @@
+##################################################
+### K7sfunc 的可选附属脚本
+##################################################
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = ["QTGMC", "QTGMC_obs", "QTGMCv2"]
 
@@ -2655,29 +2658,9 @@ def QTGMCv2(
 	tff : typing.Literal[0, 1, 2] = 0,
 	cpu : bool = True,
 	gpu : typing.Literal[-1, 0, 1, 2] = -1,
-	check : bool = True,
 ) -> vs.VideoNode:
 
-	if check :
-		func_name = "QTGMCv2"
-		if not isinstance(input, vs.VideoNode) :
-			raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-		if not isinstance(fps_in, (int, float)) or fps_in <= 0.0 :
-			raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
-		if not isinstance(obs, bool) :
-			raise vs.Error(f"模块 {func_name} 的子参数 obs 的值无效")
-		if deint_lv not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] :
-			raise vs.Error(f"模块 {func_name} 的子参数 deint_lv 的值无效")
-		if src_type not in [0, 1, 2, 3] :
-			raise vs.Error(f"模块 {func_name} 的子参数 src_type 的值无效")
-		if deint_den not in [1, 2] :
-			raise vs.Error(f"模块 {func_name} 的子参数 deint_den 的值无效")
-		if tff not in [0, 1, 2] :
-			raise vs.Error(f"模块 {func_name} 的子参数 tff 的值无效")
-		if not isinstance(cpu, bool) :
-			raise vs.Error(f"模块 {func_name} 的子参数 cpu 的值无效")
-		if gpu not in [-1, 0, 1, 2] :
-			raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
+	##TODO: 依赖检查
 
 	if not tff :
 		field_src = getattr(input.get_frame(0).props, "_FieldBased", 1)

@@ -2,7 +2,7 @@
 ### 文档： https://github.com/hooke007/MPV_lazy/wiki/3_K7sfunc
 ##################################################
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 __all__ = [
 	"FMT_CHANGE", "FMT_CTRL", "FPS_CHANGE", "FPS_CTRL",
@@ -38,7 +38,7 @@ else :
 
 vs_api = vs.__api_version__.api_major
 if vs_api < 4 :
-	raise EnvironmentError("帧服务器 VapourSynth 的版本号过低，至少 R57")
+	raise ImportError("帧服务器 VapourSynth 的版本号过低，至少 R57")
 
 core = vs.core
 dfttest2 = None
@@ -486,6 +486,9 @@ def ACNET_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "anime4kcpp") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/TianZerL/Anime4KCPP")
+
 	core.num_threads = vs_t
 	fmt_in = input.format.id
 
@@ -531,11 +534,17 @@ def CUGAN_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
-		raise EnvironmentError("vsmlrt 版本号过低，至少 3.18.1 。")
+		raise ImportError("依赖：缺失脚本 vsmlrt 版本号过低，至少 3.18.1 。")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -557,6 +566,76 @@ def CUGAN_NV(
 		opt_shapes=None if st_eng else ([1920, 1080] if lt_hd else [1280, 720]), max_shapes=None if st_eng else ([2048, 1080] if lt_hd else [1280, 720]),
 		device_id=gpu, short_path=True))
 	output = core.resize.Bilinear(clip=cut2, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
+
+	return output
+
+##################################################
+## NNEDI3放大
+##################################################
+
+def EDI_US_STD(
+	input : vs.VideoNode,
+	ext_proc : bool = True,
+	nsize : typing.Literal[0, 4] = 4,
+	nns : typing.Literal[2, 3, 4] = 3,
+	cpu : bool = True,
+	gpu : typing.Literal[-1, 0, 1, 2] = -1,
+	vs_t : int = vs_thd_dft,
+) -> vs.VideoNode :
+
+	func_name = "EDI_US_STD"
+	if not isinstance(input, vs.VideoNode) :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
+	if not isinstance(ext_proc, bool) :
+		raise vs.Error(f"模块 {func_name} 的子参数 ext_proc 的值无效")
+	if nsize not in [0, 4] :
+		raise vs.Error(f"模块 {func_name} 的子参数 nsize 的值无效")
+	if nns not in [2, 3, 4] :
+		raise vs.Error(f"模块 {func_name} 的子参数 nns 的值无效")
+	if not isinstance(cpu, bool) :
+		raise vs.Error(f"模块 {func_name} 的子参数 cpu 的值无效")
+	if gpu not in [-1, 0, 1, 2] :
+		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
+	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
+		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "fmtc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://gitlab.com/EleonoreMizo/fmtconv")
+	if cpu :
+		if not hasattr(core, "znedi3") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/sekrit-twc/znedi3")
+	else :
+		if not hasattr(core, "nnedi3cl") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-NNEDI3CL")
+
+	global nnedi3_resample
+	if nnedi3_resample is None :
+		try :
+			import nnedi3_resample
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 nnedi3_resample")
+	if LooseVersion(nnedi3_resample.__version__) < LooseVersion("2") :
+		raise ImportError("依赖：缺失脚本 nnedi3_resample 的版本号过低，至少 2")
+
+	core.num_threads = vs_t
+
+	if ext_proc :
+		fmt_in = input.format.id
+		if fmt_in in [vs.YUV410P8, vs.YUV420P8, vs.YUV420P10] :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV420P16)
+		elif fmt_in in [vs.YUV411P8, vs.YUV422P8, vs.YUV422P10] :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV422P16)
+		elif fmt_in == vs.YUV444P16 :
+			clip = input
+		else :
+			clip = core.resize.Bilinear(clip=input, format=vs.YUV444P16)
+	else :
+		clip = input
+
+	output = nnedi3_resample.nnedi3_resample(input=clip, target_width=input.width * 2, target_height=input.height * 2,
+		nsize=nsize, nns=nns, qual=1, etype=0, pscrn=2, mode="znedi3" if cpu else "nnedi3cl", device=gpu)
+	if ext_proc :
+		output = core.resize.Bilinear(clip=output, format=fmt_in)
 
 	return output
 
@@ -587,11 +666,17 @@ def ESRGAN_DML(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "ort") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.15.25") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.15.25")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.15.25")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -642,11 +727,17 @@ def ESRGAN_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.18.1")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.1")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -668,64 +759,6 @@ def ESRGAN_NV(
 		opt_shapes=None if st_eng else ([1920, 1080] if lt_hd else [1280, 720]), max_shapes=None if st_eng else ([2048, 1080] if lt_hd else [1280, 720]),
 		device_id=gpu, short_path=True))
 	output = core.resize.Bilinear(clip=cut2, format=fmt_in, matrix_s="709", range=1 if colorlv==0 else None)
-
-	return output
-
-##################################################
-## NNEDI3放大
-##################################################
-
-def EDI_US_STD(
-	input : vs.VideoNode,
-	ext_proc : bool = True,
-	nsize : typing.Literal[0, 4] = 4,
-	nns : typing.Literal[2, 3, 4] = 3,
-	cpu : bool = True,
-	gpu : typing.Literal[-1, 0, 1, 2] = -1,
-	vs_t : int = vs_thd_dft,
-) -> vs.VideoNode :
-
-	func_name = "EDI_US_STD"
-	if not isinstance(input, vs.VideoNode) :
-		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-	if not isinstance(ext_proc, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 ext_proc 的值无效")
-	if nsize not in [0, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 nsize 的值无效")
-	if nns not in [2, 3, 4] :
-		raise vs.Error(f"模块 {func_name} 的子参数 nns 的值无效")
-	if not isinstance(cpu, bool) :
-		raise vs.Error(f"模块 {func_name} 的子参数 cpu 的值无效")
-	if gpu not in [-1, 0, 1, 2] :
-		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
-	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
-		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
-
-	global nnedi3_resample
-	if nnedi3_resample is None :
-		import nnedi3_resample
-	if LooseVersion(nnedi3_resample.__version__) < LooseVersion("2") :
-		raise EnvironmentError("依赖 nnedi3_resample 的版本号过低，至少 2")
-
-	core.num_threads = vs_t
-
-	if ext_proc :
-		fmt_in = input.format.id
-		if fmt_in in [vs.YUV410P8, vs.YUV420P8, vs.YUV420P10] :
-			clip = core.resize.Bilinear(clip=input, format=vs.YUV420P16)
-		elif fmt_in in [vs.YUV411P8, vs.YUV422P8, vs.YUV422P10] :
-			clip = core.resize.Bilinear(clip=input, format=vs.YUV422P16)
-		elif fmt_in == vs.YUV444P16 :
-			clip = input
-		else :
-			clip = core.resize.Bilinear(clip=input, format=vs.YUV444P16)
-	else :
-		clip = input
-
-	output = nnedi3_resample.nnedi3_resample(input=clip, target_width=input.width * 2, target_height=input.height * 2,
-		nsize=nsize, nns=nns, qual=1, etype=0, pscrn=2, mode="znedi3" if cpu else "nnedi3cl", device=gpu)
-	if ext_proc :
-		output = core.resize.Bilinear(clip=output, format=fmt_in)
 
 	return output
 
@@ -759,11 +792,17 @@ def WAIFU_DML(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "ort") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.15.25") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.15.25")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.15.25")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -817,11 +856,17 @@ def WAIFU_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.18.1")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.1")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -872,6 +917,9 @@ def MVT_LQ(
 		raise vs.Error(f"模块 {func_name} 的子参数 block 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -925,6 +973,9 @@ def MVT_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
+
 	def _ffps(fps) :
 		rfps = int('%.0f' % fps)
 		if ( abs(fps - (rfps/1.001)) < abs(fps - (rfps/1.000)) ) :
@@ -975,6 +1026,9 @@ def MVT_POT(
 		raise vs.Error(f"模块 {func_name} 的子参数 fps_out 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
 
 	core.num_threads = vs_t
 	max_flow_width  = 1280
@@ -1039,6 +1093,9 @@ def MVT_MQ(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
+
 	core.num_threads = vs_t
 	blksizev = blksize
 	search = [0, 3, 3][(qty_lv - 1)]
@@ -1101,6 +1158,18 @@ def RIFE_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu_t 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "rife") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/styler00dollar/VapourSynth-RIFE-ncnn-Vulkan")
+	if skip :
+		if not hasattr(core, "vmaf") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-VMAF")
+	if sc_mode == 1 :
+		if not hasattr(core, "misc") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-miscfilters-obsolete")
+	elif sc_mode == 2 :
+		if not hasattr(core, "mv") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
 
 	core.num_threads = vs_t
 	fmt_in = input.format.id
@@ -1172,11 +1241,26 @@ def RIFE_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+	if sc_mode == 1 :
+		if not hasattr(core, "misc") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-miscfilters-obsolete")
+	elif sc_mode == 2 :
+		if not hasattr(core, "mv") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
+	if not (fps_num/fps_den).is_integer() :
+		if not hasattr(core, "akarin") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AkarinVS/vapoursynth-plugin")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.19") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.18.19")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.19")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -1267,6 +1351,9 @@ def SVP_LQ(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "svp1") or not hasattr(core, "svp2") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/hooke007/MPV_lazy/discussions/114")
+
 	core.num_threads = vs_t
 	fps_num = fps_num
 	acc = 1 if cpu == 0 else 0
@@ -1317,6 +1404,9 @@ def SVP_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "svp1") or not hasattr(core, "svp2") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/hooke007/MPV_lazy/discussions/114")
+
 	core.num_threads = vs_t
 	fmt_in = input.format.id
 	fps_out = fps_out * 1e6
@@ -1334,6 +1424,76 @@ def SVP_STD(
 	vectors = core.svp1.Analyse(super["clip"], super["data"], input if acc else clip_f, analyse_params)
 	smooth = core.svp2.SmoothFps(input if acc else clip_f, super["clip"], super["data"], vectors["clip"], vectors["data"], smoothfps_params, src=input if acc else clip_f, fps=fps_in)
 	output = core.std.AssumeFPS(smooth, fpsnum=smooth.fps_num, fpsden=smooth.fps_den)
+
+	return output
+
+##################################################
+## PORT https://github.com/natural-harmonia-gropius
+## SVP补帧
+##################################################
+
+def SVP_HQ(
+	input : vs.VideoNode,
+	fps_in : float = 23.976,
+	fps_dp : float = 59.940,
+	cpu : typing.Literal[0, 1] = 0,
+	gpu : typing.Literal[0, 11, 12, 21] = 0,
+	vs_t : int = vs_thd_dft,
+) -> vs.VideoNode :
+
+	func_name = "SVP_HQ"
+	if not isinstance(input, vs.VideoNode) :
+		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
+	if not isinstance(fps_in, (int, float)) or fps_in <= 0.0 :
+		raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
+	if not isinstance(fps_dp, (int, float)) or fps_dp < 23.976 :
+		raise vs.Error(f"模块 {func_name} 的子参数 fps_dp 的值无效")
+	if cpu not in [0, 1] :
+		raise vs.Error(f"模块 {func_name} 的子参数 cpu 的值无效")
+	if gpu not in [0, 11, 12, 21] :
+		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
+	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
+		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "svp1") or not hasattr(core, "svp2") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/hooke007/MPV_lazy/discussions/114")
+
+	core.num_threads = vs_t
+	fps = fps_in or 23.976
+	freq = fps_dp or 59.970
+	acc = 1 if cpu == 0 else 0
+	overlap = 2 if cpu == 0 else 3
+	w, h = input.width, input.height
+
+	if (freq - fps < 2) :
+		raise Exception("Interpolation is not necessary.")
+
+	target_fps = 60
+
+	sp = "{gpu:%d}" % (acc)
+	ap = "{block:{w:32,h:16,overlap:%d},main:{levels:5,search:{type:4,distance:-12,coarse:{type:4,distance:-1,trymany:true,bad:{range:0}}},penalty:{lambda:3.33,plevel:1.33,lsad:3300,pzero:110,pnbour:50}},refine:[{thsad:400},{thsad:200,search:{type:4,distance:-4}}]}" % (overlap)
+	fp = "{gpuid:%d,algo:23,rate:{num:%d,den:%d,abs:true},mask:{cover:80,area:30,area_sharp:0.75},scene:{mode:0,limits:{scene:6000,zero:100,blocks:40}}}" % (gpu, round(min(max(target_fps, fps * 2, freq / 2), freq)) * 1000, 1001)
+
+	def _toYUV420(clip) :
+		if clip.format.id == vs.YUV420P8 :
+			clip8 = clip
+		elif clip.format.id == vs.YUV420P10 :
+			clip8 = core.resize.Bilinear(clip=clip, format=vs.YUV420P8)
+		else :
+			clip = core.resize.Bilinear(clip=clip, format=vs.YUV420P10)
+			clip8 = core.resize.Bilinear(clip=clip, format=vs.YUV420P8)
+		return clip, clip8
+
+	def _svpflow(clip, fps, sp, ap, fp) :
+		clip, clip8 = _toYUV420(clip)
+		s = core.svp1.Super(clip8, sp)
+		r = s["clip"], s["data"]
+		v = core.svp1.Analyse(*r, clip, ap)
+		r = *r, v["clip"], v["data"]
+		clip = core.svp2.SmoothFps(clip if acc else clip8, *r, fp, src=clip, fps=fps)
+		return clip
+
+	output = _svpflow(input, fps, sp, ap, fp)
 
 	return output
 
@@ -1378,6 +1538,9 @@ def SVP_PRO(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "svp1") or not hasattr(core, "svp2") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/hooke007/MPV_lazy/discussions/114")
+
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
 	size_in = w_in * h_in
@@ -1409,73 +1572,6 @@ def SVP_PRO(
 	return output
 
 ##################################################
-## PORT https://github.com/natural-harmonia-gropius
-## SVP补帧
-##################################################
-
-def SVP_HQ(
-	input : vs.VideoNode,
-	fps_in : float = 23.976,
-	fps_dp : float = 59.940,
-	cpu : typing.Literal[0, 1] = 0,
-	gpu : typing.Literal[0, 11, 12, 21] = 0,
-	vs_t : int = vs_thd_dft,
-) -> vs.VideoNode :
-
-	func_name = "SVP_HQ"
-	if not isinstance(input, vs.VideoNode) :
-		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
-	if not isinstance(fps_in, (int, float)) or fps_in <= 0.0 :
-		raise vs.Error(f"模块 {func_name} 的子参数 fps_in 的值无效")
-	if not isinstance(fps_dp, (int, float)) or fps_dp < 23.976 :
-		raise vs.Error(f"模块 {func_name} 的子参数 fps_dp 的值无效")
-	if cpu not in [0, 1] :
-		raise vs.Error(f"模块 {func_name} 的子参数 cpu 的值无效")
-	if gpu not in [0, 11, 12, 21] :
-		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
-	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
-		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
-
-	core.num_threads = vs_t
-	fps = fps_in or 23.976
-	freq = fps_dp or 59.970
-	acc = 1 if cpu == 0 else 0
-	overlap = 2 if cpu == 0 else 3
-	w, h = input.width, input.height
-
-	if (freq - fps < 2) :
-		raise Exception("Interpolation is not necessary.")
-
-	target_fps = 60
-
-	sp = "{gpu:%d}" % (acc)
-	ap = "{block:{w:32,h:16,overlap:%d},main:{levels:5,search:{type:4,distance:-12,coarse:{type:4,distance:-1,trymany:true,bad:{range:0}}},penalty:{lambda:3.33,plevel:1.33,lsad:3300,pzero:110,pnbour:50}},refine:[{thsad:400},{thsad:200,search:{type:4,distance:-4}}]}" % (overlap)
-	fp = "{gpuid:%d,algo:23,rate:{num:%d,den:%d,abs:true},mask:{cover:80,area:30,area_sharp:0.75},scene:{mode:0,limits:{scene:6000,zero:100,blocks:40}}}" % (gpu, round(min(max(target_fps, fps * 2, freq / 2), freq)) * 1000, 1001)
-
-	def _toYUV420(clip) :
-		if clip.format.id == vs.YUV420P8 :
-			clip8 = clip
-		elif clip.format.id == vs.YUV420P10 :
-			clip8 = core.resize.Bilinear(clip=clip, format=vs.YUV420P8)
-		else :
-			clip = core.resize.Bilinear(clip=clip, format=vs.YUV420P10)
-			clip8 = core.resize.Bilinear(clip=clip, format=vs.YUV420P8)
-		return clip, clip8
-
-	def _svpflow(clip, fps, sp, ap, fp) :
-		clip, clip8 = _toYUV420(clip)
-		s = core.svp1.Super(clip8, sp)
-		r = s["clip"], s["data"]
-		v = core.svp1.Analyse(*r, clip, ap)
-		r = *r, v["clip"], v["data"]
-		clip = core.svp2.SmoothFps(clip if acc else clip8, *r, fp, src=clip, fps=fps)
-		return clip
-
-	output = _svpflow(input, fps, sp, ap, fp)
-
-	return output
-
-##################################################
 ## Bilateral降噪
 ##################################################
 
@@ -1501,6 +1597,9 @@ def BILA_NV(
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu_t 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "bilateralgpu_rtc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/WolframRhodium/VapourSynth-BilateralGPU")
 
 	core.num_threads = vs_t
 	fmt_in = input.format.id
@@ -1541,6 +1640,9 @@ def BM3D_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "bm3dcuda_rtc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/WolframRhodium/VapourSynth-BM3DCUDA")
+
 	core.num_threads = vs_t
 	fmt_in = input.format.id
 
@@ -1569,6 +1671,9 @@ def CCD_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 nr_lv 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "akarin") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AkarinVS/vapoursynth-plugin")
 
 	core.num_threads = vs_t
 	colorlv = getattr(input.get_frame(0).props, "_ColorRange", 0)
@@ -1648,14 +1753,20 @@ def DFTT_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
-	core.num_threads = vs_t
-	fmt_in = input.format.id
+	if not hasattr(core, "dfttest2_cpu") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-dfttest2")
 
 	global dfttest2
 	if dfttest2 is None :
-		import dfttest2
+		try :
+			import dfttest2
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 dfttest2")
 	if LooseVersion(dfttest2.__version__) < LooseVersion("0.3.3") :
-		raise EnvironmentError("依赖 dfttest2 的版本号过低，至少 0.3.3")
+		raise ImportError("依赖：缺失脚本 dfttest2 的版本号过低，至少 0.3.3")
+
+	core.num_threads = vs_t
+	fmt_in = input.format.id
 
 	if fmt_in == vs.YUV444P16 :
 		cut0 = input
@@ -1702,14 +1813,20 @@ def DFTT_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "dfttest2_nvrtc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-dfttest2")
+
 	core.num_threads = vs_t
 	fmt_in = input.format.id
 
 	global dfttest2
 	if dfttest2 is None :
-		import dfttest2
+		try :
+			import dfttest2
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 dfttest2")
 	if LooseVersion(dfttest2.__version__) < LooseVersion("0.3.3") :
-		raise EnvironmentError("依赖 dfttest2 的版本号过低，至少 0.3.3")
+		raise ImportError("依赖：缺失脚本 dfttest2 的版本号过低，至少 0.3.3")
 
 	if fmt_in == vs.YUV444P16 :
 		cut0 = input
@@ -1756,11 +1873,17 @@ def DPIR_NR_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.18.1")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.1")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -1842,6 +1965,15 @@ def FFT3D_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+	if mode == 1 :
+		if not hasattr(core, "fft3dfilter") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/myrsloik/VapourSynth-FFT3DFilter")
+	elif mode == 2 :
+		if not hasattr(core, "neo_fft3d") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfAviSynthPlusEvolution/neo_FFT3D")
+
 	core.num_threads = vs_t
 
 	if mode == 1 :
@@ -1886,6 +2018,16 @@ def NLM_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 gpu 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if blur_m == 1 :
+		if not hasattr(core, "rgvs") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-removegrain")
+	if nlm_m == 1 :
+		if not hasattr(core, "knlm") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/KNLMeansCL")
+	elif nlm_m == 2 :
+		if not hasattr(core, "nlm_ispc") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-nlm-ispc")
 
 	core.num_threads = vs_t
 	fmt_in = input.format.id
@@ -1946,6 +2088,12 @@ def NLM_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "nlm_cuda") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-nlm-cuda")
+	if blur_m == 1 :
+		if not hasattr(core, "rgvs") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-removegrain")
+
 	core.num_threads = vs_t
 	fmt_in = input.format.id
 	blur, diff = LAYER_HIGH(input=input, blur_m=blur_m, vs_t=vs_t)
@@ -1979,6 +2127,9 @@ def COLOR_P3W_FIX(
 		raise vs.Error(f"模块 {func_name} 的子参数 linear 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "fmtc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://gitlab.com/EleonoreMizo/fmtconv")
 
 	core.num_threads = vs_t
 	colorlv = input.get_frame(0).props._ColorRange
@@ -2117,6 +2268,9 @@ def DEBAND_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "neo_f3kdb") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfAviSynthPlusEvolution/neo_f3kdb")
+
 	core.num_threads = vs_t
 	fmt_in = fmt_in = input.format.id
 	color_lv = getattr(input.get_frame(0).props, "_ColorRange", 0)
@@ -2149,6 +2303,9 @@ def DEINT_LQ(
 		raise vs.Error(f"模块 {func_name} 的子参数 tff 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "bwdif") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-Bwdif")
 
 	core.num_threads = vs_t
 
@@ -2185,6 +2342,25 @@ def DEINT_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 deint_m 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if ref_m == 1 :
+		if not hasattr(core, "znedi3") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/sekrit-twc/znedi3")
+	elif ref_m == 2 :
+		if not hasattr(core, "nnedi3cl") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-NNEDI3CL")
+	elif ref_m == 3 :
+		if not hasattr(core, "eedi3m") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-EEDI3")
+	if deint_m == 1 :
+		if not hasattr(core, "bwdif") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-Bwdif")
+	elif deint_m == 2 :
+		if not hasattr(core, "yadifmod") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-Yadifmod")
+	elif deint_m == 3 :
+		if not hasattr(core, "tdm") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-TDeintMod")
 
 	core.num_threads = vs_t
 
@@ -2247,11 +2423,14 @@ def DEINT_EX(
 
 	global qtgmc
 	if qtgmc is None :
-		import qtgmc
+		try :
+			import qtgmc
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 qtgmc")
 	if LooseVersion(qtgmc.__version__) < LooseVersion("0.0.3") :
-		raise EnvironmentError("依赖 qtgmc 的版本号过低，至少 0.0.3")
+		raise ImportError("依赖：缺失脚本 qtgmc 的版本号过低，至少 0.0.3")
 
-	output = qtgmc.QTGMCv2(input=input, fps_in=fps_in, obs=obs, deint_lv=deint_lv, src_type=src_type, deint_den=deint_den, tff=tff, cpu=cpu, gpu=gpu, check=False)
+	output = qtgmc.QTGMCv2(input=input, fps_in=fps_in, obs=obs, deint_lv=deint_lv, src_type=src_type, deint_den=deint_den, tff=tff, cpu=cpu, gpu=gpu)
 
 	return output
 
@@ -2291,11 +2470,17 @@ def DPIR_DBLK_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
 	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
-		raise EnvironmentError("依赖 vsmlrt 的版本号过低，至少 3.18.1")
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.1")
 
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
@@ -2368,6 +2553,13 @@ def EDI_AA_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if cpu :
+		if not hasattr(core, "znedi3") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/sekrit-twc/znedi3")
+	else :
+		if not hasattr(core, "nnedi3cl") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/HomeOfVapourSynthEvolution/VapourSynth-NNEDI3CL")
+
 	core.num_threads = vs_t
 	w_in, h_in = input.width, input.height
 
@@ -2410,6 +2602,9 @@ def EDI_AA_NV(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "eedi2cuda") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/hooke007/VapourSynth-EEDI2CUDA")
+
 	core.num_threads = vs_t
 
 	output = core.eedi2cuda.AA2(clip=input, mthresh=10, lthresh=20, vthresh=20, estr=2, dstr=4, maxd=24, map=0, nt=50, pp=1, num_streams=gpu_t, device_id=gpu)
@@ -2436,6 +2631,13 @@ def IVTC_STD(
 		raise vs.Error(f"模块 {func_name} 的子参数 ivtc_m 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if ivtc_m == 1 :
+		if not hasattr(core, "vivtc") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vivtc")
+	elif ivtc_m == 2 :
+		if not hasattr(core, "tivtc") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-tivtc")
 
 	core.num_threads = vs_t
 	if fps_in <= 24 or fps_in >= 31 or (fps_in >= 26 and fps_in <= 29) :
@@ -2470,6 +2672,15 @@ def STAB_STD(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "focus2") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-temporalsoften2")
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
+	if not hasattr(core, "misc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-miscfilters-obsolete")
+	if not hasattr(core, "rgvs") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-removegrain")
+
 	core.num_threads = vs_t
 
 	threshold = 255 << (input.format.bits_per_sample - 8)
@@ -2496,6 +2707,13 @@ def STAB_HQ(
 		raise vs.Error(f"模块 {func_name} 的子参数 input 的值无效")
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
+
+	if not hasattr(core, "mv") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/dubhater/vapoursynth-mvtools")
+	if not hasattr(core, "misc") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-miscfilters-obsolete")
+	if not hasattr(core, "rgvs") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/vapoursynth/vs-removegrain")
 
 	core.num_threads = vs_t
 
@@ -2557,9 +2775,20 @@ def UAI_DML(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "ort") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+	if clamp :
+		if not hasattr(core, "akarin") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AkarinVS/vapoursynth-plugin")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
+	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.15.25") :
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.15.25")
 
 	core.num_threads = vs_t
 	fmt_in = input.format.id
@@ -2626,9 +2855,20 @@ def UAI_NV_TRT(
 	if not isinstance(vs_t, int) or vs_t > vs_thd_init :
 		raise vs.Error(f"模块 {func_name} 的子参数 vs_t 的值无效")
 
+	if not hasattr(core, "trt") :
+		raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AmusementClub/vs-mlrt")
+	if clamp :
+		if not hasattr(core, "akarin") :
+			raise ModuleNotFoundError("依赖：缺失插件 https://github.com/AkarinVS/vapoursynth-plugin")
+
 	global vsmlrt
 	if vsmlrt is None :
-		import vsmlrt
+		try :
+			import vsmlrt
+		except ImportError :
+			raise ImportError("依赖：缺失脚本 vsmlrt")
+	if LooseVersion(vsmlrt.__version__) < LooseVersion("3.18.1") :
+		raise ImportError("依赖：缺失脚本 vsmlrt 的版本号过低，至少 3.18.1")
 
 	core.num_threads = vs_t
 	fmt_in = input.format.id
