@@ -2870,7 +2870,8 @@ def UAI_DML(
 		if not hasattr(core, "akarin") :
 			raise ModuleNotFoundError(f"模块 {func_name} 依赖错误：缺失插件，检查项目 akarin")
 
-	mdl_pth_rel = os.path.join(vsmlrt.models_path, model_pth)
+	plg_dir = os.path.dirname(core.ort.Version()["path"]).decode()
+	mdl_pth_rel = plg_dir + "/models/" + model_pth
 	if not os.path.exists(mdl_pth_rel) and not os.path.exists(model_pth) :
 		raise vs.Error(f"模块 {func_name} 所请求的模型缺失")
 	mdl_pth = mdl_pth_rel if os.path.exists(mdl_pth_rel) else model_pth
@@ -2955,7 +2956,8 @@ def UAI_NV_TRT(
 		if not hasattr(core, "akarin") :
 			raise ModuleNotFoundError(f"模块 {func_name} 依赖错误：缺失插件，检查项目 akarin")
 
-	mdl_pth_rel = os.path.join(vsmlrt.models_path, model_pth)
+	plg_dir = os.path.dirname(core.trt.Version()["path"]).decode()
+	mdl_pth_rel = plg_dir + "/models/" + model_pth
 	if not os.path.exists(mdl_pth_rel) and not os.path.exists(model_pth) :
 		raise vs.Error(f"模块 {func_name} 所请求的模型缺失")
 	mdl_pth = mdl_pth_rel if os.path.exists(mdl_pth_rel) else model_pth
