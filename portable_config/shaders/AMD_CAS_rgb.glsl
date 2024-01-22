@@ -19,7 +19,7 @@
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC AMD-CAS_rgb (Relinearization)
+//!DESC [AMD_CAS_rgb] (Relinearization)
 
 // User variables - Relinearization
 // Compatibility
@@ -85,7 +85,7 @@ vec4 hook() {
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC AMD-CAS_rgb
+//!DESC [AMD_CAS_rgb]
 
 // User variables
 // Intensity

@@ -23,7 +23,7 @@
 //!HOOK POSTKERNEL
 //!BIND POSTKERNEL
 //!BIND PREKERNEL
-//!DESC Pixel Clipper (Upscaling AR)
+//!DESC [PixelClipper] (Upscaling AR)
 //!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 > POSTKERNEL.h PREKERNEL.h / 1.000 > *
 
 #define TWELVE_TAP_AR 0
@@ -92,7 +92,7 @@ vec4 hook() {
 //!HOOK CHROMA_SCALED
 //!BIND CHROMA
 //!BIND CHROMA_SCALED
-//!DESC Pixel Clipper (Chroma AR)
+//!DESC [PixelClipper] (Chroma AR)
 //!WHEN CHROMA_SCALED.w CHROMA.w / 1.000 > CHROMA_SCALED.h CHROMA.h / 1.000 > *
 
 #define TWELVE_TAP_AR 0
@@ -161,7 +161,7 @@ vec4 hook() {
 //!HOOK POSTKERNEL
 //!BIND PREKERNEL
 //!BIND POSTKERNEL
-//!DESC Pixel Clipper (Downscaling AR)
+//!DESC [PixelClipper] (Downscaling AR)
 //!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 < POSTKERNEL.h PREKERNEL.h / 1.000 < *
 
 const float strength = 1.0;

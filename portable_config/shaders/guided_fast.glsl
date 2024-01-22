@@ -36,7 +36,7 @@
 //!BIND HOOKED
 //!WIDTH HOOKED.w 2 /
 //!HEIGHT HOOKED.h 2 /
-//!DESC Guided filter (I)
+//!DESC [guided_fast] (I)
 //!SAVE I
 
 vec4 hook()
@@ -48,7 +48,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (P)
+//!DESC [guided_fast] (P)
 //!BIND HOOKED
 //!WIDTH I.w
 //!HEIGHT I.h
@@ -62,7 +62,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANI)
+//!DESC [guided_fast] (MEANI)
 //!BIND I
 //!SAVE MEANI
 //!WIDTH I.w 1.5 /
@@ -76,7 +76,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANP)
+//!DESC [guided_fast] (MEANP)
 //!BIND P
 //!WIDTH MEANI.w
 //!HEIGHT MEANI.h
@@ -90,7 +90,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (I_SQ)
+//!DESC [guided_fast] (I_SQ)
 //!BIND I
 //!WIDTH I.w
 //!HEIGHT I.h
@@ -104,7 +104,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (IXP)
+//!DESC [guided_fast] (IXP)
 //!BIND I
 //!BIND P
 //!WIDTH I.w
@@ -119,7 +119,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (CORRI)
+//!DESC [guided_fast] (CORRI)
 //!BIND I_SQ
 //!WIDTH MEANI.w
 //!HEIGHT MEANI.h
@@ -133,7 +133,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (CORRP)
+//!DESC [guided_fast] (CORRP)
 //!BIND IXP
 //!WIDTH MEANI.w
 //!HEIGHT MEANI.h
@@ -147,7 +147,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (A)
+//!DESC [guided_fast] (A)
 //!BIND MEANI
 //!BIND MEANP
 //!BIND CORRI
@@ -168,7 +168,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (B)
+//!DESC [guided_fast] (B)
 //!BIND A
 //!BIND MEANI
 //!BIND MEANP
@@ -184,7 +184,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANA)
+//!DESC [guided_fast] (MEANA)
 //!BIND A
 //!WIDTH MEANI.w
 //!HEIGHT MEANI.h
@@ -198,7 +198,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANB)
+//!DESC [guided_fast] (MEANB)
 //!BIND B
 //!WIDTH MEANI.w
 //!HEIGHT MEANI.h
@@ -212,7 +212,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter
+//!DESC [guided_fast]
 //!BIND HOOKED
 //!BIND MEANA
 //!BIND MEANB

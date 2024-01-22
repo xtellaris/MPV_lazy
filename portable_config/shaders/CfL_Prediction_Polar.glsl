@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 //!PARAM cfl_antiring
-//!DESC CfL Antiring Parameter
+//!DESC [CfL_Prediction_Polar] Antiring Parameter
 //!TYPE float
 //!MINIMUM 0.0
 //!MAXIMUM 1.0
@@ -34,7 +34,7 @@
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC CfL Downscaling Hermite
+//!DESC [CfL_Prediction_Polar] Downscaling Hermite
 
 #define weight hermite
 
@@ -72,7 +72,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!OFFSET ALIGN
-//!DESC CfL Upscaling UV FSR
+//!DESC [CfL_Prediction_Polar] Upscaling UV FSR
 
 #define USE_12_TAP_REGRESSION 1
 #define USE_8_TAP_REGRESSIONS 1

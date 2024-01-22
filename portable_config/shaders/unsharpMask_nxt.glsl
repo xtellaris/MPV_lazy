@@ -1,7 +1,7 @@
 //!HOOK MAIN
 //!BIND HOOKED
 //!SAVE PASS0
-//!DESC unsharp mask pass1
+//!DESC [unsharpMask_nxt] pass1
 
 vec4 hook() {
     return linearize(textureLod(HOOKED_raw, HOOKED_pos, 0.0) * HOOKED_mul);
@@ -10,7 +10,7 @@ vec4 hook() {
 //!HOOK MAIN
 //!BIND PASS0
 //!SAVE PASS1
-//!DESC unsharp mask pass2
+//!DESC [unsharpMask_nxt] pass2
 
 ////////////////////////////////////////////////////////////////////////
 // USER CONFIGURABLE, PASS 2 (blur in y axis)
@@ -39,7 +39,7 @@ vec4 hook() {
 //!HOOK MAIN
 //!BIND PASS0
 //!BIND PASS1
-//!DESC unsharp mask pass3
+//!DESC [unsharpMask_nxt] pass3
 
 ////////////////////////////////////////////////////////////////////////
 // USER CONFIGURABLE, PASS 3 (blur in x axis and aply unsharp mask)

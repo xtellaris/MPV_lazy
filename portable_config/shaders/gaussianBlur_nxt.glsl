@@ -1,7 +1,7 @@
 //!HOOK MAIN
 //!BIND HOOKED
 //!SAVE PASS0
-//!DESC gaussian blur pass1
+//!DESC [gaussianBlur_nxt] pass1
 
 vec4 hook() {
     return linearize(textureLod(HOOKED_raw, HOOKED_pos, 0.0) * HOOKED_mul);
@@ -10,7 +10,7 @@ vec4 hook() {
 //!HOOK MAIN
 //!BIND PASS0
 //!SAVE PASS1
-//!DESC gaussian blur pass2
+//!DESC [gaussianBlur_nxt] pass2
 
 ////////////////////////////////////////////////////////////////////////
 // USER CONFIGURABLE, PASS 2 (blur in y axis)
@@ -38,7 +38,7 @@ vec4 hook() {
 
 //!HOOK MAIN
 //!BIND PASS1
-//!DESC gaussian blur pass3
+//!DESC [gaussianBlur_nxt] pass3
 
 ////////////////////////////////////////////////////////////////////////
 // USER CONFIGURABLE, PASS 3 (blur in x axis)

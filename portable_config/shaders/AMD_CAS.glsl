@@ -40,7 +40,7 @@
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC FidelityFX Sharpening (Relinearization)
+//!DESC [AMD_CAS] FidelityFX Sharpening (Relinearization)
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 > ! OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 < ! *
 
 // User variables - Relinearization
@@ -99,7 +99,7 @@ vec4 hook() {
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC FidelityFX Sharpening
+//!DESC [AMD_CAS] FidelityFX Sharpening
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 > ! OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 < ! *
 
 // User variables

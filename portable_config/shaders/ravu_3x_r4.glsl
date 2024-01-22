@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU-3x (luma, r4)
+//!DESC [ravu_3x_r4] (luma, r4)
 //!HOOK LUMA
 //!BIND HOOKED
 //!BIND ravu_3x_lut4

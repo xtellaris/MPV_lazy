@@ -19,7 +19,7 @@
 
 //!HOOK MAIN
 //!BIND HOOKED
-//!DESC AMD-CAS-scaled_rgb (Relinearization)
+//!DESC [AMD_CAS_scaled_rgb] (Relinearization)
 //!WHEN OUTPUT.w OUTPUT.h * MAIN.w MAIN.h * / 1.0 >
 
 // User variables - Relinearization
@@ -86,7 +86,7 @@ vec4 hook() {
 
 //!HOOK MAIN
 //!BIND HOOKED
-//!DESC AMD-CAS-scaled_rgb
+//!DESC [AMD_CAS_scaled_rgb]
 //!WHEN OUTPUT.w OUTPUT.h * MAIN.w MAIN.h * / 1.0 >
 //!WIDTH OUTPUT.w
 //!HEIGHT OUTPUT.h

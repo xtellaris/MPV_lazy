@@ -48,7 +48,7 @@
 //!HOOK LUMA
 //!HOOK CHROMA
 //!BIND HOOKED
-//!DESC Non-local means (nlmeans.glsl)
+//!DESC [nlmeans_temporal] (nlmeans.glsl)
 //!SAVE G
 
 
@@ -1382,7 +1382,7 @@ vec4 hook()
 //!BIND G
 //!WIDTH G.w
 //!HEIGHT G.h
-//!DESC Non-local means (Guide, share)
+//!DESC [nlmeans_temporal] (Guide, share)
 //!SAVE GC
 
 vec4 hook()
@@ -1397,7 +1397,7 @@ vec4 hook()
 //!BIND GC
 //!BIND PREV1
 //!BIND PREV2
-//!DESC Non-local means (nlmeans_temporal.glsl)
+//!DESC [nlmeans_temporal] (nlmeans_temporal.glsl)
 
 
 

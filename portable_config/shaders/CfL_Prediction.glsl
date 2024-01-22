@@ -27,7 +27,7 @@
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma)
+//!DESC [CfL_Prediction] (Downscaling Luma)
 
 vec4 hook() {
     return LUMA_texOff(0.0);
@@ -41,7 +41,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!OFFSET ALIGN
-//!DESC Chroma From Luma Prediction (Upscaling Chroma)
+//!DESC [CfL_Prediction] (Upscaling Chroma)
 
 #define USE_12_TAP_REGRESSION 1
 #define USE_8_TAP_REGRESSIONS 1

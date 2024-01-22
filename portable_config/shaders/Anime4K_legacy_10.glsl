@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!DESC anime-sharpen_10 (Luma)
+//!DESC [Anime4K_legacy_10] (Luma)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -35,7 +35,7 @@ vec4 hook() {
 	return HOOKED_tex(HOOKED_pos);
 }
 
-//!DESC anime-sharpen_10 (ComputeGaussianX)
+//!DESC [Anime4K_legacy_10] (ComputeGaussianX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -62,7 +62,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10 (ComputeGaussianY)
+//!DESC [Anime4K_legacy_10] (ComputeGaussianY)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -89,7 +89,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10 (LineDetect)
+//!DESC [Anime4K_legacy_10] (LineDetect)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -117,7 +117,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10 (ComputeLineGaussianX)
+//!DESC [Anime4K_legacy_10] (ComputeLineGaussianX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -145,7 +145,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10 (ComputeLineGaussianY)
+//!DESC [Anime4K_legacy_10] (ComputeLineGaussianY)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -172,7 +172,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10 (ComputeGradientX)
+//!DESC [Anime4K_legacy_10] (ComputeGradientX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -208,7 +208,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10 (ComputeGradientY)
+//!DESC [Anime4K_legacy_10] (ComputeGradientY)
 //!HOOK LUMA
 //!BIND HOOKED
 //!BIND LUMAX
@@ -250,7 +250,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10 (ThinLines)
+//!DESC [Anime4K_legacy_10] (ThinLines)
 //!HOOK SCALED
 //!BIND HOOKED
 //!BIND LUMA
@@ -371,7 +371,7 @@ vec4 hook()  {
 }
 
 
-//!DESC anime-sharpen_10 (Refine)
+//!DESC [Anime4K_legacy_10] (Refine)
 //!HOOK SCALED
 //!BIND HOOKED
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
@@ -487,7 +487,7 @@ vec4 hook()  {
 //Fast FXAA (1 Iteration) courtesy of Geeks3D
 //https://www.geeks3d.com/20110405/fxaa-fast-approximate-anti-aliasing-demo-glsl-opengl-test-radeon-geforce/3/
 
-//!DESC anime-sharpen_10 (PostFXAA)
+//!DESC [Anime4K_legacy_10] (PostFXAA)
 //!HOOK SCALED
 //!BIND HOOKED
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *

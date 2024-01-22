@@ -28,7 +28,7 @@
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC NVIDIA Image Sharpening v1.0.2
+//!DESC [NVSharpen] NVIDIA Image Sharpening v1.0.2
 //!COMPUTE 32 32 256 1
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 > ! OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 < ! *
 

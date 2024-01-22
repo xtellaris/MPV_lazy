@@ -25,7 +25,7 @@
 //!BIND HOOKED
 //!BIND coef_scaler
 //!BIND coef_usm
-//!DESC NVScaler_rgb
+//!DESC [NVScaler_rgb]
 //!COMPUTE 32 24 256 1
 //!WHEN OUTPUT.w OUTPUT.h * MAIN.w MAIN.h * / 1.0 >
 //!WIDTH OUTPUT.w

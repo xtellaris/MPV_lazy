@@ -1,6 +1,6 @@
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP feature map 1
+//!DESC [TsubaUP] feature map 1
 //!BIND LUMA
 //!SAVE FEATURE1
 //!COMPONENTS 4
@@ -37,7 +37,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP feature map 2
+//!DESC [TsubaUP] feature map 2
 //!BIND LUMA
 //!SAVE FEATURE2
 //!COMPONENTS 4
@@ -74,7 +74,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP feature map 3
+//!DESC [TsubaUP] feature map 3
 //!BIND LUMA
 //!SAVE FEATURE3
 //!COMPONENTS 4
@@ -111,7 +111,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 1_1
+//!DESC [TsubaUP] mapping 1_1
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -153,7 +153,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 1_2
+//!DESC [TsubaUP] mapping 1_2
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -195,7 +195,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 1_3
+//!DESC [TsubaUP] mapping 1_3
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -237,7 +237,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 2_1
+//!DESC [TsubaUP] mapping 2_1
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -279,7 +279,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 2_2
+//!DESC [TsubaUP] mapping 2_2
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -321,7 +321,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 2_3
+//!DESC [TsubaUP] mapping 2_3
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -363,7 +363,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 3_1
+//!DESC [TsubaUP] mapping 3_1
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -405,7 +405,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 3_2
+//!DESC [TsubaUP] mapping 3_2
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -447,7 +447,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 3_3
+//!DESC [TsubaUP] mapping 3_3
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -489,7 +489,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 4_1
+//!DESC [TsubaUP] mapping 4_1
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -531,7 +531,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 4_2
+//!DESC [TsubaUP] mapping 4_2
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -573,7 +573,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP mapping 4_3
+//!DESC [TsubaUP] mapping 4_3
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -615,7 +615,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP sub-band residuals 1
+//!DESC [TsubaUP] sub-band residuals 1
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -635,7 +635,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP sub-band residuals 2
+//!DESC [TsubaUP] sub-band residuals 2
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -655,7 +655,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP sub-band residuals 3
+//!DESC [TsubaUP] sub-band residuals 3
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -675,7 +675,7 @@ return res;
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC TsubaUP sub-pixel convolution 1
+//!DESC [TsubaUP] sub-pixel convolution 1
 //!BIND RES1
 //!BIND RES2
 //!BIND RES3
@@ -718,7 +718,7 @@ return vec4(res);
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
 //!WIDTH LUMA.w 2 *
 //!HEIGHT LUMA.h 2 *
-//!DESC TsubaUP aggregation
+//!DESC [TsubaUP] aggregation
 //!BIND SUBCONV1
 vec4 hook()
 {

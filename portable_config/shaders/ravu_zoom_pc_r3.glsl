@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU-Zoom-PC (luma, r3)
+//!DESC [ravu_zoom_pc_r3] (luma, r3)
 //!HOOK LUMA
 //!BIND HOOKED
 //!BIND ravu_zoom_lut3

@@ -7,7 +7,7 @@
 //!MAXIMUM 10
 1
 
-//!DESC unsharp_masking_next
+//!DESC [unsharp_masking_nxt]
 //!HOOK MAIN
 //!BIND HOOKED
 

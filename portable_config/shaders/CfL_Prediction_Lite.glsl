@@ -27,7 +27,7 @@
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Chroma From Luma Prediction (Downscaling Luma)
+//!DESC [CfL_Prediction_Lite] (Downscaling Luma)
 
 vec4 hook() {
     return LUMA_texOff(0.0);
@@ -41,7 +41,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!OFFSET ALIGN
-//!DESC Chroma From Luma Prediction (Upscaling Chroma)
+//!DESC [CfL_Prediction_Lite] (Upscaling Chroma)
 
 #define DEBUG 0
 

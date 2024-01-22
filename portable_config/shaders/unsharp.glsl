@@ -1,5 +1,5 @@
 
-//!DESC unsharp
+//!DESC [unsharp]
 //!HOOK SCALED  
 //!BIND HOOKED
 

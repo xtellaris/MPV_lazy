@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU-Zoom (chroma, r3, compute)
+//!DESC [ravu_zoom_r3_chroma_ddx] (chroma, r3, compute)
 //!HOOK CHROMA
 //!BIND HOOKED
 //!BIND ravu_zoom_lut3

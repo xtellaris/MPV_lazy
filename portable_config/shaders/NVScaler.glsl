@@ -31,7 +31,7 @@
 //!BIND HOOKED
 //!BIND coef_scaler
 //!BIND coef_usm
-//!DESC NVIDIA Image Scaling and Sharpening v1.0.2
+//!DESC [NVScaler] NVIDIA Image Scaling and Sharpening v1.0.2
 //!COMPUTE 32 24 256 1
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 >
 //!WIDTH OUTPUT.w

@@ -27,7 +27,7 @@
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC Fast Bilateral (Downscaling Luma)
+//!DESC [FastBilateral_nxt] (Downscaling Luma)
 
 vec4 hook() {
     return LUMA_texOff(0.0);
@@ -51,7 +51,7 @@ vec4 hook() {
 //!HEIGHT LUMA.h
 //!WHEN CHROMA.w LUMA.w <
 //!OFFSET ALIGN
-//!DESC Fast Bilateral (Upscaling Chroma)
+//!DESC [FastBilateral_nxt] (Upscaling Chroma)
 
 float comp_w(vec2 spatial_distance, float intensity_distance) {
     return max(exp(-distance_coeff * pow(length(spatial_distance), 2.0) - intensity_coeff * pow(intensity_distance, 2.0)), 1e-32);

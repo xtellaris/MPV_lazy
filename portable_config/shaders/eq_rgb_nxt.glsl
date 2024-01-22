@@ -17,7 +17,7 @@
 //!MAXIMUM 1
 0.0591
 
-//!DESC [eq_rgb_next]
+//!DESC [eq_rgb_nxt]
 //!HOOK MAIN
 //!BIND HOOKED
 

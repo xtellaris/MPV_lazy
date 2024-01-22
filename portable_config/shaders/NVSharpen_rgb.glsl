@@ -23,7 +23,7 @@
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC NVIDIA Image Sharpening v1.0.2
+//!DESC [NVSharpen_rgb] NVIDIA Image Sharpening v1.0.2
 //!COMPUTE 32 32 256 1
 
 // User variables

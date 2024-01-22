@@ -1,5 +1,5 @@
 
-//!DESC color levels + (LUMA)
+//!DESC [colorlevel_expand_luma]
 //!HOOK LUMA
 //!BIND HOOKED
 

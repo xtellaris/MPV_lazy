@@ -5,7 +5,7 @@
 //!COMPONENTS 1
 //!BIND LUMA
 //!SAVE LANCZOS3
-//!DESC (AU_M_S_3x_LA) lanczos3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] lanczos3
 
 #define FIX(c)		max(abs(c), 1e-5)
 #define PI		3.141592653
@@ -50,7 +50,7 @@ vec4 hook()
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE1
-//!DESC (AU_M_S_3x_LA) feature map 1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 1
 
 vec4 hook()
 {
@@ -89,7 +89,7 @@ return res;
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE2
-//!DESC (AU_M_S_3x_LA) feature map 2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 2
 
 vec4 hook()
 {
@@ -128,7 +128,7 @@ return res;
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE3
-//!DESC (AU_M_S_3x_LA) feature map 3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 3
 
 vec4 hook()
 {
@@ -167,7 +167,7 @@ return res;
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE4
-//!DESC (AU_M_S_3x_LA) feature map 4
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 4
 
 vec4 hook()
 {
@@ -206,7 +206,7 @@ return res;
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE5
-//!DESC (AU_M_S_3x_LA) feature map 5
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 5
 
 vec4 hook()
 {
@@ -245,7 +245,7 @@ return res;
 //!COMPONENTS 4
 //!BIND LUMA
 //!SAVE FEATURE6
-//!DESC (AU_M_S_3x_LA) feature map 6
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] feature map 6
 
 vec4 hook()
 {
@@ -289,7 +289,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL1
-//!DESC (AU_M_S_3x_LA) mapping 1_1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_1
 
 vec4 hook()
 {
@@ -362,7 +362,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL2
-//!DESC (AU_M_S_3x_LA) mapping 1_2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_2
 
 vec4 hook()
 {
@@ -435,7 +435,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL3
-//!DESC (AU_M_S_3x_LA) mapping 1_3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_3
 
 vec4 hook()
 {
@@ -508,7 +508,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL4
-//!DESC (AU_M_S_3x_LA) mapping 1_4
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_4
 
 vec4 hook()
 {
@@ -581,7 +581,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL5
-//!DESC (AU_M_S_3x_LA) mapping 1_5
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_5
 
 vec4 hook()
 {
@@ -654,7 +654,7 @@ return res;
 //!BIND FEATURE5
 //!BIND FEATURE6
 //!SAVE MODEL6
-//!DESC (AU_M_S_3x_LA) mapping 1_6
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 1_6
 
 vec4 hook()
 {
@@ -727,7 +727,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL7
-//!DESC (AU_M_S_3x_LA) mapping 2_1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_1
 
 vec4 hook()
 {
@@ -800,7 +800,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL8
-//!DESC (AU_M_S_3x_LA) mapping 2_2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_2
 
 vec4 hook()
 {
@@ -873,7 +873,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL9
-//!DESC (AU_M_S_3x_LA) mapping 2_3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_3
 
 vec4 hook()
 {
@@ -946,7 +946,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL10
-//!DESC (AU_M_S_3x_LA) mapping 2_4
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_4
 
 vec4 hook()
 {
@@ -1019,7 +1019,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL11
-//!DESC (AU_M_S_3x_LA) mapping 2_5
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_5
 
 vec4 hook()
 {
@@ -1092,7 +1092,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL12
-//!DESC (AU_M_S_3x_LA) mapping 2_6
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 2_6
 
 vec4 hook()
 {
@@ -1165,7 +1165,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL1
-//!DESC (AU_M_S_3x_LA) mapping 3_1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_1
 
 vec4 hook()
 {
@@ -1238,7 +1238,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL2
-//!DESC (AU_M_S_3x_LA) mapping 3_2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_2
 
 vec4 hook()
 {
@@ -1311,7 +1311,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL3
-//!DESC (AU_M_S_3x_LA) mapping 3_3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_3
 
 vec4 hook()
 {
@@ -1384,7 +1384,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL4
-//!DESC (AU_M_S_3x_LA) mapping 3_4
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_4
 
 vec4 hook()
 {
@@ -1457,7 +1457,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL5
-//!DESC (AU_M_S_3x_LA) mapping 3_5
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_5
 
 vec4 hook()
 {
@@ -1530,7 +1530,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE MODEL6
-//!DESC (AU_M_S_3x_LA) mapping 3_6
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 3_6
 
 vec4 hook()
 {
@@ -1603,7 +1603,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL7
-//!DESC (AU_M_S_3x_LA) mapping 4_1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_1
 
 vec4 hook()
 {
@@ -1676,7 +1676,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL8
-//!DESC (AU_M_S_3x_LA) mapping 4_2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_2
 
 vec4 hook()
 {
@@ -1749,7 +1749,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL9
-//!DESC (AU_M_S_3x_LA) mapping 4_3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_3
 
 vec4 hook()
 {
@@ -1822,7 +1822,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL10
-//!DESC (AU_M_S_3x_LA) mapping 4_4
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_4
 
 vec4 hook()
 {
@@ -1895,7 +1895,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL11
-//!DESC (AU_M_S_3x_LA) mapping 4_5
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_5
 
 vec4 hook()
 {
@@ -1968,7 +1968,7 @@ return res;
 //!BIND MODEL5
 //!BIND MODEL6
 //!SAVE MODEL12
-//!DESC (AU_M_S_3x_LA) mapping 4_6
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] mapping 4_6
 
 vec4 hook()
 {
@@ -2041,7 +2041,7 @@ return res;
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE SUBCONV1
-//!DESC (AU_M_S_3x_LA) sub-pixel convolution 1
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] sub-pixel convolution 1
 
 vec4 hook()
 {
@@ -2113,7 +2113,7 @@ return vec4(res, 0);
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE SUBCONV2
-//!DESC (AU_M_S_3x_LA) sub-pixel convolution 2
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] sub-pixel convolution 2
 
 vec4 hook()
 {
@@ -2185,7 +2185,7 @@ return vec4(res, 0);
 //!BIND MODEL11
 //!BIND MODEL12
 //!SAVE SUBCONV3
-//!DESC (AU_M_S_3x_LA) sub-pixel convolution 3
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] sub-pixel convolution 3
 
 vec4 hook()
 {
@@ -2255,7 +2255,7 @@ return vec4(res, 0);
 //!BIND SUBCONV2
 //!BIND SUBCONV3
 //!BIND LANCZOS3
-//!DESC (AU_M_S_3x_LA) depth to space
+//!DESC [AiUpscale_Medium_Sharp_3x_LineArt] depth to space
 
 vec4 hook()
 {

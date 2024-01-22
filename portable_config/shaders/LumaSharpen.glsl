@@ -13,7 +13,7 @@
 // -- Hooks --
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC LumaSharpen
+//!DESC [LumaSharpen]
 
 
 // -- Sharpening --

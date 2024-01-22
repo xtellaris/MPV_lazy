@@ -37,7 +37,7 @@
 
 //!HOOK MAINPRESUB
 //!BIND HOOKED
-//!DESC Bidirectional Nonlinear Stretch
+//!DESC [NLS_nxt] Bidirectional Nonlinear Stretch
 
 vec2 stretch(vec2 pos, float h_par, float v_par)
 {

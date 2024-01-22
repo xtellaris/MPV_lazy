@@ -1,4 +1,4 @@
-//!DESC MinBlur-USM
+//!DESC [minblur_usm]
 //!HOOK LUMA
 //!BIND HOOKED
 

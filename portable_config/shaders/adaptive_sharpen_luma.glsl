@@ -26,7 +26,7 @@
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC adaptive-sharpen_luma
+//!DESC [adaptive_sharpen_luma]
 
 //--------------------------------------- Settings ------------------------------------------------
 

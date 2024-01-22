@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU-Zoom-AR (yuv, r2, compute)
+//!DESC [ravu_zoom_ar_r2_yuv_ddx] (yuv, r2, compute)
 //!HOOK NATIVE
 //!BIND HOOKED
 //!BIND ravu_zoom_lut2

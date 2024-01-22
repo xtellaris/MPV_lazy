@@ -1,5 +1,5 @@
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) feature map 1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] feature map 1
 //!BIND LUMA
 //!SAVE FEATURE1
 //!COMPONENTS 4
@@ -35,7 +35,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) feature map 2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] feature map 2
 //!BIND LUMA
 //!SAVE FEATURE2
 //!COMPONENTS 4
@@ -71,7 +71,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) feature map 3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] feature map 3
 //!BIND LUMA
 //!SAVE FEATURE3
 //!COMPONENTS 4
@@ -107,7 +107,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) feature map 4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] feature map 4
 //!BIND LUMA
 //!SAVE FEATURE4
 //!COMPONENTS 4
@@ -143,7 +143,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 1_1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 1_1
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -194,7 +194,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 1_2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 1_2
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -245,7 +245,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 1_3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 1_3
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -296,7 +296,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 1_4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 1_4
 //!BIND FEATURE1
 //!BIND FEATURE2
 //!BIND FEATURE3
@@ -347,7 +347,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 2_1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 2_1
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -398,7 +398,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 2_2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 2_2
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -449,7 +449,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 2_3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 2_3
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -500,7 +500,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 2_4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 2_4
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -551,7 +551,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 3_1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 3_1
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -602,7 +602,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 3_2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 3_2
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -653,7 +653,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 3_3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 3_3
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -704,7 +704,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 3_4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 3_4
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -755,7 +755,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 4_1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 4_1
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -806,7 +806,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 4_2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 4_2
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -857,7 +857,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 4_3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 4_3
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -908,7 +908,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) mapping 4_4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] mapping 4_4
 //!BIND MODEL21
 //!BIND MODEL22
 //!BIND MODEL23
@@ -959,7 +959,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) sub-band residuals 1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] sub-band residuals 1
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -980,7 +980,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) sub-band residuals 2
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] sub-band residuals 2
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -1001,7 +1001,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) sub-band residuals 3
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] sub-band residuals 3
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -1022,7 +1022,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) sub-band residuals 4
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] sub-band residuals 4
 //!BIND MODEL1
 //!BIND MODEL2
 //!BIND MODEL3
@@ -1043,7 +1043,7 @@ return res;
 }
 
 //!HOOK LUMA
-//!DESC (FSRCNNX_x1_16_0_4_1_anime_distort) sub-pixel convolution 1
+//!DESC [FSRCNNX_x1_16_0_4_1_anime_distort] sub-pixel convolution 1
 //!BIND RES1
 //!BIND RES2
 //!BIND RES3

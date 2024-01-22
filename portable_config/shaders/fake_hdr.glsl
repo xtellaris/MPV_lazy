@@ -5,7 +5,7 @@ Source: igv_faux-HDR
 //!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMA
-//!DESC sdr2hdr(fake)
+//!DESC [fake_hdr]
 
 #define saturation                      0.9   // 1.0
 #define gamma                           1.1   // 1.0 // 1.3

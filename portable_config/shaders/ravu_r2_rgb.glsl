@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU (step1, rgb, r2, compute)
+//!DESC [ravu_r2_rgb] (step1, rgb, r2, compute)
 //!HOOK MAIN
 //!BIND HOOKED
 //!BIND ravu_lut2
@@ -126,7 +126,7 @@ res = clamp(res, 0.0, 1.0);
 imageStore(out_image, ivec2(gl_GlobalInvocationID), vec4(res, 1.0));
 }
 }
-//!DESC RAVU (step2, rgb, r2, compute)
+//!DESC [ravu_r2_rgb] (step2, rgb, r2, compute)
 //!HOOK MAIN
 //!BIND HOOKED
 //!BIND ravu_lut2
