@@ -1,11 +1,13 @@
+
+// Maximum resolution
 //!PARAM res
-//!DESC [fast_gaussian_blur_nxt] Maximum resolution
 //!TYPE DEFINE
 //!MINIMUM 64
+//!MAXIMUM 4096
 1024
 
+// Number of blur passes
 //!PARAM passes
-//!DESC [fast_gaussian_blur_nxt] Number of blur passes
 //!TYPE DEFINE
 //!MINIMUM 0
 //!MAXIMUM 8

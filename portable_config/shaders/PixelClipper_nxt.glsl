@@ -20,15 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//!PARAM TAPS_scale
+//!TYPE int
+//!MINIMUM 0
+//!MAXIMUM 1
+0
+
+//!PARAM TAPS_cscale
+//!TYPE int
+//!MINIMUM 0
+//!MAXIMUM 1
+0
+
+//!PARAM CLIP_scale
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 1.0
+0.8
+
+//!PARAM CLIP_cscale
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 1.0
+0.8
+
+//!PARAM CLIP_dscale
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 1.0
+1.0
+
 //!HOOK POSTKERNEL
 //!BIND POSTKERNEL
 //!BIND PREKERNEL
-//!DESC [PixelClipper] (Upscaling AR)
+//!DESC [PixelClipper_nxt] (Upscaling AR)
 //!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 > POSTKERNEL.h PREKERNEL.h / 1.000 > *
 
-#define TWELVE_TAP_AR 0
+#define TWELVE_TAP_AR TAPS_scale
 
-const float strength = 0.8;
+const float strength = CLIP_scale;
 
 vec4 hook() {
     vec2 pp = PREKERNEL_pos * PREKERNEL_size - vec2(0.5);
@@ -92,12 +122,12 @@ vec4 hook() {
 //!HOOK CHROMA_SCALED
 //!BIND CHROMA
 //!BIND CHROMA_SCALED
-//!DESC [PixelClipper] (Chroma AR)
+//!DESC [PixelClipper_nxt] (Chroma AR)
 //!WHEN CHROMA_SCALED.w CHROMA.w / 1.000 > CHROMA_SCALED.h CHROMA.h / 1.000 > *
 
-#define TWELVE_TAP_AR 0
+#define TWELVE_TAP_AR TAPS_cscale
 
-const float strength = 0.8;
+const float strength = CLIP_cscale;
 
 vec4 hook() {
     vec2 pp = CHROMA_pos * CHROMA_size - vec2(0.5);
@@ -161,10 +191,10 @@ vec4 hook() {
 //!HOOK POSTKERNEL
 //!BIND PREKERNEL
 //!BIND POSTKERNEL
-//!DESC [PixelClipper] (Downscaling AR)
+//!DESC [PixelClipper_nxt] (Downscaling AR)
 //!WHEN POSTKERNEL.w PREKERNEL.w / 1.000 < POSTKERNEL.h PREKERNEL.h / 1.000 < *
 
-const float strength = 1.0;
+const float strength = CLIP_dscale;
 
 vec4 hook() {
     int radius = int(ceil((PREKERNEL_size.x / POSTKERNEL_size.x) * 0.5));
@@ -184,3 +214,4 @@ vec4 hook() {
     vec4 clipped = clamp(lr_pix, min_pix, max_pix);
     return mix(lr_pix, clipped, strength);
 }
+

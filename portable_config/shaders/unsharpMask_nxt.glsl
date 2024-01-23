@@ -1,3 +1,28 @@
+
+//!PARAM BLUR
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 10.0
+1.0
+
+//!PARAM RAD
+//!TYPE int
+//!MINIMUM 1
+//!MAXIMUM 10
+2
+
+//!PARAM SHARP
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 10.0
+0.5
+
+//!PARAM THR
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 10.0
+0.0
+
 //!HOOK MAIN
 //!BIND HOOKED
 //!SAVE PASS0
@@ -17,8 +42,8 @@ vec4 hook() {
 //
 // CAUTION! probably should use the same settings for "USER CONFIGURABLE, PASS 3" below
 //
-#define SIGMA 1.0 //blur spread or amount, (0.0, 10+]
-#define RADIUS 2.0 //kernel radius (integer as float, e.g. 3.0), (0.0, 10+]
+#define SIGMA    BLUR   //blur spread or amount, (0.0, 10+]
+#define RADIUS   RAD    //kernel radius (integer as float, e.g. 3.0), (0.0, 10+]
 //
 ////////////////////////////////////////////////////////////////////////
 
@@ -46,12 +71,12 @@ vec4 hook() {
 //
 // CAUTION! probably should use the same settings for "USER CONFIGURABLE, PASS 2" above
 //
-#define SIGMA 1.0 //blur spread or amount, (0.0, 10+]
-#define RADIUS 2.0 //kernel radius (integer as float, e.g. 3.0), (0.0, 10+]
+#define SIGMA       BLUR    //blur spread or amount, (0.0, 10+]
+#define RADIUS      RAD     //kernel radius (integer as float, e.g. 3.0), (0.0, 10+]
 //
 //sharpnes
-#define AMOUNT 0.5 //amount of sharpening [0.0, 10+]
-#define THRESHOLD 0.0 //sets the minimum contrast for sharpening (e.g. 0.1), [0.0, 1.0]
+#define AMOUNT      SHARP   //amount of sharpening [0.0, 10+]
+#define THRESHOLD   THR     //sets the minimum contrast for sharpening (e.g. 0.1), [0.0, 1.0]
 //
 ////////////////////////////////////////////////////////////////////////
 
@@ -72,3 +97,4 @@ vec4 hook() {
         return delinearize(original + mask * AMOUNT);
     return delinearize(original);
 }
+

@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!PARAM cfl_antiring
-//!DESC [CfL_Prediction_Polar] Antiring Parameter
+//!PARAM AR
 //!TYPE float
 //!MINIMUM 0.0
 //!MAXIMUM 1.0
@@ -34,31 +33,52 @@
 //!WIDTH CHROMA.w
 //!HEIGHT CHROMA.h
 //!WHEN CHROMA.w LUMA.w <
-//!DESC [CfL_Prediction_Polar] Downscaling Hermite
+//!DESC [CfL_Prediction_Polar_nxt] Downscaling Y Box
 
-#define weight hermite
+#define weight box
 
-float box(const vec2 d)      { return float(length(d) <= 0.5); }
-float triangle(const vec2 d) { return max(1.0 - 2.0 * length(d), 0.0); }
-float hermite(const vec2 d)  { return smoothstep(0.0, 1.0, 1 - length(d)); }
-float fsr(const vec2 d) {
-    float x2  = min(dot(d, d), 4.0);
-    float x24 = x2 - 4.0;
-    return x24 * x24 * x24 * (x2 - 1.0);
+float box(const vec2 d)       { return float(length(d) <= 0.5); }
+float triangle(const vec2 d)  { return max(1.0 - length(d), 0.0); }
+float hermite(const vec2 d)   { return smoothstep(0.0, 1.0, 1 - length(d)); }
+float quadratic(const vec2 d) {
+    float x = 1.5 * length(d);
+    if (x < 0.5)
+        return(0.75 - x * x);
+    if (x < 1.5)
+        return(0.5 * (x - 1.5) * (x - 1.5));
+    return(0.0);
 }
 
-vec2  scale = LUMA_size / CHROMA_size;
-ivec2 start = ivec2(ceil(-scale - 0.5));
-ivec2 end   = ivec2(floor(scale - 0.5));
+vec2 scale  = LUMA_size / CHROMA_size;
+vec2 radius = ceil(scale);
+vec2 pp     = fract(LUMA_pos * LUMA_size - 0.5);
 
 vec4 hook() {
     vec2  d;
     float w, wsum, ysum = 0.0;
-    for(int dx = start.x; dx <= end.x; dx++) {
-        for(int dy = start.y; dy <= end.y; dy++) {
-            d = vec2(dx, dy) + 0.5;
-            wsum += w = weight(d / scale);
-            ysum += w == 0.0 ? 0.0 : w * LUMA_texOff(d).x;
+    if(bool(mod(scale.x, 2)) || bool(mod(scale.y, 2))) {
+        for(float dx = 1.0 - radius.x; dx <= radius.x; dx++) {
+            for(float dy = 1.0 - radius.y; dy <= radius.y; dy++) {
+                d = vec2(dx, dy) - pp;
+                w = weight(d / scale);
+                if (w == 0.0) { continue; }
+                wsum += w;
+                ysum += w * LUMA_texOff(d).x;
+            }
+        }
+    }
+    else {
+        for(float dx = 0; dx <= radius.x; dx++) {
+            for(float dy = 0; dy <= radius.y; dy++) {
+                d = vec2(dx, dy) + 0.5;
+                w = weight(d / scale);
+                if (w == 0.0) { continue; }
+                wsum += w * 4.0;
+                ysum += w * (LUMA_texOff(vec2( d.x, d.y)).x +
+                             LUMA_texOff(vec2(-d.x, d.y)).x +
+                             LUMA_texOff(vec2( d.x,-d.y)).x +
+                             LUMA_texOff(vec2(-d.x,-d.y)).x);
+            }
         }
     }
     return vec4(ysum / wsum, 0.0, 0.0, 1.0);
@@ -72,11 +92,10 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!OFFSET ALIGN
-//!DESC [CfL_Prediction_Polar] Upscaling UV FSR
+//!DESC [CfL_Prediction_Polar_nxt] Upscaling UV FSR
 
 #define USE_12_TAP_REGRESSION 1
 #define USE_8_TAP_REGRESSIONS 1
-#define LITE  0
 #define DEBUG 0
 
 #define weight fsr
@@ -138,42 +157,32 @@ vec4 hook() {
     }
 #endif
 
-    const int i12[12] = {1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14};
-
 #if (DEBUG == 1)
     vec2 chroma_spatial = vec2(0.5);
     mix_coeff = vec2(1.0);
 #else
+#ifdef CHROMA_HIGHRES_tex
+    vec2 chroma_spatial = CHROMA_RAVU_tex(CHROMA_RAVU_pos).xy;
+#else
     float wt = 0.0;
     vec2 ct = vec2(0.0);
-
-    vec2 chroma_min = min(min(min(chroma_pixels[5], chroma_pixels[6]), chroma_pixels[9]), chroma_pixels[10]);
-    vec2 chroma_max = max(max(max(chroma_pixels[5], chroma_pixels[6]), chroma_pixels[9]), chroma_pixels[10]);
-
     const int dx[16] = {-1, 0, 1, 2, -1, 0, 1, 2, -1, 0, 1, 2, -1, 0, 1, 2};
     const int dy[16] = {-1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2};
-
-#if (LITE == 1)
-    float wd[12];
-    for(int i = 0; i < 12; i++) {
-        wd[i] = weight(vec2(dx[i12[i]], dy[i12[i]]) - pp);
-        wt += wd[i];
-        ct += wd[i] * chroma_pixels[i12[i]];
-    }
-#else
     float wd[16];
     for(int i = 0; i < 16; i++) {
         wd[i] = weight(vec2(dx[i], dy[i]) - pp);
         wt += wd[i];
         ct += wd[i] * chroma_pixels[i];
     }
-#endif
-
     vec2 chroma_spatial = ct / wt;
-    chroma_spatial = clamp(mix(chroma_spatial, clamp(chroma_spatial, chroma_min, chroma_max), cfl_antiring), 0.0, 1.0);
+    vec2 chroma_min = min(min(min(chroma_pixels[5], chroma_pixels[6]), chroma_pixels[9]), chroma_pixels[10]);
+    vec2 chroma_max = max(max(max(chroma_pixels[5], chroma_pixels[6]), chroma_pixels[9]), chroma_pixels[10]);
+    chroma_spatial = clamp(mix(chroma_spatial, clamp(chroma_spatial, chroma_min, chroma_max), AR), 0.0, 1.0);
+#endif
 #endif
 
 #if (USE_12_TAP_REGRESSION == 1 || USE_8_TAP_REGRESSIONS == 1)
+    const int i12[12] = {1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14};
     const int i4y[4] = {1, 2, 13, 14};
     const int i4x[4] = {4, 7, 8, 11};
     const int i4[4] = {5, 6, 9, 10};

@@ -26,17 +26,29 @@
 // Made it directly operate on LUMA plane, since the original shader was operating
 // on LUMA by deriving it from RGB.
 
+//!PARAM SHARP
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 1.0
+0.25
+
+//!PARAM PQ
+//!TYPE int
+//!MINIMUM 0
+//!MAXIMUM 1
+0
+
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC [NVSharpen] NVIDIA Image Sharpening v1.0.2
+//!DESC [NVSharpen_nxt] NVIDIA Image Sharpening v1.0.2
 //!COMPUTE 32 32 256 1
 
 // User variables
-#define SHARPNESS 0.25 // Amount of sharpening. 0.0 to 1.0.
-#define NIS_THREAD_GROUP_SIZE 256 // May be set to 128 for better performance on NVIDIA hardware, otherwise set to 256. Don't forget to modify the COMPUTE directive accordingly as well (e.g., COMPUTE 32 32 128 1).
-#define NIS_HDR_MODE 0 // Must be set to 1 for content with PQ colorspace. 0 or 1.
+#define SHARPNESS      SHARP   // Amount of sharpening. 0.0 to 1.0.
+#define NIS_HDR_MODE   PQ      // Must be set to 1 for content with PQ colorspace. 0 or 1.
 
 // Constant variables
+#define NIS_THREAD_GROUP_SIZE 256 // May be set to 128 for better performance on NVIDIA hardware, otherwise set to 256. Don't forget to modify the COMPUTE directive accordingly as well (e.g., COMPUTE 32 32 128 1).
 #define NIS_BLOCK_WIDTH 32
 #define NIS_BLOCK_HEIGHT 32
 #define kSupportSize 5

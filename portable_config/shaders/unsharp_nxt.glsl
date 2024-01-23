@@ -1,10 +1,22 @@
 
-//!DESC [unsharp]
+//!PARAM WIDTH
+//!TYPE float
+//!MINIMUM 0.0
+//!MAXIMUM 2.0
+1.0
+
+//!PARAM SHARP
+//!TYPE float
+//!MINIMUM -2.0
+//!MAXIMUM 2.0
+0.8
+
+//!DESC [unsharp_nxt]
 //!HOOK SCALED
 //!BIND HOOKED
 
-#define effect_width   1.0
-#define coeff_blur     0.8
+#define effect_width   WIDTH
+#define coeff_blur     SHARP
 
 #define coeff_orig (1 + coeff_blur)
 

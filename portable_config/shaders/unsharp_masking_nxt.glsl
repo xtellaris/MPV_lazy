@@ -3,9 +3,9 @@
 
 //!PARAM SHARP
 //!TYPE float
-//!MINIMUM -10
-//!MAXIMUM 10
-1
+//!MINIMUM -10.0
+//!MAXIMUM 10.0
+1.0
 
 //!DESC [unsharp_masking_nxt]
 //!HOOK MAIN

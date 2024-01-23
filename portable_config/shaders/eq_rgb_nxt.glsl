@@ -1,20 +1,20 @@
 
 //!PARAM Rp
 //!TYPE float
-//!MINIMUM -1
-//!MAXIMUM 1
+//!MINIMUM -1.0
+//!MAXIMUM 1.0
 -0.1106
 
 //!PARAM Gp
 //!TYPE float
-//!MINIMUM -1
-//!MAXIMUM 1
+//!MINIMUM -1.0
+//!MAXIMUM 1.0
 0.0
 
 //!PARAM Bp
 //!TYPE float
-//!MINIMUM -1
-//!MAXIMUM 1
+//!MINIMUM -1.0
+//!MAXIMUM 1.0
 0.0591
 
 //!DESC [eq_rgb_nxt]
