@@ -27,7 +27,7 @@
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (LUMA_texOff(vec2(x_off, y_off)).x)
 vec4 hook() {
     vec4 result = vec4(-0.031113926, -0.1849055, 0.019723099, -0.0009780162) * input_0(-1.0, -1.0);
@@ -50,7 +50,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (LUMA_texOff(vec2(x_off, y_off)).x)
 vec4 hook() {
     vec4 result = vec4(0.10102284, -0.11274667, -0.08372078, 0.042605724) * input_0(-1.0, -1.0);
@@ -73,7 +73,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (LUMA_texOff(vec2(x_off, y_off)).x)
 vec4 hook() {
     vec4 result = vec4(-0.06370002, 0.11982288, -0.19412886, -0.064242795) * input_0(-1.0, -1.0);
@@ -96,7 +96,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (LUMA_texOff(vec2(x_off, y_off)).x)
 vec4 hook() {
     vec4 result = vec4(0.091321334, -0.13928263, 0.25112692, -0.12617964) * input_0(-1.0, -1.0);
@@ -122,7 +122,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -178,7 +178,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -234,7 +234,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -290,7 +290,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -346,7 +346,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -402,7 +402,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -458,7 +458,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -514,7 +514,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -570,7 +570,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -626,7 +626,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -682,7 +682,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -738,7 +738,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -794,7 +794,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -850,7 +850,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -906,7 +906,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -962,7 +962,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -1018,7 +1018,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1074,7 +1074,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1130,7 +1130,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1186,7 +1186,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1246,7 +1246,7 @@ vec4 hook() {
 //!WIDTH LUMA.w
 //!HEIGHT LUMA.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 #define input_0(x_off, y_off) ((conv2d_5_tf_texOff(vec2(x_off, y_off)))+(conv2d_tf_texOff(vec2(x_off, y_off))))
 #define input_1(x_off, y_off) ((conv2d_5_tf1_texOff(vec2(x_off, y_off)))+(conv2d_tf1_texOff(vec2(x_off, y_off))))
 #define input_2(x_off, y_off) ((conv2d_5_tf2_texOff(vec2(x_off, y_off)))+(conv2d_tf2_texOff(vec2(x_off, y_off))))
@@ -1299,7 +1299,7 @@ vec4 hook() {
 //!WIDTH LUMA.w 2 *
 //!HEIGHT LUMA.h 2 *
 //!COMPONENTS 4
-//!WHEN OUTPUT.w LUMA.w / 1.3 > OUTPUT.h LUMA.h / 1.3 > *
+//!WHEN OUTPUT.w LUMA.w / 1.2 > OUTPUT.h LUMA.h / 1.2 > *
 
 vec4 hook() {
     vec4 output_pix = vec4(0.0, 0.0, 0.0, 1.0);

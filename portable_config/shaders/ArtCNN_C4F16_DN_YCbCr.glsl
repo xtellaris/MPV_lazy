@@ -26,7 +26,7 @@
 //!WIDTH CHROMA.w 2.0 *
 //!HEIGHT CHROMA.h 2.0 *
 //!OFFSET ALIGN
-//!WHEN OUTPUT.w CHROMA.w / 2.6 > OUTPUT.h CHROMA.h / 2.6 > *
+//!WHEN OUTPUT.w CHROMA.w / 2.4 > OUTPUT.h CHROMA.h / 2.4 > *
 vec4 hook() {
     return CHROMA_texOff(0.0);
 }
@@ -38,7 +38,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (NATIVE_texOff(vec2(x_off, y_off)))
 vec4 hook() {
     vec4 result = mat4(-0.07751469, 0.06251849, -0.0794072, 0.14662093, -0.07507714, -0.13171795, 0.059838444, 0.00058377604, 0.069427006, 0.049408067, 0.02568544, 0.022409461, 0.0, 0.0, 0.0, 0.0) * input_0(-1.0, -1.0);
@@ -61,7 +61,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (NATIVE_texOff(vec2(x_off, y_off)))
 vec4 hook() {
     vec4 result = mat4(-0.044937313, -0.0013568022, 0.039761174, 0.08997496, -0.05078402, -0.013435092, -0.023282083, -0.11842341, 0.024433782, -0.042034496, 0.07832007, 0.16198264, 0.0, 0.0, 0.0, 0.0) * input_0(-1.0, -1.0);
@@ -84,7 +84,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (NATIVE_texOff(vec2(x_off, y_off)))
 vec4 hook() {
     vec4 result = mat4(0.113454476, 0.08450209, -0.07657697, -0.060240306, -0.06568766, -0.034375027, 0.12877563, 0.005017186, -0.028665312, -0.067787156, 0.05715312, -0.075336866, 0.0, 0.0, 0.0, 0.0) * input_0(-1.0, -1.0);
@@ -107,7 +107,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (NATIVE_texOff(vec2(x_off, y_off)))
 vec4 hook() {
     vec4 result = mat4(-0.12978671, 0.12346874, -0.03891322, -0.11947439, 0.030906128, 0.0055063856, 0.09901091, -0.0025414962, -0.04688585, -0.015880428, 0.002644277, 0.060172178, 0.0, 0.0, 0.0, 0.0) * input_0(-1.0, -1.0);
@@ -133,7 +133,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -189,7 +189,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -245,7 +245,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -301,7 +301,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_tf2_texOff(vec2(x_off, y_off)))
@@ -357,7 +357,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -413,7 +413,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -469,7 +469,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -525,7 +525,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_1_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_1_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_1_tf2_texOff(vec2(x_off, y_off)))
@@ -581,7 +581,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -637,7 +637,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -693,7 +693,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -749,7 +749,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_2_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_2_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_2_tf2_texOff(vec2(x_off, y_off)))
@@ -805,7 +805,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -861,7 +861,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -917,7 +917,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -973,7 +973,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_3_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_3_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_3_tf2_texOff(vec2(x_off, y_off)))
@@ -1029,7 +1029,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1085,7 +1085,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1141,7 +1141,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1197,7 +1197,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) (conv2d_4_tf_texOff(vec2(x_off, y_off)))
 #define input_1(x_off, y_off) (conv2d_4_tf1_texOff(vec2(x_off, y_off)))
 #define input_2(x_off, y_off) (conv2d_4_tf2_texOff(vec2(x_off, y_off)))
@@ -1257,7 +1257,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) ((conv2d_5_tf_texOff(vec2(x_off, y_off)))+(conv2d_tf_texOff(vec2(x_off, y_off))))
 #define input_1(x_off, y_off) ((conv2d_5_tf1_texOff(vec2(x_off, y_off)))+(conv2d_tf1_texOff(vec2(x_off, y_off))))
 #define input_2(x_off, y_off) ((conv2d_5_tf2_texOff(vec2(x_off, y_off)))+(conv2d_tf2_texOff(vec2(x_off, y_off))))
@@ -1317,7 +1317,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) ((conv2d_5_tf_texOff(vec2(x_off, y_off)))+(conv2d_tf_texOff(vec2(x_off, y_off))))
 #define input_1(x_off, y_off) ((conv2d_5_tf1_texOff(vec2(x_off, y_off)))+(conv2d_tf1_texOff(vec2(x_off, y_off))))
 #define input_2(x_off, y_off) ((conv2d_5_tf2_texOff(vec2(x_off, y_off)))+(conv2d_tf2_texOff(vec2(x_off, y_off))))
@@ -1377,7 +1377,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w
 //!HEIGHT NATIVE.h
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 #define input_0(x_off, y_off) ((conv2d_5_tf_texOff(vec2(x_off, y_off)))+(conv2d_tf_texOff(vec2(x_off, y_off))))
 #define input_1(x_off, y_off) ((conv2d_5_tf1_texOff(vec2(x_off, y_off)))+(conv2d_tf1_texOff(vec2(x_off, y_off))))
 #define input_2(x_off, y_off) ((conv2d_5_tf2_texOff(vec2(x_off, y_off)))+(conv2d_tf2_texOff(vec2(x_off, y_off))))
@@ -1431,7 +1431,7 @@ vec4 hook() {
 //!WIDTH NATIVE.w 2 *
 //!HEIGHT NATIVE.h 2 *
 //!COMPONENTS 4
-//!WHEN OUTPUT.w NATIVE.w / 1.3 > OUTPUT.h NATIVE.h / 1.3 > *
+//!WHEN OUTPUT.w NATIVE.w / 1.2 > OUTPUT.h NATIVE.h / 1.2 > *
 vec4 hook() {
     vec4 output_pix = vec4(0.0, 0.0, 0.0, 1.0);
     vec2 f0 = fract(conv2d_6_tf_pos * conv2d_6_tf_size);
