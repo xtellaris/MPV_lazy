@@ -71,7 +71,7 @@ defaults = {
 	shuffle = false,
 
 	scale = 0,
-	scale_fullscreen = 0,
+	scale_fullscreen = 1,
 	font_scale = 1,
 	font_bold = false,
 	text_border = 1.2,
@@ -130,25 +130,17 @@ options.proximity_out = math.max(options.proximity_out, options.proximity_in + 1
 if options.chapter_ranges:sub(1, 4) == '^op|' then options.chapter_ranges = defaults.chapter_ranges end
 -- Ensure required environment configuration
 if options.autoload then mp.commandv('set', 'keep-open-pause', 'no') end
--- 禁用DPI探测时的UI倍率自动计算
+-- 用于UI倍率计算
 function auto_ui_scale()
 	local display_w, display_h = mp.get_property_number('display-width', 0), mp.get_property_number('display-height', 0)
 	local display_aspect = display_w / display_h or 0
-	if display_aspect <= 1 then
-		options.scale = 1
-		msg.warn('检测到异常的显示器分辨率，回退选项 scale 为1')
-		return
-	end
-	if display_aspect >=2 then
-		options.scale = tonumber(string.format('%.2f', display_h / 1080))
-		msg.info('检测到超宽显示器，建议手动指定选项 scale')
-		return
-	end
-	if display_w * display_h > 2304000 then
-		options.scale = tonumber(string.format('%.2f', math.sqrt(display_w * display_h / 2073600)))
+	local factor = 1
+	if display_aspect >= 1 then
+		factor = tonumber(string.format('%.2f', display_h / 1080))
 	else
-		options.scale = 1
+		factor = tonumber(string.format('%.2f', display_w / 1080))
 	end
+	return factor
 end
 -- 设置脚本属性
 mp.set_property_native('user-data/osc', { idlescreen = options.idlescreen })
@@ -429,16 +421,16 @@ function update_display_dimensions()
 	if real_width <= 0 then return end
 
 	-- 此处起才能获取到显示分辨率的信息
-	if options.scale <= 0 then
-		if mp.get_property_native('hidpi-window-scale') then
-			options.scale = 1
-		else
-			auto_ui_scale()
-		end
+	local dpi, scale_fom = state.hidpi_scale, options.scale_fullscreen
+	if scale_fom <= 0 then scale_fom = 1 end
+	if options.scale < 0 then
+		state.scale = (dpi or 1) * (state.fullormaxed and scale_fom or 1)
+	elseif options.scale == 0 then
+		state.scale = auto_ui_scale() * (state.fullormaxed and scale_fom or 1)
+	else
+		state.scale = options.scale * (state.fullormaxed and scale_fom or 1)
 	end
-	if options.scale_fullscreen <= 0 then options.scale_fullscreen = options.scale end
 
-	state.scale = (state.hidpi_scale or 1) * (state.fullormaxed and options.scale_fullscreen or options.scale)
 	state.radius = round(options.border_radius * state.scale)
 	display.width, display.height = real_width, real_height
 	display.initialized = true
