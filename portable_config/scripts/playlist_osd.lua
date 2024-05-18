@@ -36,7 +36,7 @@ local settings = {
 	slice_longfilenames = false,
 	slice_longfilenames_amount = 80,
 
-	style_ass_tags = "{\\rDefault\\an7\\fs12\\b0\\blur0\\bord1\\1c&H996F9A\\3c&H000000\\q2}",
+	style_ass_tags = "{\\rDefault\\an7\\fs24\\b0\\blur0\\bord1\\1c&H996F9A\\3c&H000000\\q2}",
 	playlist_header = "播放列表 [%cursor/%plen]",
 	normal_file = "{\\c&HFFFFFF&}□ %name",
 	hovered_file = "{\\c&H33FFFF&}■ %name",
@@ -158,9 +158,8 @@ function get_name_from_index(i, notitle)
 	local title = mp.get_property("playlist/" .. i .. "/title")
 	local name = mp.get_property("playlist/" .. i .. "/filename")
 
-	local should_use_title = settings.prefer_titles == "all" or is_protocol(name) and settings.prefer_titles == "url"
 	--check if file has a media title stored or as property
-	if not title and should_use_title then
+	if not title then
 		local mtitle = mp.get_property("media-title")
 		if i == pos and mp.get_property("filename") ~= mtitle then
 			if not title_table[name] then
@@ -173,7 +172,7 @@ function get_name_from_index(i, notitle)
 	end
 
 	--if we have media title use a more conservative strip
-	if title and not notitle and should_use_title then
+	if title and not notitle then
 		-- Escape a string for verbatim display on the OSD
 		-- Ref: https://github.com/mpv-player/mpv/blob/94677723624fb84756e65c8f1377956667244bc9/player/lua/stats.lua#L145
 		return stripfilename(title, true):gsub("\\", "\\\239\187\191"):gsub("{", "\\{"):gsub("^ ", "\\h")
@@ -239,10 +238,6 @@ end
 function draw_playlist()
 	refresh_globals()
 	local ass = assdraw.ass_new()
-
-	local _, _, a = mp.get_osd_size()
-	local h = 360
-	local w = h * a
 
 	ass:append(settings.style_ass_tags)
 
