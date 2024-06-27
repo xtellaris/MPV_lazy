@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-//!DESC RAVU-Zoom (rgb, r2, compute)
+//!DESC [ravu_zoom_r2_rgb] (rgb, r2, compute)
 //!HOOK MAIN
 //!BIND HOOKED
 //!BIND ravu_zoom_lut2

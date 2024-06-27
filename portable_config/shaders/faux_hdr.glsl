@@ -1,6 +1,6 @@
 //!HOOK MAIN
 //!BIND LUMA
-//!DESC faux-hdr step1
+//!DESC [faux_hdr] step1
 //!SAVE BW
 
 const float pi = 3.14159265;
@@ -35,7 +35,7 @@ vec4 hook() {
 //!BIND HOOKED
 //!BIND LUMA
 //!BIND BW
-//!DESC faux-hdr step2
+//!DESC [faux_hdr] step2
 
 #define Soft
 

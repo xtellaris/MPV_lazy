@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!DESC anime-sharpen_10_Fast (Luma)
+//!DESC [Anime4K_legacy_10_Fast] (Luma)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -35,7 +35,7 @@ vec4 hook() {
 	return HOOKED_tex(HOOKED_pos);
 }
 
-//!DESC anime-sharpen_10_Fast (ComputeGaussianX)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeGaussianX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -60,7 +60,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10_Fast (ComputeGaussianY)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeGaussianY)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -85,7 +85,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_Fast (LineDetect)
+//!DESC [Anime4K_legacy_10_Fast] (LineDetect)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -113,7 +113,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10_Fast (ComputeLineGaussianX)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeLineGaussianX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -139,7 +139,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10_Fast (ComputeLineGaussianY)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeLineGaussianY)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -164,7 +164,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_Fast (ComputeGradientX)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeGradientX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -200,7 +200,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_Fast (ComputeGradientY)
+//!DESC [Anime4K_legacy_10_Fast] (ComputeGradientY)
 //!HOOK LUMA
 //!BIND HOOKED
 //!BIND LUMAX
@@ -242,7 +242,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_Fast (Refine)
+//!DESC [Anime4K_legacy_10_Fast] (Refine)
 //!HOOK SCALED
 //!BIND HOOKED
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *

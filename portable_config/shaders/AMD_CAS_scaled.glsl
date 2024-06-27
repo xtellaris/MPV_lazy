@@ -39,7 +39,7 @@
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC FidelityFX Upsampling and Sharpening v1.0.2 (Relinearization)
+//!DESC [AMD_CAS_scaled] FidelityFX Upsampling and Sharpening v1.0.2 (Relinearization)
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 >
 
 // User variables - Relinearization
@@ -98,7 +98,7 @@ vec4 hook() {
 
 //!HOOK LUMA
 //!BIND HOOKED
-//!DESC FidelityFX Upsampling and Sharpening v1.0.2
+//!DESC [AMD_CAS_scaled] FidelityFX Upsampling and Sharpening v1.0.2
 //!WHEN OUTPUT.w OUTPUT.h * LUMA.w LUMA.h * / 1.0 >
 //!WIDTH OUTPUT.w OUTPUT.w LUMA.w 2 * < * LUMA.w 2 * OUTPUT.w LUMA.w 2 * > * + OUTPUT.w OUTPUT.w LUMA.w 2 * = * +
 //!HEIGHT OUTPUT.h OUTPUT.h LUMA.h 2 * < * LUMA.h 2 * OUTPUT.h LUMA.h 2 * > * + OUTPUT.h OUTPUT.h LUMA.h 2 * = * +

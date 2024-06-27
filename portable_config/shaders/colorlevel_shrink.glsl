@@ -1,5 +1,5 @@
 
-//!DESC color levels -
+//!DESC [colorlevel_shrink]
 //!HOOK MAINPRESUB
 //!BIND HOOKED
 

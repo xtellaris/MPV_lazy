@@ -1,5 +1,5 @@
 
-//!DESC color levels + (CHROMA)
+//!DESC [colorlevel_expand_chroma]
 //!HOOK CHROMA
 //!BIND HOOKED
 

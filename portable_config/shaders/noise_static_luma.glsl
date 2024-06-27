@@ -1,5 +1,5 @@
 
-//!DESC Reduce static noise (luma)
+//!DESC [noise_static_luma]
 //!HOOK LUMA
 //!BIND HOOKED
 

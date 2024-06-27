@@ -1,5 +1,5 @@
 
-//!DESC Reduce static noise (chroma)
+//!DESC [noise_static_chroma]
 //!HOOK CHROMA
 //!BIND HOOKED
 

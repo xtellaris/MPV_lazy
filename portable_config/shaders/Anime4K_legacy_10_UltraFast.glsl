@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//!DESC anime-sharpen_10_UltraFast (ComputeGradientX)
+//!DESC [Anime4K_legacy_10_UltraFast] (ComputeGradientX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -57,7 +57,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_UltraFast (ComputeGradientY)
+//!DESC [Anime4K_legacy_10_UltraFast] (ComputeGradientY)
 //!HOOK LUMA
 //!BIND HOOKED
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
@@ -98,7 +98,7 @@ vec4 hook() {
 }
 
 
-//!DESC anime-sharpen_10_UltraFast (ComputeLineGaussianX)
+//!DESC [Anime4K_legacy_10_UltraFast] (ComputeLineGaussianX)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -123,7 +123,7 @@ vec4 hook() {
 
 
 
-//!DESC anime-sharpen_10_UltraFast (ComputeLineGaussianY)
+//!DESC [Anime4K_legacy_10_UltraFast] (ComputeLineGaussianY)
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *
 //!HOOK LUMA
 //!BIND HOOKED
@@ -147,7 +147,7 @@ vec4 hook() {
     return vec4(1 - g, 0, 0, 0);
 }
 
-//!DESC anime-sharpen_10_UltraFast (Refine)
+//!DESC [Anime4K_legacy_10_UltraFast] (Refine)
 //!HOOK SCALED
 //!BIND HOOKED
 //!WHEN OUTPUT.w LUMA.w / 1 > OUTPUT.h LUMA.h / 1 > *

@@ -1,6 +1,6 @@
 --[[
 SOURCE_ https://github.com/mpv-player/mpv/blob/master/TOOLS/lua/autoload.lua
-COMMIT_ d147a06e60bfc10cb2fd7c66af7eb6871dba163e
+COMMIT_ b1491bed28ffad2adb23d704241ca4cbfcae8df3
 SOURCE_ https://github.com/rossy/mpv-open-file-dialog/blob/master/open-file-dialog.lua
 COMMIT_ 04fe818fc703d8c5dcc3a6aabe1caeed8286bdbb
 文档_ https://github.com/hooke007/MPV_lazy/discussions/106
@@ -17,9 +17,6 @@ COMMIT_ 04fe818fc703d8c5dcc3a6aabe1caeed8286bdbb
  <KEY>   script-binding load_plus/append_aid     # 追加其它音轨（不切换）
  <KEY>   script-binding load_plus/append_sid     # 追加其它字幕（切换）
 
- <KEY>   script-binding load_plus/append_vfSub   # 装载次字幕（滤镜型）
- <KEY>   script-binding load_plus/toggle_vfSub   # 隐藏/显示 当前的次字幕（滤镜型）
- <KEY>   script-binding load_plus/remove_vfSub   # 移除次字幕（滤镜型）
 ]]
 
 local msg = require "mp.msg"
@@ -157,10 +154,56 @@ table.append = function(t1, t2)
 	end
 end
 
+-- port https://github.com/mpvnet-player/mpv.net/issues/575#issuecomment-1817413401
+-- https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-strcmplogicalw
+local winapi = {}
+local is_windows = mp.get_property_native("platform") == "windows"
+
+if is_windows then
+	-- port https://github.com/po5/thumbfast/blob/8498a34b594578a8b5ddd38c8c2ba20023638fc0/thumbfast.lua#L81
+	local is_ffi_loaded, ffi = pcall(require, "ffi")
+	if is_ffi_loaded then
+		winapi = {
+			ffi = ffi,
+			C = ffi.C,
+			CP_UTF8 = 65001,
+			shlwapi = ffi.load("shlwapi"),
+		}
+
+		ffi.cdef[[
+			int __stdcall MultiByteToWideChar(unsigned int CodePage, unsigned long dwFlags, const char *lpMultiByteStr,
+			int cbMultiByte, wchar_t *lpWideCharStr, int cchWideChar);
+			int __stdcall StrCmpLogicalW(wchar_t *psz1, wchar_t *psz2);
+		]]
+
+		winapi.utf8_to_wide = function(utf8_str)
+			if utf8_str then
+				local utf16_len = winapi.C.MultiByteToWideChar(winapi.CP_UTF8, 0, utf8_str, -1, nil, 0)
+				if utf16_len > 0 then
+					local utf16_str = winapi.ffi.new("wchar_t[?]", utf16_len)
+					if winapi.C.MultiByteToWideChar(winapi.CP_UTF8, 0, utf8_str, -1, utf16_str, utf16_len) > 0 then
+						return utf16_str
+					end
+				end
+			end
+			return ""
+		end
+	end
+end
+
+function alphanumsort_windows(filenames)
+	table.sort(filenames, function(a, b)
+		local a_wide = winapi.utf8_to_wide(a)
+		local b_wide = winapi.utf8_to_wide(b)
+		return winapi.shlwapi.StrCmpLogicalW(a_wide, b_wide) == -1
+	end)
+	return filenames
+end
+
 -- alphanum sorting for humans in Lua
 -- http://notebook.kulchenko.com/algorithms/alphanumeric-natural-sorting-for-humans-in-lua
 
-function alphanumsort(filenames)
+function alphanumsort_lua(filenames)
 	local function padnum(n, d)
 		return #d > 0 and ("%03d%s%.12f"):format(#n, n, tonumber(d) / (10 ^ #d))
 			or ("%03d%s"):format(#n, n)
@@ -175,6 +218,15 @@ function alphanumsort(filenames)
 	end)
 	for i, tuple in ipairs(tuples) do filenames[i] = tuple[2] end
 	return filenames
+end
+
+function alphanumsort(filenames)
+	local is_ffi_loaded = pcall(require, "ffi")
+	if is_windows and is_ffi_loaded then
+		alphanumsort_windows(filenames)
+	else
+		alphanumsort_lua(filenames)
+	end
 end
 
 local autoloaded = nil
@@ -241,6 +293,12 @@ function scan_dir(path, current_file, dir_mode, separator, dir_depth, total_file
 end
 
 function find_and_add_entries()
+	local aborted = mp.get_property_native("playback-abort")
+	if aborted then
+		msg.verbose("自动队列中止：播放中止")
+		return
+	end
+
 	local path = mp.get_property("path", "")
 	local dir, filename = utils.split_path(path)
 	msg.trace(("dir: %s, filename: %s"):format(dir, filename))
@@ -475,56 +533,6 @@ function append_sid()
 	end
 end
 
-function append_vfSub()
-	local was_ontop = mp.get_property_native("ontop")
-	if was_ontop then mp.set_property_native("ontop", false) end
-	local res = utils.subprocess({
-		args = {'powershell', '-NoProfile', '-Command', [[& {
-			Trap {
-				Write-Error -ErrorRecord $_
-				Exit 1
-			}
-			Add-Type -AssemblyName PresentationFramework
-			$u8 = [System.Text.Encoding]::UTF8
-			$out = [Console]::OpenStandardOutput()
-			$ofd = New-Object -TypeName Microsoft.Win32.OpenFileDialog
-			$ofd.Multiselect = $false
-			If ($ofd.ShowDialog() -eq $true) {
-				ForEach ($filename in $ofd.FileNames) {
-					$u8filename = $u8.GetBytes("$filename")
-					$out.Write($u8filename, 0, $u8filename.Length)
-				}
-			}
-		}]]},
-		cancellable = false,
-	})
-	if was_ontop then mp.set_property_native("ontop", true) end
-	if (res.status ~= 0) then return end
-	for filename in string.gmatch(res.stdout, '[^\n]+') do
-		local vfSub = "vf append ``@LUA-load_plus:subtitles=filename=\"" .. res.stdout .. "\"``"
-		mp.command(vfSub)
-	end
-end
-
-function filter_state(label, key, value)
-	local filters = mp.get_property_native("vf")
-	for _, filter in pairs(filters) do
-		if filter["label"] == label and (not key or key and filter[key] == value) then
-			return true
-		end
-	end
-	return false
-end
-
-function toggle_vfSub()
-	local vfSub = "vf toggle @LUA-load_plus"
-	if filter_state("LUA-load_plus") then mp.command(vfSub) end
-end
-
-function remove_vfSub()
-	local vfSub = "vf remove @LUA-load_plus"
-	if filter_state("LUA-load_plus") then mp.command(vfSub) end
-end
 
 
 mp.register_event("end-file", remove_vfSub)
@@ -535,6 +543,3 @@ mp.add_key_binding(nil, "import_files", import_files)
 mp.add_key_binding(nil, "import_url", import_url)
 mp.add_key_binding(nil, "append_aid", append_aid)
 mp.add_key_binding(nil, "append_sid", append_sid)
-mp.add_key_binding(nil, "append_vfSub", append_vfSub)
-mp.add_key_binding(nil, "toggle_vfSub", toggle_vfSub)
-mp.add_key_binding(nil, "remove_vfSub", remove_vfSub)

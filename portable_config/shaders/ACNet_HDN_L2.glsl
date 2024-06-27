@@ -29,7 +29,7 @@ SOFTWARE.
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L1
+//!DESC [ACNet_HDN_L2] L1
 //!BIND LUMA
 //!SAVE L1_1
 //!COMPONENTS 4
@@ -93,7 +93,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L1
+//!DESC [ACNet_HDN_L2] L1
 //!BIND LUMA
 //!SAVE L1_2
 //!COMPONENTS 4
@@ -157,7 +157,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L2
+//!DESC [ACNet_HDN_L2] L2
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_1
@@ -429,7 +429,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L2
+//!DESC [ACNet_HDN_L2] L2
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_2
@@ -700,7 +700,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L3
+//!DESC [ACNet_HDN_L2] L3
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_1
@@ -972,7 +972,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L3
+//!DESC [ACNet_HDN_L2] L3
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_2
@@ -1243,7 +1243,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L4
+//!DESC [ACNet_HDN_L2] L4
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_1
@@ -1515,7 +1515,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L4
+//!DESC [ACNet_HDN_L2] L4
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_2
@@ -1786,7 +1786,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L5
+//!DESC [ACNet_HDN_L2] L5
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_1
@@ -2058,7 +2058,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L5
+//!DESC [ACNet_HDN_L2] L5
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_2
@@ -2329,7 +2329,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L6
+//!DESC [ACNet_HDN_L2] L6
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_1
@@ -2601,7 +2601,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L6
+//!DESC [ACNet_HDN_L2] L6
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_2
@@ -2872,7 +2872,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L7
+//!DESC [ACNet_HDN_L2] L7
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_1
@@ -3144,7 +3144,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L7
+//!DESC [ACNet_HDN_L2] L7
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_2
@@ -3415,7 +3415,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L8
+//!DESC [ACNet_HDN_L2] L8
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_1
@@ -3687,7 +3687,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L8
+//!DESC [ACNet_HDN_L2] L8
 //!BIND L1_1
 //!BIND L1_2
 //!SAVE L2_2
@@ -3958,7 +3958,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L9
+//!DESC [ACNet_HDN_L2] L9
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_1
@@ -4230,7 +4230,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L9
+//!DESC [ACNet_HDN_L2] L9
 //!BIND L2_1
 //!BIND L2_2
 //!SAVE L1_2
@@ -4501,7 +4501,7 @@ vec4 hook()
 
 //!HOOK LUMA
 //!WHEN OUTPUT.w LUMA.w / 1.200 > OUTPUT.h LUMA.h / 1.200 > *
-//!DESC ACNet HDN Level 2 L10
+//!DESC [ACNet_HDN_L2] L10
 //!WIDTH LUMA.w 2 *
 //!HEIGHT LUMA.h 2 *
 //!BIND L1_1

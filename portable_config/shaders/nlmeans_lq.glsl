@@ -24,7 +24,7 @@
 //!HOOK LUMA
 //!HOOK CHROMA
 //!BIND HOOKED
-//!DESC Non-local means (LQ/nlmeans.glsl)
+//!DESC [nlmeans_lq] (LQ/nlmeans.glsl)
 
 
 

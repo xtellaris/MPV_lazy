@@ -1,5 +1,5 @@
 
-//!DESC saturate
+//!DESC [saturate]
 //!HOOK MAINPRESUB   
 //!BIND HOOKED
 

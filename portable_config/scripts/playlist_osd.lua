@@ -7,6 +7,8 @@
 可用的快捷键示例（在 input.conf 中写入）：
  <KEY>   script-binding playlist_osd/display   # 显示高级播放列表
 
+ <KEY>   script-message-to playlist_osd random   # 跳转到随机条目
+
 ]]
 
 local settings = {
@@ -26,33 +28,22 @@ local settings = {
 	show_title_on_file_load = false,
 	show_playlist_on_file_load = false,
 	close_playlist_on_playfile = false,
-
 	sync_cursor_on_load = true,
-
 	loop_cursor = true,
-
 	reset_cursor_on_open = true,
-
 	playlist_display_timeout = 4,
-
 	showamount = 15,
-
-	scale_playlist_by_window=true,
-
-	style_ass_tags = "{\\rDefault\\an7\\fs12\\b0\\blur0\\bord1\\1c&H996F9A\\3c&H000000\\q2}",
-
 	slice_longfilenames = false,
 	slice_longfilenames_amount = 80,
 
+	style_ass_tags = "{\\rDefault\\an7\\fs24\\b0\\blur0\\bord1\\1c&H996F9A\\3c&H000000\\q2}",
 	playlist_header = "播放列表 [%cursor/%plen]",
-
 	normal_file = "{\\c&HFFFFFF&}□ %name",
 	hovered_file = "{\\c&H33FFFF&}■ %name",
 	selected_file = "{\\c&C1C1FF&}➔ %name",
 	playing_file = "{\\c&HAAAAAA&}▷ %name",
 	playing_hovered_file = "{\\c&H00FF00&}▶ %name",
 	playing_selected_file = "{\\c&C1C1FF&}➔ %name",
-
 	playlist_sliced_prefix = "▲",
 	playlist_sliced_suffix = "▼",
 
@@ -68,6 +59,7 @@ local assdraw = require("mp.assdraw")
 --global variables
 local selection = nil
 local dynamic_binds = true
+local playlist_overlay = mp.create_osd_overlay("ass-events")
 local playlist_visible = false
 local strippedname = nil
 local path = nil
@@ -103,7 +95,7 @@ function on_file_loaded()
 		mp.commandv("show-text", strippedname)
 	end
 	if settings.show_playlist_on_file_load then
-		showplaylist()
+		playlist_show()
 	end
 end
 
@@ -166,9 +158,8 @@ function get_name_from_index(i, notitle)
 	local title = mp.get_property("playlist/" .. i .. "/title")
 	local name = mp.get_property("playlist/" .. i .. "/filename")
 
-	local should_use_title = settings.prefer_titles == "all" or is_protocol(name) and settings.prefer_titles == "url"
 	--check if file has a media title stored or as property
-	if not title and should_use_title then
+	if not title then
 		local mtitle = mp.get_property("media-title")
 		if i == pos and mp.get_property("filename") ~= mtitle then
 			if not title_table[name] then
@@ -181,7 +172,7 @@ function get_name_from_index(i, notitle)
 	end
 
 	--if we have media title use a more conservative strip
-	if title and not notitle and should_use_title then
+	if title and not notitle then
 		-- Escape a string for verbatim display on the OSD
 		-- Ref: https://github.com/mpv-player/mpv/blob/94677723624fb84756e65c8f1377956667244bc9/player/lua/stats.lua#L145
 		return stripfilename(title, true):gsub("\\", "\\\239\187\191"):gsub("{", "\\{"):gsub("^ ", "\\h")
@@ -248,10 +239,6 @@ function draw_playlist()
 	refresh_globals()
 	local ass = assdraw.ass_new()
 
-	local _, _, a = mp.get_osd_size()
-	local h = 360
-	local w = h * a
-
 	ass:append(settings.style_ass_tags)
 
 	if settings.playlist_header ~= "" then
@@ -297,8 +284,8 @@ function draw_playlist()
 		end
 	end
 
-	if settings.scale_playlist_by_window then w,h = 0, 0 end
-	mp.set_osd_ass(w, h, ass.text)
+	playlist_overlay.data = ass.text
+	playlist_overlay:update()
 end
 
 function toggle_playlist(show_function)
@@ -450,7 +437,7 @@ function playlist_next()
 	if settings.close_playlist_on_playfile then
 		remove_keybinds()
 	end
-	if playlist_visible then showplaylist() end
+	if playlist_visible then playlist_show() end
 end
 
 function playlist_prev()
@@ -458,7 +445,21 @@ function playlist_prev()
 	if settings.close_playlist_on_playfile then
 		remove_keybinds()
 	end
-	if playlist_visible then showplaylist() end
+	if playlist_visible then playlist_show() end
+end
+
+function playlist_random()
+	refresh_globals()
+	if plen < 2 then return end
+	math.randomseed(os.time())
+	local random = pos
+	while random == pos do
+		random = math.random(0, plen-1)
+	end
+	mp.set_property("playlist-pos", random)
+	if settings.close_playlist_on_playfile then
+		remove_keybinds()
+	end
 end
 
 function playfile()
@@ -477,7 +478,7 @@ function playfile()
 	if settings.close_playlist_on_playfile then
 		remove_keybinds()
 	end
-	if playlist_visible then showplaylist() end
+	if playlist_visible then playlist_show() end
 end
 
 function bind_keys(keys, name, func, opts)
@@ -537,7 +538,8 @@ function remove_keybinds()
 	keybindstimer:kill()
 	keybindstimer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
 	keybindstimer:kill()
-	mp.set_osd_ass(0, 0, "")
+	playlist_overlay.data = ""
+	playlist_overlay:update()
 	playlist_visible = false
 	if dynamic_binds then
 		unbind_keys(settings.key_move2up, "moveup")
@@ -588,12 +590,14 @@ function handlemessage(msg, value, value2)
 		mp.commandv("show-text", strippedname ) ; return
 	end
 
-	if msg == "playlist-next" then playlist_next() ; return end
-	if msg == "playlist-prev" then playlist_prev() ; return end
+	if msg == "next" then playlist_next() ; return end
+	if msg == "prev" then playlist_prev() ; return end
+	if msg == "random" then playlist_random() ; return end
 	if msg == "close" then remove_keybinds() end
 end
 
 mp.register_script_message("playlist_osd", handlemessage)
+mp.register_script_message("random", playlist_random)
 
 bind_keys(nil, "display", playlist_show)
 

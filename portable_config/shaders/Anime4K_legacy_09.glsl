@@ -25,7 +25,7 @@
 
 //!HOOK SCALED
 //!BIND HOOKED
-//!DESC anime-sharpen_09 (ComputeLuma)
+//!DESC [Anime4K_legacy_09] (ComputeLuma)
 //!BIND POSTKERNEL
 //!SAVE POSTKERNEL
 
@@ -42,7 +42,7 @@ vec4 hook() { //Save lum on POSTKERNEL
 
 //!HOOK SCALED
 //!BIND HOOKED
-//!DESC anime-sharpen_09 (ThinLines)
+//!DESC [Anime4K_legacy_09] (ThinLines)
 //!BIND POSTKERNEL
 //!BIND NATIVE
 
@@ -148,7 +148,7 @@ vec4 hook()  {
 
 //!HOOK SCALED
 //!BIND HOOKED
-//!DESC anime-sharpen_09 (ComputeLuma)
+//!DESC [Anime4K_legacy_09] (ComputeLuma)
 //!BIND POSTKERNEL
 //!SAVE POSTKERNEL
 
@@ -165,7 +165,7 @@ vec4 hook() { //Save lum on POSTKERNEL
 
 //!HOOK SCALED
 //!BIND HOOKED
-//!DESC anime-sharpen_09 (ComputeGradient)
+//!DESC [Anime4K_legacy_09] (ComputeGradient)
 //!BIND POSTKERNEL
 //!SAVE POSTKERNEL
 
@@ -212,7 +212,7 @@ vec4 hook() { //Save grad on POSTKERNEL
 
 //!HOOK SCALED
 //!BIND HOOKED
-//!DESC anime-sharpen_09 (Refine)
+//!DESC [Anime4K_legacy_09] (Refine)
 //!BIND POSTKERNEL
 //!BIND NATIVE
 

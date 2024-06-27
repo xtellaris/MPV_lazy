@@ -1,12 +1,12 @@
 --[[
 SOURCE_ https://github.com/tomasklaen/uosc/tree/main/src/uosc
-COMMIT_ 96b57b259ee6ca547564c20745531804deff0f0d
+COMMIT_ 6fa34c31d0a5290dee83282205768d15111df7d8
 文档_ https://github.com/hooke007/MPV_lazy/discussions/186
 
 极简主义设计驱动的多功能界面脚本群组，兼容 thumbfast 新缩略图引擎
 ]]
 
-local uosc_version = '5.1.1'
+local uosc_version = '5.2.0'
 
 mp.commandv('script-message', 'uosc-version', uosc_version)
 
@@ -71,7 +71,7 @@ defaults = {
 	shuffle = false,
 
 	scale = 0,
-	scale_fullscreen = 0,
+	scale_fullscreen = 1,
 	font_scale = 1,
 	font_bold = false,
 	text_border = 1.2,
@@ -79,7 +79,7 @@ defaults = {
 	color = '',
 	opacity = '',
 	animation_duration = 100,
-	text_width_estimation = true,
+	refine = 'text_width,sorting',
 	click_threshold = 0,
 	click_command = 'cycle pause; script-binding uosc/flash-pause-indicator',
 	flash_duration = 1000,
@@ -111,9 +111,13 @@ defaults = {
 	idlemsg = 'default',
 	idle_call_menu = 0,
 	custom_font = 'default',
+	ziggy_pth = 'default',
 }
 options = table_copy(defaults)
-opt.read_options(options, nil, function(_)
+opt.read_options(options, nil, function(changed_options)
+	if changed_options.time_precision then
+		timestamp_zero_rep_clear_cache()
+	end
 	update_config()
 	update_human_times()
 	Manager:disable('user', options.disable_elements)
@@ -126,28 +130,23 @@ options.proximity_out = math.max(options.proximity_out, options.proximity_in + 1
 if options.chapter_ranges:sub(1, 4) == '^op|' then options.chapter_ranges = defaults.chapter_ranges end
 -- Ensure required environment configuration
 if options.autoload then mp.commandv('set', 'keep-open-pause', 'no') end
--- 禁用DPI探测时的UI倍率自动计算
+-- 用于UI倍率计算
 function auto_ui_scale()
 	local display_w, display_h = mp.get_property_number('display-width', 0), mp.get_property_number('display-height', 0)
 	local display_aspect = display_w / display_h or 0
-	if display_aspect <= 1 then
-		options.scale = 1
-		msg.warn('检测到异常的显示器分辨率，回退选项 scale 为1')
-		return
-	end
-	if display_aspect >=2 then
-		options.scale = tonumber(string.format('%.2f', display_h / 1080))
-		msg.info('检测到超宽显示器，建议手动指定选项 scale')
-		return
-	end
-	if display_w * display_h > 2304000 then
-		options.scale = tonumber(string.format('%.2f', math.sqrt(display_w * display_h / 2073600)))
+	local factor = 1
+	if display_aspect >= 1 then
+		factor = tonumber(string.format('%.2f', display_h / 1080))
 	else
-		options.scale = 1
+		factor = tonumber(string.format('%.2f', display_w / 1080))
 	end
+	return factor
 end
 -- 设置脚本属性
 mp.set_property_native('user-data/osc', { idlescreen = options.idlescreen })
+
+--[[ Language ]]
+require('lib/char_conv')
 
 --[[ CONFIG ]]
 local config_defaults = {
@@ -201,6 +200,7 @@ config = {
 	osd_margin_y = mp.get_property('osd-margin-y'),
 	osd_alignment_x = mp.get_property('osd-align-x'),
 	osd_alignment_y = mp.get_property('osd-align-y'),
+	refine = create_set(comma_split(options.refine)),
 	types = {
 		video = comma_split(options.video_types),
 		audio = comma_split(options.audio_types),
@@ -411,7 +411,7 @@ require('lib/menus')
 -- Determine path to ziggy
 do
 	local bin = 'ziggy-' .. (state.platform == 'windows' and 'windows.exe' or state.platform)
-	config.ziggy_path = join_path(mp.get_script_directory(), join_path('bin', bin))
+	config.ziggy_path = options.ziggy_pth ~= "default" and mp.command_native({'expand-path', options.ziggy_pth}) or (join_path(mp.get_script_directory(), join_path('bin', bin)))
 end
 
 --[[ STATE UPDATERS ]]
@@ -421,16 +421,16 @@ function update_display_dimensions()
 	if real_width <= 0 then return end
 
 	-- 此处起才能获取到显示分辨率的信息
-	if options.scale <= 0 then
-		if mp.get_property_native('hidpi-window-scale') then
-			options.scale = 1
-		else
-			auto_ui_scale()
-		end
+	local dpi, scale_fom = state.hidpi_scale, options.scale_fullscreen
+	if scale_fom <= 0 then scale_fom = 1 end
+	if options.scale < 0 then
+		state.scale = (dpi or 1) * (state.fullormaxed and scale_fom or 1)
+	elseif options.scale == 0 then
+		state.scale = auto_ui_scale() * (state.fullormaxed and scale_fom or 1)
+	else
+		state.scale = options.scale * (state.fullormaxed and scale_fom or 1)
 	end
-	if options.scale_fullscreen <= 0 then options.scale_fullscreen = options.scale end
 
-	state.scale = (state.hidpi_scale or 1) * (state.fullormaxed and options.scale_fullscreen or options.scale)
 	state.radius = round(options.border_radius * state.scale)
 	display.width, display.height = real_width, real_height
 	display.initialized = true
@@ -451,22 +451,24 @@ function update_fullormaxed()
 end
 
 function update_human_times()
+	state.speed = state.speed or 1
 	if state.time then
-		state.time_human = format_time(state.time, state.duration)
+		local max_seconds = state.duration
 		if state.duration then
-			local speed = state.speed or 1
 			if options.destination_time == 'playtime-remaining' then
-				state.destination_time_human = format_time((state.time - state.duration) / speed, state.duration)
+				max_seconds = state.speed >= 1 and state.duration or state.duration / state.speed
+				state.destination_time_human = format_time((state.time - state.duration) / state.speed, max_seconds)
 			elseif options.destination_time == 'total' then
-				state.destination_time_human = format_time(state.duration, state.duration)
+				state.destination_time_human = format_time(state.duration, max_seconds)
 			else
-				state.destination_time_human = format_time(state.time - state.duration, state.duration)
+				state.destination_time_human = format_time(state.time - state.duration, max_seconds)
 			end
 		else
 			state.destination_time_human = nil
 		end
+		state.time_human = format_time(state.time, max_seconds)
 	else
-		state.time_human = nil
+		state.time_human, state.destination_time_human = nil, nil
 	end
 end
 
@@ -564,7 +566,7 @@ function load_file_index_in_current_directory(index)
 		})
 
 		if not files then return end
-		sort_filenames(files)
+		sort_strings(files)
 		if index < 0 then index = #files + index + 1 end
 
 		if files[index] then
@@ -607,14 +609,17 @@ if options.click_threshold > 0 then
 		if delta > 0 and delta < click_time and delta > 0.02 then mp.command(options.click_command) end
 	end)
 	click_timer:kill()
-	mp.set_key_bindings({{'mbtn_left',
-		function() last_up = mp.get_time() end,
-		function()
-			last_down = mp.get_time()
-			if click_timer:is_enabled() then click_timer:kill() else click_timer:resume() end
-		end,
-	}}, 'mouse_movement', 'force')
-	mp.enable_key_bindings('mouse_movement', 'allow-vo-dragging+allow-hide-cursor')
+	local function handle_up() last_up = mp.get_time() end
+	local function handle_down()
+		last_down = mp.get_time()
+		if click_timer:is_enabled() then click_timer:kill() else click_timer:resume() end
+	end
+	-- If this function exists, it'll be called at the beginning of render().
+	function setup_click_detection()
+		local hitbox = {ax = 0, ay = 0, bx = display.width, by = display.height, window_drag = true}
+		cursor:zone('primary_down', hitbox, handle_down)
+		cursor:zone('primary_up', hitbox, handle_up)
+	end
 end
 
 mp.observe_property('osc', 'bool', function(name, value) if value == true then mp.set_property('osc', 'no') end end)
@@ -849,6 +854,7 @@ bind_command('flash-top-bar', function() Elements:flash({'top_bar'}) end)
 bind_command('flash-volume', function() Elements:flash({'volume'}) end)
 bind_command('flash-speed', function() Elements:flash({'speed'}) end)
 bind_command('flash-pause-indicator', function() Elements:flash({'pause_indicator'}) end)
+bind_command('flash-progress', function() Elements:flash({'progress'}) end)
 bind_command('toggle-progress', function() Elements:maybe('timeline', 'toggle_progress') end)
 bind_command('toggle-title', function() Elements:maybe('top_bar', 'toggle_title') end)
 bind_command('decide-pause-indicator', function() Elements:maybe('pause_indicator', 'decide') end)
@@ -858,7 +864,7 @@ bind_command('keybinds', function()
 	if Menu:is_open('keybinds') then
 		Menu:close()
 	else
-		open_command_menu({type = 'keybinds', items = get_keybinds_items(), palette = true})
+		open_command_menu({type = 'keybinds', items = get_keybinds_items(), search_style = 'palette'})
 	end
 end)
 bind_command('download-subtitles', open_subtitle_downloader)
@@ -873,6 +879,9 @@ bind_command('load-video', create_track_loader_menu_opener({
 }))
 bind_command('subtitles', create_select_tracklist_type_menu_opener(
 	ulang._sid_submenu_title, 'sub', 'sid', 'script-binding uosc/load-subtitles', 'script-binding uosc/download-subtitles'
+))
+bind_command('subtitles-sec', create_select_tracklist_type_menu_opener(
+	ulang._sid_sec_submenu_title, 'sub', 'secondary-sid', 'script-binding uosc/load-subtitles', 'script-binding uosc/download-subtitles'
 ))
 bind_command('audio', create_select_tracklist_type_menu_opener(
 	ulang._aid_submenu_title, 'audio', 'aid', 'script-binding uosc/load-audio'
@@ -948,7 +957,7 @@ bind_command('show-in-directory', function()
 	if not state.path or is_protocol(state.path) then return end
 
 	if state.platform == 'windows' then
-		utils.subprocess_detached({args = {'explorer', '/select,', state.path}, cancellable = false})
+		utils.subprocess_detached({args = {'explorer', '/select,', state.path .. ' '}, cancellable = false})
 	elseif state.platform == 'darwin' then
 		utils.subprocess_detached({args = {'open', '-R', state.path}, cancellable = false})
 	elseif state.platform == 'linux' then

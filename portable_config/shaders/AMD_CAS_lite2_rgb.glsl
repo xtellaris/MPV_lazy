@@ -71,7 +71,7 @@
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC CAS Relinearization Pass
+//!DESC [AMD_CAS_lite2_rgb] Relinearization Pass
 
 vec3 srgb_to_linear(vec3 col) {
 	return mix(col * 1.0 / 12.92,  pow((col + 0.055) / 1.055, vec3(2.4)), ivec3(lessThan(vec3(0.04045), col)));
@@ -87,7 +87,7 @@ vec4 hook()
 
 //!HOOK OUTPUT
 //!BIND HOOKED
-//!DESC CAS Sharpening + Delinearization Pass
+//!DESC [AMD_CAS_lite2_rgb] Sharpening + Delinearization Pass
 
 // User variables
 #define SHARPENING 1.0 // Sharpening intensity: Adjusts sharpening intensity by averaging the original pixels to the sharpened result.  1.0 is the unmodified default. 0.0 to 1.0.

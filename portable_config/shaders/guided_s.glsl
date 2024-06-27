@@ -30,7 +30,7 @@
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (IP)
+//!DESC [guided_s] (IP)
 //!BIND HOOKED
 //!WIDTH HOOKED.w 1.0 /
 //!HEIGHT HOOKED.h 1.0 /
@@ -44,7 +44,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANIP)
+//!DESC [guided_s] (MEANIP)
 //!BIND IP
 //!WIDTH IP.w 1.5 /
 //!HEIGHT IP.h 1.5 /
@@ -58,7 +58,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (IP_SQ)
+//!DESC [guided_s] (IP_SQ)
 //!BIND IP
 //!WIDTH IP.w
 //!HEIGHT IP.h
@@ -72,7 +72,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (CORRIP)
+//!DESC [guided_s] (CORRIP)
 //!BIND IP_SQ
 //!WIDTH MEANIP.w
 //!HEIGHT MEANIP.h
@@ -86,7 +86,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (A)
+//!DESC [guided_s] (A)
 //!BIND MEANIP
 //!BIND CORRIP
 //!WIDTH IP.w
@@ -105,7 +105,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (B)
+//!DESC [guided_s] (B)
 //!BIND A
 //!BIND MEANIP
 //!WIDTH IP.w
@@ -120,7 +120,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANA)
+//!DESC [guided_s] (MEANA)
 //!BIND A
 //!WIDTH MEANIP.w
 //!HEIGHT MEANIP.h
@@ -134,7 +134,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter (MEANB)
+//!DESC [guided_s] (MEANB)
 //!BIND B
 //!WIDTH MEANIP.w
 //!HEIGHT MEANIP.h
@@ -148,7 +148,7 @@ vec4 hook()
 //!HOOK LUMA
 //!HOOK CHROMA
 //!HOOK RGB
-//!DESC Guided filter
+//!DESC [guided_s]
 //!BIND HOOKED
 //!BIND MEANA
 //!BIND MEANB
